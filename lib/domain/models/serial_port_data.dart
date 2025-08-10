@@ -1,4 +1,6 @@
 final class SerialPortData {
+  String name;
+  int adress;
   String description;
   String transport;
   String usbBus;
@@ -10,7 +12,7 @@ final class SerialPortData {
   String serialNumber;
   String macAdress;
 
-  SerialPortData(this.description, this.transport, this.usbBus, this.usbDevice, this.vendorId, this.productId, this.manufacturer, this.productName, this.serialNumber, this.macAdress);
+  SerialPortData(this.name, this.adress, this.description, this.transport, this.usbBus, this.usbDevice, this.vendorId, this.productId, this.manufacturer, this.productName, this.serialNumber, this.macAdress);
 
   // armazena o nome da variavel dada a instância da classe
   String instanceName = (SerialPortData).toString();
@@ -23,6 +25,8 @@ final class SerialPortData {
     
     return '''
         $instanceName:
+        Nome da Porta --> $name
+        Endereço --> $adress
         Descrição --> $description
         Transporte --> $transport
         USB Bus --> $usbBus
