@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:arari_next/domain/models/serial_port_data.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
+import 'package:provider/provider.dart';
 
 // extendendo intToString para nossos propósitos no serial;
 
@@ -25,13 +27,18 @@ extension IntToString on int {
 
 class SerialConnector {
 
-  // mostra as portas disponiveis.
+  // Retorna as portas disponiveis.
 
-  var availablePorts = SerialPort.availablePorts;
+  final _availablePorts = SerialPort.availablePorts;
 
+  // Retorna a porta selecionada, null se nenhum porta tiver sido selecionada.
   SerialPort? selectedPort;
 
-  SerialPort? connectedPort;
+  StreamController<String> outputStreamController = StreamController();
+
+  late Stream<String>? outputStream;
+
+  SerialPortReader? _reader;
 
   // Listar Portas e dados em strings literais
 
@@ -41,7 +48,7 @@ class SerialConnector {
 
     // para cada campo de endereço de porta checa se existem dados, se sim, os escreve nos campos, se não escreve N/D(Não Definido) nos campos, após isso adicona a porta a lista.
 
-    for (final adress in availablePorts) {
+    for (final adress in _availablePorts) {
       final port = SerialPort(adress);
       readyPortList.add(SerialPortData(
         adress,
@@ -106,9 +113,9 @@ class SerialConnector {
     return translatedMessage;
   }
 
-  bool send(String message) {
+  // implementandos seguintes erros previsiveis: Porta não aberta, porta não definida 
 
-    // implementandos seguintes erros previsiveis: Porta não aberta, porta não definida 
+  bool checkPortIsGood() {
 
     if (selectedPort == null) {
 
@@ -119,30 +126,32 @@ class SerialConnector {
       throw AssertionError('Serial port is not open');
 
     // se não tivemos erros previsiveis, tentar de fato escrever a mensagem;
-    } else { 
+    } else {return true;}
 
-      try {
-        int? writteBytes = selectedPort!.write(_stringToUint8List(message));
-
-        // checa se o número de bytes confirmados é igual ao número de bytes enviados.
-
-        if (_stringToUint8List(message).length != writteBytes) {
-
-          throw AssertionError('Number of bytes confirmed do not match de number of bytes sent');
-
-        } else {
-
-          return true;
-
-        }
-        
-      } catch (err, _) {
-        //TODO implementar loging de erros.
-        rethrow;
-      }
-    }
   }
 
+  bool send(String message) {
+
+    // checando erros previsisveis.
+    checkPortIsGood();
+
+    try {
+      int? writteBytes = selectedPort!.write(_stringToUint8List(message));
+
+      // checa se o número de bytes confirmados é igual ao número de bytes enviados.
+      if (_stringToUint8List(message).length != writteBytes) {
+
+        throw AssertionError('Number of bytes confirmed do not match de number of bytes sent');
+
+      } else {
+        return true;
+      }
+    } catch(err, _) {
+      //TODO implementar loging de erros.
+      rethrow;
+    }
+  }
+   
   // traduzindo a mensagem de string to uint8list 
   String _Uint8ListToString(Uint8List serialMessage) {
 
@@ -151,6 +160,41 @@ class SerialConnector {
     return decodedMessage;
   }
 
+  Stream read() {
 
+   // checando erros previsisveis.
+    checkPortIsGood();
+
+    try {
+      // Convertendo stream 
+      _reader = SerialPortReader(selectedPort!);
+      // Quando mensagem chega, converte ela de uint8 para string e streama a mesma novamente.
+      Stream<String>fromSerial = _reader!.stream.map((data) {
+        return _Uint8ListToString(data);
+      });
+
+      //junta a stream de mensagens recebidas serial a stream da classe.
+      outputStreamController.sink.addStream(fromSerial);
+      // Retorna a stream principal, excalamação já que sabemos que não é null pois juntamos a stream principal
+      return outputStream!;
+      } catch(err, _) {
+      //TODO implementar loging de erros.
+      rethrow;
+    }
+  }
+
+  void dispose() { // evitar vazamentos de memoria por conta do serialPortReader, outputStream ou ReadWrite;
+
+  outputStreamController.close();
+  
+  if ( _reader != null) {
+    _reader!.close();
+  }
+
+  if  (selectedPort != null) {
+    selectedPort!.close();
+  }
+
+  }
 
 }
