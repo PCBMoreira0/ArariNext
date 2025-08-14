@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:arari_next/domain/models/serial_port_data.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
-import 'package:provider/provider.dart';
 
 // extendendo intToString para nossos propósitos no serial;
 
@@ -153,7 +152,7 @@ class SerialConnector {
   }
    
   // traduzindo a mensagem de string to uint8list 
-  String _Uint8ListToString(Uint8List serialMessage) {
+  String _uint8ListToString(Uint8List serialMessage) {
 
    String decodedMessage = String.fromCharCodes(serialMessage);
 
@@ -170,7 +169,7 @@ class SerialConnector {
       _reader = SerialPortReader(selectedPort!);
       // Quando mensagem chega, converte ela de uint8 para string e streama a mesma novamente.
       Stream<String>fromSerial = _reader!.stream.map((data) {
-        return _Uint8ListToString(data);
+        return _uint8ListToString(data);
       });
 
       //junta a stream de mensagens recebidas serial a stream da classe.

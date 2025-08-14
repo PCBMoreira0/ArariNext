@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
+import '/router.dart';
+import 'data.dart';
 
-void main() {
-  runApp(const MainApp());
+void main() => runApp(Mavboia());
+
+class Mavboia extends StatefulWidget {
+  const Mavboia({super.key});
+
+  @override
+  State<Mavboia> createState() => _MavboiaState();
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class _MavboiaState extends State<Mavboia> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp(
+      title: 'MavBoia',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      // Initially display FirstPage
+      initialRoute: '/console',
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }
