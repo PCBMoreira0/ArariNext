@@ -33,15 +33,15 @@ class SerialConnector {
   // Retorna a porta selecionada, null se nenhum porta tiver sido selecionada.
   SerialPort? selectedPort;
 
-  StreamController<String> outputStreamController = StreamController();
+  final StreamController<Uint8List> _outputStreamController = StreamController();
 
-  late Stream<String>? outputStream;
+  late Stream<Uint8List>? outputStream;
 
   SerialPortReader? _reader;
 
   // Listar Portas e dados em strings literais
 
-  List<SerialPortData> listPorts() {
+  List<SerialPortData> readPorts() {
 
     List<SerialPortData> readyPortList = []; 
 
@@ -77,7 +77,7 @@ class SerialConnector {
 
   }
   
-  bool connect() {
+  bool open() {
 
     // Checando se a porta selecionada é null, se for levanta um erro
     if (selectedPort == null) {
@@ -129,7 +129,7 @@ class SerialConnector {
 
   }
 
-  bool send(String message) {
+  bool write(String message) {
 
     // checando erros previsisveis.
     checkPortIsGood();
@@ -150,14 +150,7 @@ class SerialConnector {
       rethrow;
     }
   }
-   
-  // traduzindo a mensagem de string to uint8list 
-  String _uint8ListToString(Uint8List serialMessage) {
 
-   String decodedMessage = String.fromCharCodes(serialMessage);
-
-    return decodedMessage;
-  }
 
   Stream read() {
 
@@ -168,12 +161,12 @@ class SerialConnector {
       // Convertendo stream 
       _reader = SerialPortReader(selectedPort!);
       // Quando mensagem chega, converte ela de uint8 para string e streama a mesma novamente.
-      Stream<String>fromSerial = _reader!.stream.map((data) {
-        return _uint8ListToString(data);
+      Stream<Uint8List>fromSerial = _reader!.stream.map((data) {
+        return data;
       });
 
       //junta a stream de mensagens recebidas serial a stream da classe.
-      outputStreamController.sink.addStream(fromSerial);
+      _outputStreamController.sink.addStream(fromSerial);
       // Retorna a stream principal, excalamação já que sabemos que não é null pois juntamos a stream principal
       return outputStream!;
       } catch(err, _) {
@@ -184,7 +177,7 @@ class SerialConnector {
 
   void dispose() { // evitar vazamentos de memoria por conta do serialPortReader, outputStream ou ReadWrite;
 
-  outputStreamController.close();
+  _outputStreamController.close();
   
   if ( _reader != null) {
     _reader!.close();
