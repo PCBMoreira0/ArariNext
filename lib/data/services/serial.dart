@@ -39,6 +39,16 @@ class SerialConnector {
 
   SerialPortReader? _reader;
 
+  int? baudRate;
+
+  // setting the baud rate 
+
+  void setBaudRate(int baud) {
+
+    baudRate = baud;
+
+  }
+
   // Listar Portas e dados em strings literais
 
   List<SerialPortData> readPorts() {
@@ -87,10 +97,18 @@ class SerialConnector {
     } else if (selectedPort!.isOpen) {
       throw AssertionError('Serial port is already open');
 
+    } else if (baudRate == null) {
+      throw AssertionError('BaudRate cant be null');
+
     } else {
       // Tentando abrir comuniação com a porta, exclamação pois temos certeza que a porta selecionada não é null.
       try {
-        selectedPort!.openReadWrite();
+        selectedPort!.openReadWrite();        
+        SerialPortConfig configuration = selectedPort!.config;
+
+        // Setando a baudrate da porta depois de abri-la
+        configuration.baudRate = baudRate!;
+        selectedPort!.config = configuration;
         // TODO implementar loging de status da porta, se a porta abrir, estamos aqui e temos que fazer algo
         return true;
       } on SerialPortError catch (err,_) {
