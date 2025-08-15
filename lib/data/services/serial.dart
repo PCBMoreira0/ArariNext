@@ -35,7 +35,7 @@ class SerialConnector {
 
   final StreamController<Uint8List> _outputStreamController = StreamController();
 
-  late Stream<Uint8List>? outputStream;
+  late Stream<Uint8List>? outputStream = _outputStreamController.stream;
 
   SerialPortReader? _reader;
 

@@ -1,16 +1,16 @@
 final class SerialPortData {
-  String name;
-  int adress;
-  String description;
-  String transport;
-  String usbBus;
-  String usbDevice;
-  String vendorId;
-  String productId;
-  String manufacturer;
-  String productName;
-  String serialNumber;
-  String macAdress;
+  final String name;
+  final int adress;
+  final String description;
+  final String transport;
+  final String usbBus;
+  final String usbDevice;
+  final String vendorId;
+  final String productId;
+  final String manufacturer;
+  final String productName;
+  final String serialNumber;
+  final String macAdress;
 
   SerialPortData(this.name, this.adress, this.description, this.transport, this.usbBus, this.usbDevice, this.vendorId, this.productId, this.manufacturer, this.productName, this.serialNumber, this.macAdress);
 

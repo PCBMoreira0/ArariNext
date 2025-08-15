@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:arari_next/ui/console.dart';
+import 'package:arari_next/ui/console_ui.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
