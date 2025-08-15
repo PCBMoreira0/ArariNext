@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '/router.dart';
-import 'data.dart';
+import 'package:arari_next/routing/router.dart';
 
 void main() => runApp(Mavboia());
 

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '/console.dart';
+import 'package:arari_next/ui/console.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
+    
     // Getting arguments passed in while calling Navigator.pushNamed
     final args = settings.arguments;
 
