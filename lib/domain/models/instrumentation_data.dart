@@ -8,7 +8,7 @@ final class InstrumentationData implements IBoatData {
   final double mpptCurrent;
   final double auxBatteryCurrent;
   final double auxBatteryVoltage;
-  final double irradiance;
+  final int irradiance;
   double get generationPower => mpptCurrent * batteryVoltage;
   double get batteryPower => batteryCurrent * batteryVoltage;
   double get motorPowerLeft => motorCurrentLeft * batteryVoltage;

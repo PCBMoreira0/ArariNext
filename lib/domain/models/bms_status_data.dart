@@ -4,7 +4,8 @@ enum BMSStatus{
   charge, discharge
 }
 
-enum FailureFlag {
+// DO NOT REORDER
+enum BMSFailureFlag {
   // Byte 0
   cellVoltHighLevel1,
   cellVoltHighLevel2,
@@ -76,9 +77,10 @@ enum FailureFlag {
 final class BMSStatusData implements IBoatData {
   final List<double> temperatures;
   final BMSStatus status;
-  final List<FailureFlag> failureFlags;
+  final List<BMSFailureFlag> failureFlags;
+  final int faultCodeByte7;
   
-  BMSStatusData._({required List<double> temperatures, required this.status, required List<FailureFlag> failureFlags}) 
+  BMSStatusData._({required List<double> temperatures, required this.status, required List<BMSFailureFlag> failureFlags, required this.faultCodeByte7}) 
     : temperatures = List.unmodifiable(temperatures),
     failureFlags = List.unmodifiable(failureFlags);
 
@@ -91,16 +93,17 @@ final class BMSStatusData implements IBoatData {
         int failureFlagsByte3 = 0, 
         int failureFlagsByte4 = 0, 
         int failureFlagsByte5 = 0, 
-        int failureFlagsByte6 = 0
+        int failureFlagsByte6 = 0,
+        int faultCodeByte7 = 0
     }) {
-        List<FailureFlag> failureFlags = [];
+        List<BMSFailureFlag> failureFlags = [];
 
         // Byte 0
         for (int i = 0; i < 8; i++)
         {
             if((failureFlagsByte0 & (128 >> i)) != 0)
             {
-                failureFlags.add(FailureFlag.values[(i + 8 * 0)]);
+                failureFlags.add(BMSFailureFlag.values[(i + 8 * 0)]);
             }
         }
     
@@ -109,7 +112,7 @@ final class BMSStatusData implements IBoatData {
         {
             if ((failureFlagsByte1 & (128 >> i)) != 0)
             {
-                failureFlags.add(FailureFlag.values[(i + 8 * 1)]);
+                failureFlags.add(BMSFailureFlag.values[(i + 8 * 1)]);
             }
         }
     
@@ -118,7 +121,7 @@ final class BMSStatusData implements IBoatData {
         {
             if ((failureFlagsByte2 & (128 >> i)) != 0)
             {
-                failureFlags.add(FailureFlag.values[(i + 8 * 2)]);
+                failureFlags.add(BMSFailureFlag.values[(i + 8 * 2)]);
             }
         }
     
@@ -127,7 +130,7 @@ final class BMSStatusData implements IBoatData {
         {
             if ((failureFlagsByte3 & (128 >> i)) != 0)
             {
-                failureFlags.add(FailureFlag.values[(i + 8 * 3)]);
+                failureFlags.add(BMSFailureFlag.values[(i + 8 * 3)]);
             }
         }
     
@@ -136,7 +139,7 @@ final class BMSStatusData implements IBoatData {
         {
             if ((failureFlagsByte4 & (128 >> i)) != 0)
             {
-                failureFlags.add(FailureFlag.values[(i + 8 * 4)]);
+                failureFlags.add(BMSFailureFlag.values[(i + 8 * 4)]);
             }
         }
     
@@ -145,7 +148,7 @@ final class BMSStatusData implements IBoatData {
         {
             if ((failureFlagsByte5 & (128 >> i)) != 0)
             {
-                failureFlags.add(FailureFlag.values[(i + 8 * 5)]);
+                failureFlags.add(BMSFailureFlag.values[(i + 8 * 5)]);
             }
         }
     
@@ -154,10 +157,10 @@ final class BMSStatusData implements IBoatData {
         {
             if ((failureFlagsByte6 & (128 >> i)) != 0)
             {
-                failureFlags.add(FailureFlag.values[(i + 8 * 6)]);
+                failureFlags.add(BMSFailureFlag.values[(i + 8 * 6)]);
             }
         }
 
-        return BMSStatusData._(temperatures: temperatures, status: status, failureFlags: failureFlags);
+        return BMSStatusData._(temperatures: temperatures, status: status, failureFlags: failureFlags, faultCodeByte7: faultCodeByte7);
   }
 }

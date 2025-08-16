@@ -1,8 +1,8 @@
 import 'package:arari_next/domain/models/iboat_data.dart';
 
 enum PumpState {
-  on,
-  off
+  left,
+  right
 }
 
 final class PumpData implements IBoatData {

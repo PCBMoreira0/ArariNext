@@ -1,11 +1,11 @@
 import 'package:arari_next/domain/models/iboat_data.dart';
 
 final class BMSData implements IBoatData{
-  final List<double> voltages;
-  final List<double> temperatures;
+  final List<int> voltagesMillivolts;
+  final List<int> temperatures;
   final double batteryCurrent;
-  final double stateOfCharge;
+  final int stateOfCharge;
   final double totalVoltage;
 
-  BMSData({required List<double> voltages, required List<double> temperatures, required this.batteryCurrent, required this.stateOfCharge}) : voltages = List.unmodifiable(voltages), temperatures = List.unmodifiable(temperatures), totalVoltage = voltages.fold(0, (previousValue, value) => previousValue + value);
+  BMSData({required List<int> voltagesMillivolts, required List<int> temperatures, required this.batteryCurrent, required this.stateOfCharge}) : voltagesMillivolts = List.unmodifiable(voltagesMillivolts), temperatures = List.unmodifiable(temperatures), totalVoltage = voltagesMillivolts.fold(0, (previousValue, value) => previousValue + value);
 }
