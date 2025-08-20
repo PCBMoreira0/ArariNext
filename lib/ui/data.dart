@@ -1,2 +1,0 @@
-
-final List<String> uartMessages = [];
