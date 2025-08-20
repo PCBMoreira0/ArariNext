@@ -1,4 +1,5 @@
 import 'package:arari_next/ui/viewmodels/settings_viewmodel.dart';
+import 'package:arari_next/ui/core/ui/side_menu.dart';
 import 'package:flutter/material.dart';
 
 class SettingsView extends StatefulWidget {
@@ -22,23 +23,21 @@ class _SettingsViewState extends State<SettingsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Configurações")),
+      drawer: const SideMenu(),
       body: ListView(
         padding: EdgeInsets.all(20.0),
         children: <Widget>[
           DropdownMenu(
             dropdownMenuEntries: widget.viewmodel.serialPorts
                 .map(
-                  (entrie) => DropdownMenuEntry(
-                    value: entrie,
-                    label: entrie,
-                  ),
+                  (entrie) => DropdownMenuEntry(value: entrie, label: entrie),
                 )
                 .toList(),
             initialSelection: widget.viewmodel.selectedSerialPort,
             label: const Text("Porta Serial"),
             enableSearch: false,
             onSelected: (value) async {
-              if(value != null){
+              if (value != null) {
                 await widget.viewmodel.setSerialPort(value);
               }
             },
@@ -53,8 +52,9 @@ class _SettingsViewState extends State<SettingsView> {
                   ),
                 )
                 .toList(),
+            initialSelection: widget.viewmodel.selectedBaudrate,
             onSelected: (value) async {
-              if(value != null){
+              if (value != null) {
                 await widget.viewmodel.setBaudrate(value);
               }
             },
