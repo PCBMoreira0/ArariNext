@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:arari_next/domain/models/serial_port_data.dart';
 import 'package:libserialport/libserialport.dart';
 import 'package:arari_next/utils/Console_log/console.dart';
+import 'dart:io';
 
 // extendendo intToString para nossos propósitos no serial;
 
@@ -29,14 +30,12 @@ class SerialConnector {
 
   // Retorna as portas disponiveis.
 
-  final _availablePorts = SerialPort.availablePorts;
+  List<String> _availablePorts = SerialPort.availablePorts;
 
   // Retorna a porta selecionada, null se nenhum porta tiver sido selecionada.
   SerialPort? selectedPort;
 
-  final StreamController<Uint8List> _outputStreamController = StreamController();
-
-  late Stream<Uint8List>? outputStream = _outputStreamController.stream;
+  late Stream<Uint8List>? outputStream;
 
   SerialPortReader? _reader;
 
@@ -49,21 +48,15 @@ class SerialConnector {
     baudRate = baud;
 
   }
-
   // Listar Portas e dados em strings literais
 
   List<SerialPortData> readPorts() {
 
     List<SerialPortData> readyPortList = []; 
-
+    if (Platform.isLinux) { _availablePorts = _availablePorts.sublist(1);}
     // para cada campo de endereço de porta checa se existem dados, se sim, os escreve nos campos, se não escreve N/D(Não Definido) nos campos, após isso adicona a porta a lista.
-
-    for (final adress in _availablePorts.sublist(1)) {
-      print("Trying to add pot $adress");
+      for (final adress in _availablePorts) {
       final port = SerialPort(adress);
-      print('passed final port = SerialPort(adress);');
-      String testadress = port.busNumber?.toPadded() ?? 'ND';
-      print('adress $testadress');
       readyPortList.add(SerialPortData(
         adress,
         port.address,
@@ -78,8 +71,8 @@ class SerialConnector {
         port.serialNumber ?? 'N/D',
         port.macAddress ?? 'N/D'
       ));
-      print('finished $testadress');
     }
+    
 
    // retorna lista completa de portas e dados, formatados em strig.
     return readyPortList;
@@ -113,11 +106,12 @@ class SerialConnector {
 
         // Setando a baudrate da porta depois de abri-la
         configuration.baudRate = 115200;
-        configuration.setFlowControl(1);
+        configuration.setFlowControl(SerialPortFlowControl.rtsCts);
+        configuration.parity = SerialPortParity.odd;
+        configuration.dtr = 1;
         configuration.bits = 8;
-        configuration.stopBits = 2;
-        configuration.parity = SerialPortParity.none;
-        selectedPort!.config = configuration;
+        configuration.stopBits = 1;
+        selectedPort!.config == configuration;
         // TODO implementar loging de status da porta, se a porta abrir, estamos aqui e temos que fazer algo
         return true;
       } on SerialPortError catch (err,_) {
@@ -152,8 +146,9 @@ class SerialConnector {
     checkPortIsGood();
 
     try {
-      int? writteBytes = selectedPort!.write(message);
+      int? writteBytes;
 
+      writteBytes = selectedPort!.write(message);
       // checa se o número de bytes confirmados é igual ao número de bytes enviados.
       if (message.length != writteBytes) {
           
@@ -176,18 +171,10 @@ class SerialConnector {
 
     try {
       // Convertendo stream 
-      _reader = SerialPortReader(selectedPort!, timeout: 100);
-
-      _reader!.stream.handleError((error) {
-        print(error);
-      });
+      _reader = SerialPortReader(selectedPort!, timeout: 200);
+      
       // Quando mensagem chega, converte ela de uint8 para string e streama a mesma novamente.
-      Stream<Uint8List>fromSerial = _reader!.stream.map((data) {
-        return data;
-      });
-
-      //junta a stream de mensagens recebidas serial a stream da classe.
-      _outputStreamController.sink.addStream(fromSerial);
+      outputStream = _reader!.stream;
       // Retorna a stream principal, excalamação já que sabemos que não é null pois juntamos a stream principal
       return outputStream!;
       } catch(err, _) {
@@ -198,8 +185,6 @@ class SerialConnector {
 
   void close() { // evitar vazamentos de memoria por conta do serialPortReader, outputStream ou ReadWrite;
 
-  _outputStreamController.close();
-  
   if ( _reader != null) {
     _reader!.close();
   }

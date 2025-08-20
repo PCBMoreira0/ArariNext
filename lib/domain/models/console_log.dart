@@ -1,6 +1,6 @@
 // criando datatype console log.
 
-enum ErrorType {
+enum DataType {
     error,
     warning,
     info,
@@ -8,7 +8,7 @@ enum ErrorType {
 
 final class ConsoleLog {
 
-  final ErrorType type;
+  final DataType type;
   final DateTime datetime;
   final String contents;
 
