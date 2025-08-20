@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:arari_next/data/repositories/packet_repository.dart';
-import 'package:arari_next/data/services/serial_service.dart';
+import 'package:arari_next/data/services/serial/serial_service.dart';
 import 'package:arari_next/domain/models/bms_data.dart';
 import 'package:arari_next/domain/models/bms_status_data.dart';
 import 'package:arari_next/domain/models/gps_data.dart';

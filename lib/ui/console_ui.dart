@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'barra_navegacao.dart';
 import 'data.dart';
+import 'package:arari_next/utils/Console_log/console.dart';
 
 class Console extends StatefulWidget {
   const Console({super.key});

@@ -4,15 +4,15 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.9.0
 
 dependencies:
   dart_mavlink: ^0.1.0
   flutter:
     sdk: flutter
-  
+
   flutter_libserialport: ^0.6.0
-    
+  libserialport: ^0.3.0+1
   provider: ^6.1.5
 
 dev_dependencies:

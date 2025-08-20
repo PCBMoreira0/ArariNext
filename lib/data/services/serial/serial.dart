@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:arari_next/domain/models/serial_port_data.dart';
-import 'package:flutter_libserialport/flutter_libserialport.dart';
+import 'package:libserialport/libserialport.dart';
+import 'package:arari_next/utils/Console_log/console.dart';
 
 // extendendo intToString para nossos propósitos no serial;
 
@@ -57,8 +58,12 @@ class SerialConnector {
 
     // para cada campo de endereço de porta checa se existem dados, se sim, os escreve nos campos, se não escreve N/D(Não Definido) nos campos, após isso adicona a porta a lista.
 
-    for (final adress in _availablePorts) {
+    for (final adress in _availablePorts.sublist(1)) {
+      print("Trying to add pot $adress");
       final port = SerialPort(adress);
+      print('passed final port = SerialPort(adress);');
+      String testadress = port.busNumber?.toPadded() ?? 'ND';
+      print('adress $testadress');
       readyPortList.add(SerialPortData(
         adress,
         port.address,
@@ -73,6 +78,7 @@ class SerialConnector {
         port.serialNumber ?? 'N/D',
         port.macAddress ?? 'N/D'
       ));
+      print('finished $testadress');
     }
 
    // retorna lista completa de portas e dados, formatados em strig.
@@ -82,7 +88,6 @@ class SerialConnector {
   // seleciona uma porta;
 
   void selectPort(SerialPortData port) {
-
     selectedPort = SerialPort(port.name);
 
   }
@@ -103,11 +108,15 @@ class SerialConnector {
     } else {
       // Tentando abrir comuniação com a porta, exclamação pois temos certeza que a porta selecionada não é null.
       try {
-        selectedPort!.openReadWrite();        
+        selectedPort!.openRead();        
         SerialPortConfig configuration = selectedPort!.config;
 
         // Setando a baudrate da porta depois de abri-la
-        configuration.baudRate = baudRate!;
+        configuration.baudRate = 115200;
+        configuration.setFlowControl(1);
+        configuration.bits = 8;
+        configuration.stopBits = 2;
+        configuration.parity = SerialPortParity.none;
         selectedPort!.config = configuration;
         // TODO implementar loging de status da porta, se a porta abrir, estamos aqui e temos que fazer algo
         return true;
@@ -118,16 +127,6 @@ class SerialConnector {
     }
 
     
-  }
-
-  // traduzindo a mensagem de string to uint8list 
-  Uint8List _stringToUint8List(String message) {
-
-    List<int> messageCode = message.codeUnits;
-    
-    Uint8List translatedMessage = Uint8List.fromList(messageCode);
-
-    return translatedMessage;
   }
 
   // implementandos seguintes erros previsiveis: Porta não aberta, porta não definida 
@@ -147,19 +146,19 @@ class SerialConnector {
 
   }
 
-  bool write(String message) {
+  bool write(Uint8List message) {
 
     // checando erros previsisveis.
     checkPortIsGood();
 
     try {
-      int? writteBytes = selectedPort!.write(_stringToUint8List(message));
+      int? writteBytes = selectedPort!.write(message);
 
       // checa se o número de bytes confirmados é igual ao número de bytes enviados.
-      if (_stringToUint8List(message).length != writteBytes) {
-
+      if (message.length != writteBytes) {
+          
         throw AssertionError('Number of bytes confirmed do not match de number of bytes sent');
-
+        
       } else {
         return true;
       }
@@ -170,14 +169,18 @@ class SerialConnector {
   }
 
 
-  Stream read() {
+  Stream<Uint8List> read() {
 
    // checando erros previsisveis.
     checkPortIsGood();
 
     try {
       // Convertendo stream 
-      _reader = SerialPortReader(selectedPort!);
+      _reader = SerialPortReader(selectedPort!, timeout: 100);
+
+      _reader!.stream.handleError((error) {
+        print(error);
+      });
       // Quando mensagem chega, converte ela de uint8 para string e streama a mesma novamente.
       Stream<Uint8List>fromSerial = _reader!.stream.map((data) {
         return data;
@@ -193,7 +196,7 @@ class SerialConnector {
     }
   }
 
-  void dispose() { // evitar vazamentos de memoria por conta do serialPortReader, outputStream ou ReadWrite;
+  void close() { // evitar vazamentos de memoria por conta do serialPortReader, outputStream ou ReadWrite;
 
   _outputStreamController.close();
   
