@@ -28,10 +28,6 @@ extension IntToString on int {
 
 class SerialConnector {
 
-  // Retorna as portas disponiveis.
-
-  List<String> _availablePorts = SerialPort.availablePorts;
-
   // Retorna a porta selecionada, null se nenhum porta tiver sido selecionada.
   SerialPort? selectedPort;
 
@@ -52,8 +48,16 @@ class SerialConnector {
 
   List<SerialPortData> readPorts() {
 
+    // Retorna as portas disponiveis.
+
+    List<String> _availablePorts = SerialPort.availablePorts;
+
+    // lista de portas bonita.
     List<SerialPortData> readyPortList = []; 
+
+    // checa se a plataforma é linux e aplica patch
     if (Platform.isLinux) { _availablePorts = _availablePorts.sublist(1);}
+
     // para cada campo de endereço de porta checa se existem dados, se sim, os escreve nos campos, se não escreve N/D(Não Definido) nos campos, após isso adicona a porta a lista.
       for (final adress in _availablePorts) {
       final port = SerialPort(adress);
@@ -172,7 +176,7 @@ class SerialConnector {
     try {
       // Convertendo stream 
       _reader = SerialPortReader(selectedPort!, timeout: 200);
-      
+
       // Quando mensagem chega, converte ela de uint8 para string e streama a mesma novamente.
       outputStream = _reader!.stream;
       // Retorna a stream principal, excalamação já que sabemos que não é null pois juntamos a stream principal

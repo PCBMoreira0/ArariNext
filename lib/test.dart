@@ -7,7 +7,7 @@ import 'package:arari_next/data/services/serial/serial.dart';
 void main() {
   SerialConnector con = SerialConnector();
   print(con.readPorts());
-  con.selectPort(con.readPorts().elementAt(0));
+  con.selectPort(con.readPorts().first);
   con.setBaudRate(115200);
   con.open();
 
