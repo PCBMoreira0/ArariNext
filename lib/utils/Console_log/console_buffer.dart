@@ -6,7 +6,7 @@ class Buffer<T> {
   int size;
 
   // lista principal do buffer
-  List<T> _mainBuffer = [];
+  List<T> _mainBuffer = <T>[];
 
   // metodo add, adiciona um item a lista, removendo o mais antigo se a lista estiver no tamanho maximo.
   void add (T item) {
@@ -24,8 +24,21 @@ class Buffer<T> {
   }
   // metodo asList, retorna buffer como lista.
   List<T> asList () {   
-    return _mainBuffer;
+    return _mainBuffer.toList();
   }
 
+  // clears buffer
+  void clear() {
+
+    _mainBuffer = <T>[];
+
+  }
+
+  @override
+  String toString() {
+
+    return _mainBuffer.reversed.toString();
+
+  }
   Buffer({required this.size});
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:arari_next/domain/models/serial_port_data.dart';
 import 'package:libserialport/libserialport.dart';
-import 'package:arari_next/utils/Console_log/console.dart';
 import 'dart:io';
 
 // extendendo intToString para nossos propósitos no serial;
