@@ -1,6 +1,6 @@
 import 'package:arari_next/config/settings_manager.dart';
 import 'package:arari_next/data/services/serial/model/serial_port_data.dart';
-import 'package:arari_next/data/services/serial/serial.dart';
+import 'package:arari_next/data/services/serial/serial_connector_refactor.dart';
 import 'package:arari_next/data/services/serial/serial_service.dart';
 import 'package:flutter/material.dart';
 
