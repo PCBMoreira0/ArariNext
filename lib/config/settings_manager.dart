@@ -12,11 +12,11 @@ class SettingsManager {
 
   SettingsManager._({required prefs}) : _prefs = prefs;
   
-  final StreamController<String> _serialPortStreamController = StreamController(); 
-  Stream<String> get onSerialPortChanged => _serialPortStreamController.stream.asBroadcastStream();
+  final StreamController<String> _serialPortStreamController = StreamController.broadcast(); 
+  Stream<String> get onSerialPortChanged => _serialPortStreamController.stream;
 
-  final StreamController<int> _baudrateStreamController = StreamController(); 
-  Stream<int> get onBaudrateChanged => _baudrateStreamController.stream.asBroadcastStream();
+  final StreamController<int> _baudrateStreamController = StreamController.broadcast(); 
+  Stream<int> get onBaudrateChanged => _baudrateStreamController.stream;
 
   static Future<SettingsManager> create() async {
     return SettingsManager._(prefs: await SharedPreferences.getInstance());

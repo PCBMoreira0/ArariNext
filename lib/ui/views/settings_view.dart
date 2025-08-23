@@ -27,10 +27,31 @@ class _SettingsViewState extends State<SettingsView> {
       body: ListView(
         padding: EdgeInsets.all(20.0),
         children: <Widget>[
+          ListenableBuilder(
+            listenable: widget.viewmodel,
+            builder: (context, child) => ElevatedButton(
+              onPressed: () {
+                try {
+                  widget.viewmodel.toggleSerialPort();
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Ocorreu um erro: $e"),
+                      backgroundColor: Colors.red,
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
+                }
+              },
+              child: Text('${widget.viewmodel.isSerialOpen ? 'Desconectar' : 'Conectar'}'),
+            ),
+          ),
+          SizedBox(height: 20.0),
           DropdownMenu(
             dropdownMenuEntries: widget.viewmodel.serialPorts
                 .map(
-                  (entrie) => DropdownMenuEntry(value: entrie, label: entrie),
+                  (entrie) =>
+                      DropdownMenuEntry(value: entrie, label: entrie.name),
                 )
                 .toList(),
             initialSelection: widget.viewmodel.selectedSerialPort,

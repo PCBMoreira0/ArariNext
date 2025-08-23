@@ -1,40 +1,57 @@
 import 'package:arari_next/config/settings_manager.dart';
+import 'package:arari_next/data/services/serial/model/serial_port_data.dart';
+import 'package:arari_next/data/services/serial/serial.dart';
+import 'package:arari_next/data/services/serial/serial_service.dart';
 import 'package:flutter/material.dart';
 
 class SettingsViewmodel extends ChangeNotifier {
-  List<String> _serialPorts = [];
+  List<SerialPortData> _serialPorts = [];
   final List<int> _baudrates = [9600, 11500]; 
-  String _selectedSerialPort = "";
+  SerialPortData? _selectedSerialPort;
   int _selectedBaudrate = 9600;
+  bool get isSerialOpen => _serial.isPortOpen(); 
 
-  List<String> get serialPorts => _serialPorts;
+  List<SerialPortData> get serialPorts => _serialPorts;
   List<int> get baudRates => _baudrates; 
 
-  String get selectedSerialPort => _selectedSerialPort;
+  SerialPortData? get selectedSerialPort => _selectedSerialPort;
   int get selectedBaudrate => _selectedBaudrate;
   final SettingsManager _settings;
+  final SerialService _serial;
 
-  SettingsViewmodel({required SettingsManager settings}) : _settings = settings;
+  SettingsViewmodel({required SerialService serial, required SettingsManager settings}) :  _serial = serial, _settings = settings;
 
   void downloadSettings() async {
-    _serialPorts = ["COM1", "COM2", "COM3"];
+    _serialPorts = SerialConnector.readPorts();
 
     String selectedSerial = _settings.selectedSerialPort;
-    if(!_serialPorts.contains(selectedSerial)){
-      _selectedSerialPort = _serialPorts[0];
+    for(var serial in _serialPorts){
+      if(serial.name == selectedSerial){
+        _selectedSerialPort = serial;
+        break;
+      }
     }
-    else{
-      _selectedSerialPort = selectedSerial;
-    }
+    _selectedSerialPort ??= _serialPorts[0];
 
     _selectedBaudrate = _settings.selectedBaudrate;
     
     notifyListeners();
   }
 
-  Future<void> setSerialPort(String portName) async {
-    await _settings.setSerialPort(portName);
-    _selectedSerialPort = portName;
+  void toggleSerialPort(){
+    if(_serial.isPortOpen()){
+      _serial.close();
+    }
+    else{
+      _serial.open();
+    }
+    
+    notifyListeners();
+  }
+
+  Future<void> setSerialPort(SerialPortData port) async {
+    await _settings.setSerialPort(port.name);
+    _selectedSerialPort = port;
     notifyListeners();
   }
 
