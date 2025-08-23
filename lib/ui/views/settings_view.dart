@@ -34,16 +34,12 @@ class _SettingsViewState extends State<SettingsView> {
                 try {
                   widget.viewmodel.toggleSerialPort();
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Ocorreu um erro: $e"),
-                      backgroundColor: Colors.red,
-                      duration: Duration(seconds: 3),
-                    ),
-                  );
+                  handleError(e);
                 }
               },
-              child: Text('${widget.viewmodel.isSerialOpen ? 'Desconectar' : 'Conectar'}'),
+              child: Text(
+                '${widget.viewmodel.isSerialOpen ? 'Desconectar' : 'Conectar'}',
+              ),
             ),
           ),
           SizedBox(height: 20.0),
@@ -83,6 +79,16 @@ class _SettingsViewState extends State<SettingsView> {
             enableSearch: false,
           ),
         ],
+      ),
+    );
+  }
+
+  handleError(Object e) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Ocorreu um erro: $e"),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 3),
       ),
     );
   }

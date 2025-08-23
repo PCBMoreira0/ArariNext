@@ -20,7 +20,7 @@ class SettingsViewmodel extends ChangeNotifier {
   final SerialService _serial;
 
   SettingsViewmodel({required SerialService serial, required SettingsManager settings}) :  _serial = serial, _settings = settings;
-
+  
   void downloadSettings() async {
     _serialPorts = SerialConnector.readPorts();
 

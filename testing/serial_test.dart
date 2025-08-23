@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:arari_next/data/services/serial/model/serial_port_data.dart';
@@ -19,29 +20,18 @@ void main() {
   con.open();
   con.setBaudRate(9600);
 
-  Stream<Uint8List> rawCon = con.read(); 
-
-  rawCon.listen((data) => print(data));
-
-  // Stream<String> upcomingData = rawCon.map((data) {
-  //   print('read: $data, decoding it...');
-  //   return String.fromCharCodes(data);
-  // });
-
-  // rawCon.handleError((error) {
-  //   print('Erro serial: $error');
-  // });
-
-  // int counter = 0;
-
-  // upcomingData.listen((data) {
-  //   print(data);
-  // }, onError: print);
-  }
+  Stream<Uint8List> rawCon = con.read();
   
+  Stream<String> upcomingData = rawCon.map((data) {
+    print('read: $data, decoding it...');
+    return String.fromCharCodes(data);
+  });
 
- /*
- 
- 
 
-  */
+  int counter = 0;
+
+  upcomingData.listen((data) {
+    print(data);
+  }, onError: print);
+}
+  

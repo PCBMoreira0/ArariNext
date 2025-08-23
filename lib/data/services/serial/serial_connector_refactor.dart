@@ -106,12 +106,12 @@ class SerialConnector {
   // seleciona uma porta;
 
   void selectPort(SerialPortData port) {
-    if(selectedPort != null && !selectedPort!.isOpen) throw AssertionError('You should close the current port before changing it');
+    if(selectedPort != null && selectedPort!.isOpen) throw AssertionError('You should close the port before changing it.');
     selectedPort = SerialPort(port.name);
   }
 
   void selectPortByName(String portName) {
-    if(selectedPort != null && !selectedPort!.isOpen) throw AssertionError('You should close the current port before changing it');
+    if(selectedPort != null && selectedPort!.isOpen) throw AssertionError('You should close the port before changing it.');
     selectedPort = SerialPort(portName);
   }
   
@@ -196,7 +196,6 @@ class SerialConnector {
     try {
       // Convertendo stream 
       _reader = SerialPortReader(selectedPort!, timeout: 200);
-
       SerialPortConfig configuration = selectedPort!.config;
       configuration.setFlowControl(SerialPortFlowControl.dtrDsr);
       configuration.parity = SerialPortParity.odd;
@@ -214,7 +213,7 @@ class SerialConnector {
 
   void close() { // evitar vazamentos de memoria por conta do serialPortReader, outputStream ou ReadWrite;
 
-  _config.dispose();
+  // _config.dispose();
 
   if ( _reader != null) {
     _reader!.close();
@@ -223,7 +222,6 @@ class SerialConnector {
   if  (selectedPort != null) {
     selectedPort!.close();
     // selectedPort!.dispose();
-    selectedPort = null;
   }
 
   }
