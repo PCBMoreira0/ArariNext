@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:arari_next/data/repositories/packet_repository.dart';
-import 'package:arari_next/data/services/serial/serial.dart';
 import 'package:arari_next/data/services/serial/serial_service.dart';
-import 'package:arari_next/data/services/serial/serial_service_interface.dart';
 import 'package:arari_next/domain/models/bms_data.dart';
 import 'package:arari_next/domain/models/bms_status_data.dart';
 import 'package:arari_next/domain/models/gps_data.dart';
@@ -67,7 +64,7 @@ class MavlinkRepository extends PacketRepository {
     _mavlinkParser.stream.listen(_processPackage);
     _serialService.read().listen((data) => _mavlinkParser.parse(data));
   }
-  
+
   void _processPackage(MavlinkFrame frame){
     switch (frame.message) {
       case Bms bms:

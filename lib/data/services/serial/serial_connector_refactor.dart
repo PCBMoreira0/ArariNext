@@ -197,8 +197,8 @@ class SerialConnector {
       // Convertendo stream 
       _reader = SerialPortReader(selectedPort!, timeout: 200);
       SerialPortConfig configuration = selectedPort!.config;
-      configuration.setFlowControl(SerialPortFlowControl.dtrDsr);
-      configuration.parity = SerialPortParity.odd;
+      configuration.setFlowControl(SerialPortFlowControl.none);
+      configuration.parity = SerialPortParity.none;
       configuration.bits = 8;
       configuration.stopBits = 1;
       
