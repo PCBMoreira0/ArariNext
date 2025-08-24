@@ -1,6 +1,8 @@
 import 'package:arari_next/config/settings_manager.dart';
 import 'package:arari_next/data/repositories/mavlink_repository.dart';
-import 'package:arari_next/data/services/fake_serial_service.dart';
+import 'package:arari_next/data/repositories/packet_repository.dart';
+import 'package:arari_next/data/services/serial/serial_connector_refactor.dart';
+import 'package:arari_next/data/services/serial/serial_service.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/routing/router.dart';
@@ -11,8 +13,8 @@ void main() async {
 
   runApp(MultiProvider(providers: [
     Provider.value(value: settingsManager),
-    Provider.value(value: FakeSerialService()),
-    Provider(create: (context) => MavlinkRepository(serialService: context.read()))
+    Provider(create: (context) => SerialService(serial: SerialConnector(), settings: context.read())),
+    Provider(create: (context) => MavlinkRepository(serialService: context.read()) as PacketRepository)
   ], child: const ArariNextApp()));
 }
 
@@ -35,7 +37,7 @@ class _ArariNextAppState extends State<ArariNextApp> {
       title: 'MavBoia',
       theme: ThemeData(primarySwatch: Colors.blue),
       // Initially display FirstPage
-      initialRoute: Routes.console,
+      initialRoute: Routes.dashboard,
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }

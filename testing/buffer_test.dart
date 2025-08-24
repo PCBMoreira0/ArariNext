@@ -1,4 +1,4 @@
-import 'package:arari_next/utils/Console_log/console_buffer.dart';
+import 'package:arari_next/utils/console_log/console_buffer.dart';
 
 main () {
   int i = 0;

@@ -20,52 +20,51 @@ import 'package:dart_mavlink/mavlink.dart';
 class MavlinkRepository extends PacketRepository {
 
   /* Stream Controllers */
-  final StreamController<BMSData> _bmsDataController = StreamController();
-  final StreamController<BMSStatusData> _bmsStatusDataController = StreamController();
-  final StreamController<GPSData> _gpsDataController = StreamController();
-  final StreamController<InstrumentationData> _instrumentationDataController = StreamController();
-  final StreamController<MotorData1> _motorData1Controller = StreamController();
-  final StreamController<MotorData2> _motorData2Controller = StreamController();
-  final StreamController<MPPTData> _mpptDataController = StreamController();
-  final StreamController<MPPTStateData> _mpptStateDataController = StreamController();
-  final StreamController<PumpData> _pumpDataController = StreamController();
-  final StreamController<RadioStatusData> _radioStatusDataController = StreamController();
-  final StreamController<TemperatureData> _temperatureDataController = StreamController();
+  final StreamController<BMSData> _bmsDataController = StreamController.broadcast();
+  final StreamController<BMSStatusData> _bmsStatusDataController = StreamController.broadcast();
+  final StreamController<GPSData> _gpsDataController = StreamController.broadcast();
+  final StreamController<InstrumentationData> _instrumentationDataController = StreamController.broadcast();
+  final StreamController<MotorData1> _motorData1Controller = StreamController.broadcast();
+  final StreamController<MotorData2> _motorData2Controller = StreamController.broadcast();
+  final StreamController<MPPTData> _mpptDataController = StreamController.broadcast();
+  final StreamController<MPPTStateData> _mpptStateDataController = StreamController.broadcast();
+  final StreamController<PumpData> _pumpDataController = StreamController.broadcast();
+  final StreamController<RadioStatusData> _radioStatusDataController = StreamController.broadcast();
+  final StreamController<TemperatureData> _temperatureDataController = StreamController.broadcast();
 
   /* Streams */
   @override
-  Stream<BMSData> get bmsData => _bmsDataController.stream.asBroadcastStream();
+  Stream<BMSData> get bmsData => _bmsDataController.stream;
   @override
-  Stream<BMSStatusData> get bmsStatusData => _bmsStatusDataController.stream.asBroadcastStream();
+  Stream<BMSStatusData> get bmsStatusData => _bmsStatusDataController.stream;
   @override
-  Stream<GPSData> get gpsData => _gpsDataController.stream.asBroadcastStream();
+  Stream<GPSData> get gpsData => _gpsDataController.stream;
   @override
-  Stream<InstrumentationData> get instrumentationData => _instrumentationDataController.stream.asBroadcastStream();
+  Stream<InstrumentationData> get instrumentationData => _instrumentationDataController.stream;
   @override
-  Stream<MotorData1> get motorData1 => _motorData1Controller.stream.asBroadcastStream();
+  Stream<MotorData1> get motorData1 => _motorData1Controller.stream;
   @override
-  Stream<MotorData2> get motorData2 => _motorData2Controller.stream.asBroadcastStream();
+  Stream<MotorData2> get motorData2 => _motorData2Controller.stream;
   @override
-  Stream<MPPTData> get mpptData => _mpptDataController.stream.asBroadcastStream();
+  Stream<MPPTData> get mpptData => _mpptDataController.stream;
   @override
-  Stream<MPPTStateData> get mpptStateData => _mpptStateDataController.stream.asBroadcastStream();
+  Stream<MPPTStateData> get mpptStateData => _mpptStateDataController.stream;
   @override
-  Stream<PumpData> get pumpData => _pumpDataController.stream.asBroadcastStream();
+  Stream<PumpData> get pumpData => _pumpDataController.stream;
   @override
-  Stream<RadioStatusData> get radioStatusData => _radioStatusDataController.stream.asBroadcastStream();
+  Stream<RadioStatusData> get radioStatusData => _radioStatusDataController.stream;
   @override
-  Stream<TemperatureData> get temperatureData => _temperatureDataController.stream.asBroadcastStream();
+  Stream<TemperatureData> get temperatureData => _temperatureDataController.stream;
 
   final MavlinkParser _mavlinkParser = MavlinkParser(MavlinkDialectArariboat());
 
-  final ISerialService _serialService;
+  final SerialService _serialService;
 
-  MavlinkRepository({required ISerialService serialService}) : _serialService = serialService {
+  MavlinkRepository({required SerialService serialService}) : _serialService = serialService {
     _mavlinkParser.stream.listen(_processPackage);
     _serialService.read().listen((data) => _mavlinkParser.parse(data));
   }
 
-  
   void _processPackage(MavlinkFrame frame){
     switch (frame.message) {
       case Bms bms:

@@ -30,17 +30,39 @@ class SerialConnector {
   // Retorna a porta selecionada, null se nenhum porta tiver sido selecionada.
   SerialPort? selectedPort;
 
-  late Stream<Uint8List>? outputStream;
+  late Stream<Uint8List> outputstream;
 
   SerialPortReader? _reader;
 
-  int? baudRate;
+  SerialPortConfig _config = SerialPortConfig();
 
+  
+  // funcao local para setar as configurações...' 
+  
+  void _setConfig (SerialPortConfig config) {
+     if ((selectedPort != null) && (selectedPort!.isOpen) ) {
+      selectedPort!.config = _config;
+
+      try {
+        outputstream.drain();
+      } catch (err, _) {}
+
+    }
+    else if (selectedPort == null) {
+      throw AssertionError('You need to select a port and open it before setting the configuration');
+    } else {
+      throw AssertionError('You need to open the port before setting the configuration');
+    }
+  }
+  
+  
   // setting the baud rate 
 
   void setBaudRate(int baud) {
 
-    baudRate = baud;
+    _config.baudRate = baud;
+    // caso a porta esteja fechada, isso vai dar 
+    _setConfig(_config);
 
   }
   // Listar Portas e dados em strings literais
@@ -84,10 +106,20 @@ class SerialConnector {
   // seleciona uma porta;
 
   void selectPort(SerialPortData port) {
+    if(selectedPort != null && selectedPort!.isOpen) throw AssertionError('You should close the port before changing it.');
     selectedPort = SerialPort(port.name);
+  }
 
+  void selectPortByName(String portName) {
+    if(selectedPort != null && selectedPort!.isOpen) throw AssertionError('You should close the port before changing it.');
+    selectedPort = SerialPort(portName);
   }
   
+  bool isOpen(){
+    if(selectedPort == null || !selectedPort!.isOpen) return false;
+    return true;
+  }
+
   bool open() {
 
     // Checando se a porta selecionada é null, se for levanta um erro
@@ -98,23 +130,12 @@ class SerialConnector {
     } else if (selectedPort!.isOpen) {
       throw AssertionError('Serial port is already open');
 
-    } else if (baudRate == null) {
-      throw AssertionError('BaudRate cant be null');
-
     } else {
       // Tentando abrir comuniação com a porta, exclamação pois temos certeza que a porta selecionada não é null.
       try {
-        selectedPort!.openRead();        
-        SerialPortConfig configuration = selectedPort!.config;
-
-        // Setando a baudrate da porta depois de abri-la
-        configuration.baudRate = 115200;
-        configuration.setFlowControl(SerialPortFlowControl.rtsCts);
-        configuration.parity = SerialPortParity.odd;
-        configuration.dtr = 1;
-        configuration.bits = 8;
-        configuration.stopBits = 1;
-        selectedPort!.config == configuration;
+        if(!selectedPort!.openRead()) return false;
+        selectedPort!.flush();
+        // Setando a baudrate da porta depois de abri-l
         // TODO implementar loging de status da porta, se a porta abrir, estamos aqui e temos que fazer algo
         return true;
       } on SerialPortError catch (err,_) {
@@ -174,19 +195,25 @@ class SerialConnector {
 
     try {
       // Convertendo stream 
-      _reader = SerialPortReader(selectedPort!, timeout: 5000);
-      // Quando mensagem chega, converte ela de uint8 para string e streama a mesma novamente.
-      outputStream = _reader!.stream;
+      _reader = SerialPortReader(selectedPort!, timeout: 200);
+      SerialPortConfig configuration = selectedPort!.config;
+      configuration.setFlowControl(SerialPortFlowControl.none);
+      configuration.parity = SerialPortParity.none;
+      configuration.bits = 8;
+      configuration.stopBits = 1;
+      
       // Retorna a stream principal, excalamação já que sabemos que não é null pois juntamos a stream principal
-      return outputStream!;
+      outputstream = _reader!.stream;
+      return outputstream;
       } catch(err, _) {
       //TODO implementar loging de erros.
-      print(err.toString());
       rethrow;
     }
   }
 
   void close() { // evitar vazamentos de memoria por conta do serialPortReader, outputStream ou ReadWrite;
+
+  // _config.dispose();
 
   if ( _reader != null) {
     _reader!.close();
@@ -194,6 +221,7 @@ class SerialConnector {
 
   if  (selectedPort != null) {
     selectedPort!.close();
+    // selectedPort!.dispose();
   }
 
   }
