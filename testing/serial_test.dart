@@ -7,7 +7,7 @@ import 'package:arari_next/data/services/serial/serial_connector_refactor.dart';
 
 void main() {
   SerialConnector con = SerialConnector();
-  print(SerialConnector.readPorts());
+  // print(SerialConnector.readPorts());
   var ports = SerialConnector.readPorts();
   var selectedPort;
   // for(int i = 0; i < ports.length; i++){
@@ -21,17 +21,17 @@ void main() {
   con.setBaudRate(9600);
 
   Stream<Uint8List> rawCon = con.read();
-  
-  Stream<String> upcomingData = rawCon.map((data) {
-    print('read: $data, decoding it...');
-    return String.fromCharCodes(data);
-  });
+  rawCon.listen((data) => print(data.map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase()).join(' ')), onError: (data) => print('ERRO: $data'));
+  // Stream<String> upcomingData = rawCon.map((data) {
+  //   print('read: $data, decoding it...');
+  //   return String.fromCharCodes(data);
+  // });
 
 
-  int counter = 0;
+  // int counter = 0;
 
-  upcomingData.listen((data) {
-    print(data);
-  }, onError: print);
+  // upcomingData.listen((data) {
+  //   print(data);
+  // }, onError: print);
 }
   

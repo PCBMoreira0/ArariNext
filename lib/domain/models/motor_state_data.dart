@@ -1,5 +1,5 @@
 import 'package:arari_next/domain/models/iboat_data.dart';
-import 'package:arari_next/domain/models/motor_data1.dart';
+import 'package:arari_next/domain/models/motor_eletrical_data.dart';
 
 enum MotorStatus {
   gear,
@@ -39,7 +39,7 @@ enum EzkontrolErrorFlag {
   software
 }
 
-final class MotorData2 implements IBoatData {
+final class MotorStateData implements IBoatData {
   final int controllerTemperature;
   final int motorTemperature;
   final int status;
@@ -47,9 +47,9 @@ final class MotorData2 implements IBoatData {
   final int lifeSignal;
   final MotorInstance instance;
 
-  MotorData2._({required this.controllerTemperature, required this.motorTemperature, required this.status, required List<EzkontrolErrorFlag> errorFlags, required this.lifeSignal, required this.instance}) : errorFlags = List.unmodifiable(errorFlags);
+  MotorStateData._({required this.controllerTemperature, required this.motorTemperature, required this.status, required List<EzkontrolErrorFlag> errorFlags, required this.lifeSignal, required this.instance}) : errorFlags = List.unmodifiable(errorFlags);
 
-  factory MotorData2({required int controllerTemperature, required int motorTemperature, required int status, int errorFlagByte4 = 0, int errorFlagByte5 = 0, int errorFlagByte6 = 0, required int lifeSignal, required MotorInstance instance}){
+  factory MotorStateData({required int controllerTemperature, required int motorTemperature, required int status, int errorFlagByte4 = 0, int errorFlagByte5 = 0, int errorFlagByte6 = 0, required int lifeSignal, required MotorInstance instance}){
 
     List<EzkontrolErrorFlag> errorFlags = []; 
 
@@ -79,6 +79,10 @@ final class MotorData2 implements IBoatData {
         }
     }
 
-    return MotorData2._(controllerTemperature: controllerTemperature, motorTemperature: motorTemperature, status: status,  errorFlags: errorFlags,lifeSignal: lifeSignal, instance: instance);
+    return MotorStateData._(controllerTemperature: controllerTemperature, motorTemperature: motorTemperature, status: status,  errorFlags: errorFlags,lifeSignal: lifeSignal, instance: instance);
+  }
+
+  factory MotorStateData.empty() {
+    return MotorStateData._(controllerTemperature: 0, motorTemperature: 0, status: 0, errorFlags: [], lifeSignal: 0, instance: MotorInstance.left);
   }
 }

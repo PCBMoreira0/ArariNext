@@ -16,4 +16,8 @@ final class InstrumentationData implements IBoatData {
   double get resultantPower => batteryPower * batteryVoltage;
 
   InstrumentationData({required this.batteryCurrent, required this.batteryVoltage, required this.motorCurrentLeft, required this.motorCurrentRight, required this.mpptCurrent, required this.auxBatteryCurrent, required this.auxBatteryVoltage, required this.irradiance});
+
+  factory InstrumentationData.empty() {
+    return InstrumentationData(batteryCurrent: 0, batteryVoltage: 0, motorCurrentLeft: 0, motorCurrentRight: 0, mpptCurrent: 0, auxBatteryCurrent: 0, auxBatteryVoltage: 0, irradiance: 0);
+  }
 }

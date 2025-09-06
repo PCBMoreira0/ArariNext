@@ -10,4 +10,8 @@ final class GPSData implements IBoatData {
   final double hdop;
 
   GPSData({required this.latitude, required this.longitude, required this.speed, required this.course, required this.heading, required this.visibleSatellites, required this.hdop});
+
+  factory GPSData.empty() {
+    return GPSData(latitude: 0, longitude: 0, speed: 0, course: 0, heading: 0, visibleSatellites: 0, hdop: 0);
+  }
 }

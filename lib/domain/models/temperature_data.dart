@@ -7,4 +7,8 @@ final class TemperatureData implements IBoatData {
   final double temperatureMPPTRight;
 
   TemperatureData({required this.temperatureBatteryLeft, required this.temperatureBatteryRight, required this.temperatureMPPTLeft, required this.temperatureMPPTRight});
+
+  factory TemperatureData.empty() {
+    return TemperatureData(temperatureBatteryLeft: 0, temperatureBatteryRight: 0, temperatureMPPTLeft: 0, temperatureMPPTRight: 0);
+  }
 }
