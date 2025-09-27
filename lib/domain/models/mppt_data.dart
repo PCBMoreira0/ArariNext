@@ -8,4 +8,8 @@ final class MPPTData implements IBoatData {
   double get mpptCurrent => (pvVoltage * pvCurrent * 0.98) / batteryVoltage;
 
   MPPTData({required this.pvVoltage, required this.pvCurrent, required this.batteryCurrent, required this.batteryVoltage});
+
+  factory MPPTData.empty() {
+    return MPPTData(pvVoltage: 0, pvCurrent: 0, batteryVoltage: 0, batteryCurrent: 0);
+  }
 }

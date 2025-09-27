@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class SettingsViewmodel extends ChangeNotifier {
   List<SerialPortData> _serialPorts = [];
-  final List<int> _baudrates = [9600, 11500]; 
+  final List<int> _baudrates = [9600, 115200]; 
   SerialPortData? _selectedSerialPort;
   int _selectedBaudrate = 9600;
   bool get isSerialOpen => _serial.isPortOpen(); 

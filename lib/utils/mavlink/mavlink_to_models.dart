@@ -2,8 +2,8 @@ import 'package:arari_next/domain/models/bms_data.dart';
 import 'package:arari_next/domain/models/bms_status_data.dart';
 import 'package:arari_next/domain/models/gps_data.dart';
 import 'package:arari_next/domain/models/instrumentation_data.dart';
-import 'package:arari_next/domain/models/motor_data1.dart';
-import 'package:arari_next/domain/models/motor_data2.dart';
+import 'package:arari_next/domain/models/motor_eletrical_data.dart';
+import 'package:arari_next/domain/models/motor_state_data.dart';
 import 'package:arari_next/domain/models/mppt_data.dart';
 import 'package:arari_next/domain/models/mppt_state_data.dart';
 import 'package:arari_next/domain/models/pump_data.dart';
@@ -28,12 +28,12 @@ class MavlinkToModels {
     return InstrumentationData(batteryCurrent: instrumentation.batteryCurrent / 100.0, batteryVoltage: instrumentation.batteryVoltage / 100.0, motorCurrentLeft: instrumentation.motorCurrentLeft / 100.0, motorCurrentRight: instrumentation.motorCurrentRight / 100.0, mpptCurrent: instrumentation.mpptCurrent / 100.0, auxBatteryCurrent: instrumentation.auxiliaryBatteryCurrent / 100.0, auxBatteryVoltage: instrumentation.auxiliaryBatteryVoltage / 100.0, irradiance: instrumentation.irradiance);
   }
 
-  static MotorData1 toMotor1(EzkontrolMcuMeterDataI motorData1){
-    return MotorData1(busVoltage: motorData1.busVoltage / 10.0, busCurrent: motorData1.busCurrent / 10.0, rpm: motorData1.rpm, acceleratorOpening: motorData1.acceleratorOpening, instance: motorData1.instance == 0 ? MotorInstance.left : MotorInstance.right);
+  static MotorEletricalData toMotor1(EzkontrolMcuMeterDataI motorData1){
+    return MotorEletricalData(busVoltage: motorData1.busVoltage / 10.0, busCurrent: motorData1.busCurrent / 10.0, rpm: motorData1.rpm, acceleratorOpening: motorData1.acceleratorOpening, instance: motorData1.instance == 0 ? MotorInstance.left : MotorInstance.right);
   }
 
-  static MotorData2 toMotor2(EzkontrolMcuMeterDataIi motorData2){
-    return MotorData2(controllerTemperature: motorData2.controllerTemperature, motorTemperature: motorData2.motorTemperature, status: motorData2.status,  errorFlagByte4: motorData2.errorFlagsByte4, errorFlagByte5: motorData2.errorFlagsByte5, errorFlagByte6: motorData2.errorFlagsByte6, lifeSignal: motorData2.lifeSignal, instance: motorData2.instance == 0 ? MotorInstance.left : MotorInstance.right);
+  static MotorStateData toMotor2(EzkontrolMcuMeterDataIi motorData2){
+    return MotorStateData(controllerTemperature: motorData2.controllerTemperature, motorTemperature: motorData2.motorTemperature, status: motorData2.status,  errorFlagByte4: motorData2.errorFlagsByte4, errorFlagByte5: motorData2.errorFlagsByte5, errorFlagByte6: motorData2.errorFlagsByte6, lifeSignal: motorData2.lifeSignal, instance: motorData2.instance == 0 ? MotorInstance.left : MotorInstance.right);
   } 
 
   static MPPTData toMppt(Mppt mppt){

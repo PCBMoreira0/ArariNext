@@ -6,8 +6,8 @@ import 'package:arari_next/domain/models/bms_data.dart';
 import 'package:arari_next/domain/models/bms_status_data.dart';
 import 'package:arari_next/domain/models/gps_data.dart';
 import 'package:arari_next/domain/models/instrumentation_data.dart';
-import 'package:arari_next/domain/models/motor_data1.dart';
-import 'package:arari_next/domain/models/motor_data2.dart';
+import 'package:arari_next/domain/models/motor_eletrical_data.dart';
+import 'package:arari_next/domain/models/motor_state_data.dart';
 import 'package:arari_next/domain/models/mppt_data.dart';
 import 'package:arari_next/domain/models/mppt_state_data.dart';
 import 'package:arari_next/domain/models/pump_data.dart';
@@ -24,8 +24,8 @@ class MavlinkRepository extends PacketRepository {
   final StreamController<BMSStatusData> _bmsStatusDataController = StreamController.broadcast();
   final StreamController<GPSData> _gpsDataController = StreamController.broadcast();
   final StreamController<InstrumentationData> _instrumentationDataController = StreamController.broadcast();
-  final StreamController<MotorData1> _motorData1Controller = StreamController.broadcast();
-  final StreamController<MotorData2> _motorData2Controller = StreamController.broadcast();
+  final StreamController<MotorEletricalData> _motorEletricalDataController = StreamController.broadcast();
+  final StreamController<MotorStateData> _motorStateDataController = StreamController.broadcast();
   final StreamController<MPPTData> _mpptDataController = StreamController.broadcast();
   final StreamController<MPPTStateData> _mpptStateDataController = StreamController.broadcast();
   final StreamController<PumpData> _pumpDataController = StreamController.broadcast();
@@ -42,9 +42,9 @@ class MavlinkRepository extends PacketRepository {
   @override
   Stream<InstrumentationData> get instrumentationData => _instrumentationDataController.stream;
   @override
-  Stream<MotorData1> get motorData1 => _motorData1Controller.stream;
+  Stream<MotorEletricalData> get motorEletricalData => _motorEletricalDataController.stream;
   @override
-  Stream<MotorData2> get motorData2 => _motorData2Controller.stream;
+  Stream<MotorStateData> get motorStateData => _motorStateDataController.stream;
   @override
   Stream<MPPTData> get mpptData => _mpptDataController.stream;
   @override
@@ -84,11 +84,11 @@ class MavlinkRepository extends PacketRepository {
         break;
 
       case EzkontrolMcuMeterDataI motorData1:
-        _motorData1Controller.add(MavlinkToModels.toMotor1(motorData1));
+        _motorEletricalDataController.add(MavlinkToModels.toMotor1(motorData1));
         break;
 
       case EzkontrolMcuMeterDataIi motorData2:
-        _motorData2Controller.add(MavlinkToModels.toMotor2(motorData2));
+        _motorStateDataController.add(MavlinkToModels.toMotor2(motorData2));
         break;
       
       case Mppt mppt:

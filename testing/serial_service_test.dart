@@ -15,14 +15,15 @@ void main() async {
   serial.open();
 
   // MavlinkRepository repo = MavlinkRepository(serialService: serial);
-  // serial.read().listen((data) => print(data), onError: (data) => print('ERRO: $data'));
-  var a = MavlinkRepository(serialService: serial);
-  a.gpsData.listen((data) => print(data.speed));
+  serial.read().listen((data) => print(data.map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase()).join(' ')), onError: (data) => print('ERRO: $data'));
+  // var a = MavlinkRepository(serialService: serial);
+  // a.gpsData.listen((data) => print(data.speed));
   await Future.delayed(Duration(seconds: 5));
 
   serial.close();
   
   print('REABRINDO');
   await Future.delayed(Duration(seconds: 2));
+  print('REABRIU');
   serial.open();
 }
