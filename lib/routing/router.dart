@@ -5,6 +5,7 @@ import 'package:arari_next/ui/views/dashboard_view.dart';
 import 'package:arari_next/ui/views/settings_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:arari_next/ui/views/console_view.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -13,8 +14,8 @@ class RouteGenerator {
     final args = settings.arguments;
 
     switch (settings.name) {
-      // case Routes.console:
-        // return MaterialPageRoute(builder: (_) => ConsoleView());
+      case Routes.console:
+        return MaterialPageRoute(builder: (_) => ConsoleView());
       
       case Routes.dashboard:
         return MaterialPageRoute(builder: (context) => DashboardView(viewmodel: DashboardViewmodel(repository: context.read())));

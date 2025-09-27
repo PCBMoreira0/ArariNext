@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:arari_next/utils/console_log/console_buffer.dart';
+import 'package:arari_next/utils/Console_log/console_buffer.dart';
 import 'package:arari_next/domain/models/console_log.dart';
 
 class ConsoleViewModel with ChangeNotifier {
