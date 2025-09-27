@@ -4,7 +4,9 @@ import 'package:arari_next/domain/models/bms_data.dart';
 import 'package:arari_next/domain/models/instrumentation_data.dart';
 import 'package:arari_next/domain/models/motor_eletrical_data.dart';
 import 'package:arari_next/domain/models/motor_state_data.dart';
+import 'package:arari_next/domain/models/mppt_data.dart';
 import 'package:arari_next/domain/models/temperature_data.dart';
+import 'package:arari_next/utils/mavlink/mavlink_dialect/arariboat.dart';
 import 'package:flutter/widgets.dart';
 
 class DashboardViewmodel {
@@ -28,12 +30,17 @@ class DashboardViewmodel {
   ValueNotifier<TemperatureData> temperatureValueNotifier = ValueNotifier(TemperatureData.empty());
   StreamSubscription? temperatureStream;
 
+  ValueNotifier<MPPTData> mpptValueNotifier = ValueNotifier(MPPTData.empty());
+  StreamSubscription? mpptStream;
+  
+
   DashboardViewmodel({required PacketRepository repository}) : _packetRepository = repository {
     bmsStream = _packetRepository.bmsData.listen(updateBMS);
     motorStream = _packetRepository.motorEletricalData.listen(updateMotor);
     motorStateStream = _packetRepository.motorStateData.listen(updateMotorState);
     instrumentationStream = _packetRepository.instrumentationData.listen(updateInstrumentation);
     temperatureStream = _packetRepository.temperatureData.listen(updateTemperature);
+    mpptStream = _packetRepository.mpptData.listen(updateMppt);
   }
 
   void updateBMS(BMSData data){
@@ -72,5 +79,9 @@ class DashboardViewmodel {
 
   void updateTemperature(TemperatureData data){
     temperatureValueNotifier.value = data;
+  }
+
+  void updateMppt(MPPTData data){
+    mpptValueNotifier.value = data;
   }
 }

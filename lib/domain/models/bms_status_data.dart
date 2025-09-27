@@ -76,7 +76,7 @@ enum BMSFailureFlag {
 
 final class BMSStatusData implements IBoatData {
   final List<double> temperatures;
-  final BMSStatus status;
+  final int status;
   final List<BMSFailureFlag> failureFlags;
   final int faultCodeByte7;
   

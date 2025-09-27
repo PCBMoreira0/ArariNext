@@ -71,6 +71,50 @@ class _DashboardViewState extends State<DashboardView> {
                 ),
                 Expanded(
                   child: GroupBox(
+                    title: 'MPPT',
+                    child: ValueListenableBuilder(
+                      valueListenable: widget.viewmodel.mpptValueNotifier,
+                      builder: (context, data, child) {
+                        return Table(
+                          children: [
+                            TableRow(
+                              children: [
+                                Text('Tensão dos painel:'),
+                                Text('${data.pvVoltage} V'),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                Text('Corrente dos paineis:'),
+                                Text('${data.pvCurrent} A'),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                Text('Tensão da bateria:'),
+                                Text('${data.batteryVoltage} V'),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                Text('Corrente da bateria:'),
+                                Text('${data.batteryCurrent} A'),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                Text('Corrente do mppt:'),
+                                Text('${data.mpptCurrent} A'),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GroupBox(
                     title: 'Instrumentação',
                     child: ValueListenableBuilder(
                       valueListenable:
