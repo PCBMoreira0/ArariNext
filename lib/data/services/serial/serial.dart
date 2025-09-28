@@ -55,7 +55,7 @@ class SerialConnector {
     List<SerialPortData> readyPortList = []; 
 
     // checa se a plataforma é linux e aplica patch
-    if (Platform.isLinux) { _availablePorts = _availablePorts.sublist(1);}
+    if (Platform.isLinux || Platform.isMacOS ) { _availablePorts = _availablePorts.sublist(1);}
 
     // para cada campo de endereço de porta checa se existem dados, se sim, os escreve nos campos, se não escreve N/D(Não Definido) nos campos, após isso adicona a porta a lista.
       for (final adress in _availablePorts) {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:arari_next/data/services/serial/model/serial_port_data.dart';
+import 'package:flutter/material.dart';
 import 'package:libserialport/libserialport.dart';
 import 'dart:io';
 
@@ -40,12 +41,15 @@ class SerialConnector {
   // funcao local para setar as configurações...' 
   
   void _setConfig (SerialPortConfig config) {
+    checkPortIsGood();
      if ((selectedPort != null) && (selectedPort!.isOpen) ) {
       selectedPort!.config = _config;
 
       try {
         outputstream.drain();
-      } catch (err, _) {}
+      } catch (err, _) {
+        //todo error handling
+      }
 
     }
     else if (selectedPort == null) {
@@ -73,7 +77,7 @@ class SerialConnector {
 
     List<String> _availablePorts = SerialPort.availablePorts;
 
-    // lista de portas bonita.
+    // lista de portas existentes.
     List<SerialPortData> readyPortList = []; 
 
     // checa se a plataforma é linux e aplica patch
@@ -151,6 +155,8 @@ class SerialConnector {
 
   bool checkPortIsGood() {
 
+    // todo: adicionar catch para erro de a porta nao existir. 
+
     if (selectedPort == null) {
 
       throw ArgumentError.notNull('No serial port has been seelected');
@@ -158,6 +164,11 @@ class SerialConnector {
     } else if (selectedPort!.isOpen == false) {
 
       throw AssertionError('Serial port is not open');
+
+      // check if port exists.
+    } else if (!SerialPort.availablePorts.contains(selectedPort!.name)) {
+
+      throw AssertionError('Serial port does not exist');
 
     // se não tivemos erros previsiveis, tentar de fato escrever a mensagem;
     } else {return true;}

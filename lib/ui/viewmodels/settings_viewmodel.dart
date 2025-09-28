@@ -31,7 +31,7 @@ class SettingsViewmodel extends ChangeNotifier {
         break;
       }
     }
-    _selectedSerialPort ??= _serialPorts[0];
+    _selectedSerialPort ??= null;
 
     _selectedBaudrate = _settings.selectedBaudrate;
     
