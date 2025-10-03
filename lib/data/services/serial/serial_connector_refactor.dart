@@ -80,13 +80,8 @@ class SerialConnector {
     // lista de portas existentes.
     List<SerialPortData> readyPortList = []; 
 
-<<<<<<< HEAD:arari_next/lib/data/services/serial/serial_connector_refactor.dart
-    // checa se a plataforma é linux ou MacOS e aplica patch
-    if (Platform.isLinux || Platform.isMacOS ) { _availablePorts = _availablePorts.sublist(1);}
-=======
     // checa se a plataforma é linux e aplica patch
-    if (Platform.isLinux) { availablePorts = availablePorts.sublist(1);}
->>>>>>> d669b31 (Added code to ensure widgets initialization to prevent errors):arari_next/lib/data/services/serial/serial.dart
+    if (Platform.isLinux || Platform.isMacOS) { availablePorts = availablePorts.sublist(1);}
 
     // para cada campo de endereço de porta checa se existem dados, se sim, os escreve nos campos, se não escreve N/D(Não Definido) nos campos, após isso adicona a porta a lista.
       for (final adress in availablePorts) {
