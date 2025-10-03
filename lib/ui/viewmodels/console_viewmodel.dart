@@ -7,7 +7,7 @@ class ConsoleViewModel with ChangeNotifier {
 
   // definindo tamanho maximo do cache do console
 
-  int _cacheSize = 100;
+  final int _cacheSize = 100;
 
   int get cacheSize {
     return _cacheSize;

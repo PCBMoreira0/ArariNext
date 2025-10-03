@@ -4,6 +4,8 @@ import 'package:flutter_libserialport/flutter_libserialport.dart';
 void main() => runApp(ExampleApp());
 
 class ExampleApp extends StatefulWidget {
+  const ExampleApp({super.key});
+
   @override
   _ExampleAppState createState() => _ExampleAppState();
 }
@@ -71,8 +73,8 @@ class _ExampleAppState extends State<ExampleApp> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.refresh),
           onPressed: initPorts,
+          child: Icon(Icons.refresh),
         ),
       ),
     );
@@ -83,7 +85,7 @@ class CardListTile extends StatelessWidget {
   final String name;
   final String? value;
 
-  CardListTile(this.name, this.value);
+  const CardListTile(this.name, this.value, {super.key});
 
   @override
   Widget build(BuildContext context) {

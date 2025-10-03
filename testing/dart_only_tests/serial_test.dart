@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:dart_mavlink/types.dart';
 import 'package:arari_next/data/services/serial/serial.dart';
 
 
