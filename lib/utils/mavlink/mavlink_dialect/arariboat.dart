@@ -953,8 +953,7 @@ class Instrumentation implements MavlinkMessage {
   factory Instrumentation.parse(ByteData data_) {
     if (data_.lengthInBytes < Instrumentation.mavlinkEncodedLength) {
       var len = Instrumentation.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -970,17 +969,16 @@ class Instrumentation implements MavlinkMessage {
     var timestampMilliseconds = data_.getUint16(20, Endian.little);
 
     return Instrumentation(
-      timestampSeconds: timestampSeconds,
-      batteryCurrent: batteryCurrent,
-      motorCurrentLeft: motorCurrentLeft,
-      motorCurrentRight: motorCurrentRight,
-      mpptCurrent: mpptCurrent,
-      auxiliaryBatteryCurrent: auxiliaryBatteryCurrent,
-      batteryVoltage: batteryVoltage,
-      auxiliaryBatteryVoltage: auxiliaryBatteryVoltage,
-      irradiance: irradiance,
-      timestampMilliseconds: timestampMilliseconds,
-    );
+        timestampSeconds: timestampSeconds,
+        batteryCurrent: batteryCurrent,
+        motorCurrentLeft: motorCurrentLeft,
+        motorCurrentRight: motorCurrentRight,
+        mpptCurrent: mpptCurrent,
+        auxiliaryBatteryCurrent: auxiliaryBatteryCurrent,
+        batteryVoltage: batteryVoltage,
+        auxiliaryBatteryVoltage: auxiliaryBatteryVoltage,
+        irradiance: irradiance,
+        timestampMilliseconds: timestampMilliseconds);
   }
 
   @override
@@ -1099,8 +1097,7 @@ class Temperatures implements MavlinkMessage {
   factory Temperatures.parse(ByteData data_) {
     if (data_.lengthInBytes < Temperatures.mavlinkEncodedLength) {
       var len = Temperatures.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -1112,13 +1109,12 @@ class Temperatures implements MavlinkMessage {
     var timestampMilliseconds = data_.getUint16(12, Endian.little);
 
     return Temperatures(
-      timestampSeconds: timestampSeconds,
-      temperatureBatteryLeft: temperatureBatteryLeft,
-      temperatureBatteryRight: temperatureBatteryRight,
-      temperatureMpptLeft: temperatureMpptLeft,
-      temperatureMpptRight: temperatureMpptRight,
-      timestampMilliseconds: timestampMilliseconds,
-    );
+        timestampSeconds: timestampSeconds,
+        temperatureBatteryLeft: temperatureBatteryLeft,
+        temperatureBatteryRight: temperatureBatteryRight,
+        temperatureMpptLeft: temperatureMpptLeft,
+        temperatureMpptRight: temperatureMpptRight,
+        timestampMilliseconds: timestampMilliseconds);
   }
 
   @override
@@ -1263,8 +1259,7 @@ class Gps implements MavlinkMessage {
   factory Gps.parse(ByteData data_) {
     if (data_.lengthInBytes < Gps.mavlinkEncodedLength) {
       var len = Gps.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -1279,16 +1274,15 @@ class Gps implements MavlinkMessage {
     var hdop = data_.getUint8(19);
 
     return Gps(
-      latitude: latitude,
-      longitude: longitude,
-      timestampSeconds: timestampSeconds,
-      speed: speed,
-      timestampMilliseconds: timestampMilliseconds,
-      course: course,
-      heading: heading,
-      satellitesVisible: satellitesVisible,
-      hdop: hdop,
-    );
+        latitude: latitude,
+        longitude: longitude,
+        timestampSeconds: timestampSeconds,
+        speed: speed,
+        timestampMilliseconds: timestampMilliseconds,
+        course: course,
+        heading: heading,
+        satellitesVisible: satellitesVisible,
+        hdop: hdop);
   }
 
   @override
@@ -1404,8 +1398,7 @@ class Mppt implements MavlinkMessage {
   factory Mppt.parse(ByteData data_) {
     if (data_.lengthInBytes < Mppt.mavlinkEncodedLength) {
       var len = Mppt.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -1417,13 +1410,12 @@ class Mppt implements MavlinkMessage {
     var timestampMilliseconds = data_.getUint16(12, Endian.little);
 
     return Mppt(
-      timestampSeconds: timestampSeconds,
-      pvVoltage: pvVoltage,
-      pvCurrent: pvCurrent,
-      batteryVoltage: batteryVoltage,
-      batteryCurrent: batteryCurrent,
-      timestampMilliseconds: timestampMilliseconds,
-    );
+        timestampSeconds: timestampSeconds,
+        pvVoltage: pvVoltage,
+        pvCurrent: pvCurrent,
+        batteryVoltage: batteryVoltage,
+        batteryCurrent: batteryCurrent,
+        timestampMilliseconds: timestampMilliseconds);
   }
 
   @override
@@ -1513,8 +1505,7 @@ class MpptState implements MavlinkMessage {
   factory MpptState.parse(ByteData data_) {
     if (data_.lengthInBytes < MpptState.mavlinkEncodedLength) {
       var len = MpptState.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -1524,11 +1515,10 @@ class MpptState implements MavlinkMessage {
     var timestampMilliseconds = data_.getUint16(8, Endian.little);
 
     return MpptState(
-      timestampSeconds: timestampSeconds,
-      batteryStatus: batteryStatus,
-      chargingEquipmentStatus: chargingEquipmentStatus,
-      timestampMilliseconds: timestampMilliseconds,
-    );
+        timestampSeconds: timestampSeconds,
+        batteryStatus: batteryStatus,
+        chargingEquipmentStatus: chargingEquipmentStatus,
+        timestampMilliseconds: timestampMilliseconds);
   }
 
   @override
@@ -1548,9 +1538,9 @@ class MpptState implements MavlinkMessage {
 class Bms implements MavlinkMessage {
   static const int _mavlinkMessageId = 6;
 
-  static const int _mavlinkCrcExtra = 65;
+  static const int _mavlinkCrcExtra = 43;
 
-  static const int mavlinkEncodedLength = 45;
+  static const int mavlinkEncodedLength = 46;
 
   @override
   int get mavlinkMessageId => _mavlinkMessageId;
@@ -1592,6 +1582,15 @@ class Bms implements MavlinkMessage {
   /// current_battery
   final int16_t currentBattery;
 
+  /// Remaining battery energy. Values: [0-100]
+  ///
+  /// MAVLink type: int16_t
+  ///
+  /// units: %
+  ///
+  /// state_of_charge
+  final int16_t stateOfCharge;
+
   /// Milliseconds within Unix time
   ///
   /// MAVLink type: uint16_t
@@ -1599,22 +1598,13 @@ class Bms implements MavlinkMessage {
   /// timestamp_milliseconds
   final uint16_t timestampMilliseconds;
 
-  /// Remaining battery energy. Values: [0-100]
-  ///
-  /// MAVLink type: int8_t
-  ///
-  /// units: %
-  ///
-  /// state_of_charge
-  final int8_t stateOfCharge;
-
   Bms({
     required this.timestampSeconds,
     required this.voltages,
     required this.temperatures,
     required this.currentBattery,
-    required this.timestampMilliseconds,
     required this.stateOfCharge,
+    required this.timestampMilliseconds,
   });
 
   Bms copyWith({
@@ -1622,25 +1612,24 @@ class Bms implements MavlinkMessage {
     List<int16_t>? voltages,
     List<int16_t>? temperatures,
     int16_t? currentBattery,
+    int16_t? stateOfCharge,
     uint16_t? timestampMilliseconds,
-    int8_t? stateOfCharge,
   }) {
     return Bms(
       timestampSeconds: timestampSeconds ?? this.timestampSeconds,
       voltages: voltages ?? this.voltages,
       temperatures: temperatures ?? this.temperatures,
       currentBattery: currentBattery ?? this.currentBattery,
+      stateOfCharge: stateOfCharge ?? this.stateOfCharge,
       timestampMilliseconds:
           timestampMilliseconds ?? this.timestampMilliseconds,
-      stateOfCharge: stateOfCharge ?? this.stateOfCharge,
     );
   }
 
   factory Bms.parse(ByteData data_) {
     if (data_.lengthInBytes < Bms.mavlinkEncodedLength) {
       var len = Bms.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -1648,17 +1637,16 @@ class Bms implements MavlinkMessage {
     var voltages = MavlinkMessage.asUint16List(data_, 4, 16);
     var temperatures = MavlinkMessage.asInt16List(data_, 36, 2);
     var currentBattery = data_.getInt16(40, Endian.little);
-    var timestampMilliseconds = data_.getUint16(42, Endian.little);
-    var stateOfCharge = data_.getInt8(44);
+    var stateOfCharge = data_.getInt16(42, Endian.little);
+    var timestampMilliseconds = data_.getUint16(44, Endian.little);
 
     return Bms(
-      timestampSeconds: timestampSeconds,
-      voltages: voltages,
-      temperatures: temperatures,
-      currentBattery: currentBattery,
-      timestampMilliseconds: timestampMilliseconds,
-      stateOfCharge: stateOfCharge,
-    );
+        timestampSeconds: timestampSeconds,
+        voltages: voltages,
+        temperatures: temperatures,
+        currentBattery: currentBattery,
+        stateOfCharge: stateOfCharge,
+        timestampMilliseconds: timestampMilliseconds);
   }
 
   @override
@@ -1668,8 +1656,8 @@ class Bms implements MavlinkMessage {
     MavlinkMessage.setUint16List(data_, 4, voltages);
     MavlinkMessage.setInt16List(data_, 36, temperatures);
     data_.setInt16(40, currentBattery, Endian.little);
-    data_.setUint16(42, timestampMilliseconds, Endian.little);
-    data_.setInt8(44, stateOfCharge);
+    data_.setInt16(42, stateOfCharge, Endian.little);
+    data_.setUint16(44, timestampMilliseconds, Endian.little);
     return data_;
   }
 }
@@ -1845,8 +1833,7 @@ class BmsStatus implements MavlinkMessage {
   factory BmsStatus.parse(ByteData data_) {
     if (data_.lengthInBytes < BmsStatus.mavlinkEncodedLength) {
       var len = BmsStatus.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -1864,19 +1851,18 @@ class BmsStatus implements MavlinkMessage {
     var faultCodeByte7 = data_.getUint8(18);
 
     return BmsStatus(
-      timestampSeconds: timestampSeconds,
-      temperatures: temperatures,
-      timestampMilliseconds: timestampMilliseconds,
-      status: status,
-      failureFlagsByte0: failureFlagsByte0,
-      failureFlagsByte1: failureFlagsByte1,
-      failureFlagsByte2: failureFlagsByte2,
-      failureFlagsByte3: failureFlagsByte3,
-      failureFlagsByte4: failureFlagsByte4,
-      failureFlagsByte5: failureFlagsByte5,
-      failureFlagsByte6: failureFlagsByte6,
-      faultCodeByte7: faultCodeByte7,
-    );
+        timestampSeconds: timestampSeconds,
+        temperatures: temperatures,
+        timestampMilliseconds: timestampMilliseconds,
+        status: status,
+        failureFlagsByte0: failureFlagsByte0,
+        failureFlagsByte1: failureFlagsByte1,
+        failureFlagsByte2: failureFlagsByte2,
+        failureFlagsByte3: failureFlagsByte3,
+        failureFlagsByte4: failureFlagsByte4,
+        failureFlagsByte5: failureFlagsByte5,
+        failureFlagsByte6: failureFlagsByte6,
+        faultCodeByte7: faultCodeByte7);
   }
 
   @override
@@ -2007,8 +1993,7 @@ class EzkontrolMcuMeterDataI implements MavlinkMessage {
     if (data_.lengthInBytes < EzkontrolMcuMeterDataI.mavlinkEncodedLength) {
       var len =
           EzkontrolMcuMeterDataI.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -2021,14 +2006,13 @@ class EzkontrolMcuMeterDataI implements MavlinkMessage {
     var instance = data_.getUint8(13);
 
     return EzkontrolMcuMeterDataI(
-      timestampSeconds: timestampSeconds,
-      busVoltage: busVoltage,
-      busCurrent: busCurrent,
-      rpm: rpm,
-      timestampMilliseconds: timestampMilliseconds,
-      acceleratorOpening: acceleratorOpening,
-      instance: instance,
-    );
+        timestampSeconds: timestampSeconds,
+        busVoltage: busVoltage,
+        busCurrent: busCurrent,
+        rpm: rpm,
+        timestampMilliseconds: timestampMilliseconds,
+        acceleratorOpening: acceleratorOpening,
+        instance: instance);
   }
 
   @override
@@ -2182,8 +2166,7 @@ class EzkontrolMcuMeterDataIi implements MavlinkMessage {
     if (data_.lengthInBytes < EzkontrolMcuMeterDataIi.mavlinkEncodedLength) {
       var len =
           EzkontrolMcuMeterDataIi.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -2199,17 +2182,16 @@ class EzkontrolMcuMeterDataIi implements MavlinkMessage {
     var instance = data_.getUint8(13);
 
     return EzkontrolMcuMeterDataIi(
-      timestampSeconds: timestampSeconds,
-      timestampMilliseconds: timestampMilliseconds,
-      controllerTemperature: controllerTemperature,
-      motorTemperature: motorTemperature,
-      status: status,
-      errorFlagsByte4: errorFlagsByte4,
-      errorFlagsByte5: errorFlagsByte5,
-      errorFlagsByte6: errorFlagsByte6,
-      lifeSignal: lifeSignal,
-      instance: instance,
-    );
+        timestampSeconds: timestampSeconds,
+        timestampMilliseconds: timestampMilliseconds,
+        controllerTemperature: controllerTemperature,
+        motorTemperature: motorTemperature,
+        status: status,
+        errorFlagsByte4: errorFlagsByte4,
+        errorFlagsByte5: errorFlagsByte5,
+        errorFlagsByte6: errorFlagsByte6,
+        lifeSignal: lifeSignal,
+        instance: instance);
   }
 
   @override
@@ -2288,8 +2270,7 @@ class Pumps implements MavlinkMessage {
   factory Pumps.parse(ByteData data_) {
     if (data_.lengthInBytes < Pumps.mavlinkEncodedLength) {
       var len = Pumps.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -2298,10 +2279,9 @@ class Pumps implements MavlinkMessage {
     var pumpStates = data_.getUint8(6);
 
     return Pumps(
-      timestampSeconds: timestampSeconds,
-      timestampMilliseconds: timestampMilliseconds,
-      pumpStates: pumpStates,
-    );
+        timestampSeconds: timestampSeconds,
+        timestampMilliseconds: timestampMilliseconds,
+        pumpStates: pumpStates);
   }
 
   @override
@@ -2310,6 +2290,266 @@ class Pumps implements MavlinkMessage {
     data_.setUint32(0, timestampSeconds, Endian.little);
     data_.setUint16(4, timestampMilliseconds, Endian.little);
     data_.setUint8(6, pumpStates);
+    return data_;
+  }
+}
+
+/// Data from eletronic controlled propulsion.
+///
+/// ELETRONIC_PROPULSION
+class EletronicPropulsion implements MavlinkMessage {
+  static const int _mavlinkMessageId = 11;
+
+  static const int _mavlinkCrcExtra = 83;
+
+  static const int mavlinkEncodedLength = 13;
+
+  @override
+  int get mavlinkMessageId => _mavlinkMessageId;
+
+  @override
+  int get mavlinkCrcExtra => _mavlinkCrcExtra;
+
+  /// Seconds since Unix time
+  ///
+  /// MAVLink type: uint32_t
+  ///
+  /// timestamp_seconds
+  final uint32_t timestampSeconds;
+
+  /// Helm potenciometer value.
+  ///
+  /// MAVLink type: uint16_t
+  ///
+  /// units: mV
+  ///
+  /// helm_potentiometer
+  final uint16_t helmPotentiometer;
+
+  /// Left throttle potenciometer value.
+  ///
+  /// MAVLink type: uint16_t
+  ///
+  /// units: mV
+  ///
+  /// throttle_left_potentiometer
+  final uint16_t throttleLeftPotentiometer;
+
+  /// Right throttle potenciometer value.
+  ///
+  /// MAVLink type: uint16_t
+  ///
+  /// units: mV
+  ///
+  /// throttle_right_potentiometer
+  final uint16_t throttleRightPotentiometer;
+
+  /// Milliseconds within Unix time
+  ///
+  /// MAVLink type: uint16_t
+  ///
+  /// timestamp_milliseconds
+  final uint16_t timestampMilliseconds;
+
+  /// Bit 0: OFF, Bit 1: ON
+  ///
+  /// MAVLink type: uint8_t
+  ///
+  /// state
+  final uint8_t state;
+
+  EletronicPropulsion({
+    required this.timestampSeconds,
+    required this.helmPotentiometer,
+    required this.throttleLeftPotentiometer,
+    required this.throttleRightPotentiometer,
+    required this.timestampMilliseconds,
+    required this.state,
+  });
+
+  EletronicPropulsion copyWith({
+    uint32_t? timestampSeconds,
+    uint16_t? helmPotentiometer,
+    uint16_t? throttleLeftPotentiometer,
+    uint16_t? throttleRightPotentiometer,
+    uint16_t? timestampMilliseconds,
+    uint8_t? state,
+  }) {
+    return EletronicPropulsion(
+      timestampSeconds: timestampSeconds ?? this.timestampSeconds,
+      helmPotentiometer: helmPotentiometer ?? this.helmPotentiometer,
+      throttleLeftPotentiometer:
+          throttleLeftPotentiometer ?? this.throttleLeftPotentiometer,
+      throttleRightPotentiometer:
+          throttleRightPotentiometer ?? this.throttleRightPotentiometer,
+      timestampMilliseconds:
+          timestampMilliseconds ?? this.timestampMilliseconds,
+      state: state ?? this.state,
+    );
+  }
+
+  factory EletronicPropulsion.parse(ByteData data_) {
+    if (data_.lengthInBytes < EletronicPropulsion.mavlinkEncodedLength) {
+      var len = EletronicPropulsion.mavlinkEncodedLength - data_.lengthInBytes;
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+          List<int>.filled(len, 0);
+      data_ = Uint8List.fromList(d).buffer.asByteData();
+    }
+    var timestampSeconds = data_.getUint32(0, Endian.little);
+    var helmPotentiometer = data_.getUint16(4, Endian.little);
+    var throttleLeftPotentiometer = data_.getUint16(6, Endian.little);
+    var throttleRightPotentiometer = data_.getUint16(8, Endian.little);
+    var timestampMilliseconds = data_.getUint16(10, Endian.little);
+    var state = data_.getUint8(12);
+
+    return EletronicPropulsion(
+        timestampSeconds: timestampSeconds,
+        helmPotentiometer: helmPotentiometer,
+        throttleLeftPotentiometer: throttleLeftPotentiometer,
+        throttleRightPotentiometer: throttleRightPotentiometer,
+        timestampMilliseconds: timestampMilliseconds,
+        state: state);
+  }
+
+  @override
+  ByteData serialize() {
+    var data_ = ByteData(mavlinkEncodedLength);
+    data_.setUint32(0, timestampSeconds, Endian.little);
+    data_.setUint16(4, helmPotentiometer, Endian.little);
+    data_.setUint16(6, throttleLeftPotentiometer, Endian.little);
+    data_.setUint16(8, throttleRightPotentiometer, Endian.little);
+    data_.setUint16(10, timestampMilliseconds, Endian.little);
+    data_.setUint8(12, state);
+    return data_;
+  }
+}
+
+/// Current data from each string.
+///
+/// MPPT_STRINGS
+class MpptStrings implements MavlinkMessage {
+  static const int _mavlinkMessageId = 12;
+
+  static const int _mavlinkCrcExtra = 181;
+
+  static const int mavlinkEncodedLength = 14;
+
+  @override
+  int get mavlinkMessageId => _mavlinkMessageId;
+
+  @override
+  int get mavlinkCrcExtra => _mavlinkCrcExtra;
+
+  /// Seconds since Unix time
+  ///
+  /// MAVLink type: uint32_t
+  ///
+  /// timestamp_seconds
+  final uint32_t timestampSeconds;
+
+  /// Current from string 1
+  ///
+  /// MAVLink type: uint16_t
+  ///
+  /// units: mA
+  ///
+  /// string_1
+  final uint16_t string1;
+
+  /// Current from string 2
+  ///
+  /// MAVLink type: uint16_t
+  ///
+  /// units: mA
+  ///
+  /// string_2
+  final uint16_t string2;
+
+  /// Current from string 3
+  ///
+  /// MAVLink type: uint16_t
+  ///
+  /// units: mA
+  ///
+  /// string_3
+  final uint16_t string3;
+
+  /// Current from string 4
+  ///
+  /// MAVLink type: uint16_t
+  ///
+  /// units: mA
+  ///
+  /// string_4
+  final uint16_t string4;
+
+  /// Milliseconds within Unix time
+  ///
+  /// MAVLink type: uint16_t
+  ///
+  /// timestamp_milliseconds
+  final uint16_t timestampMilliseconds;
+
+  MpptStrings({
+    required this.timestampSeconds,
+    required this.string1,
+    required this.string2,
+    required this.string3,
+    required this.string4,
+    required this.timestampMilliseconds,
+  });
+
+  MpptStrings copyWith({
+    uint32_t? timestampSeconds,
+    uint16_t? string1,
+    uint16_t? string2,
+    uint16_t? string3,
+    uint16_t? string4,
+    uint16_t? timestampMilliseconds,
+  }) {
+    return MpptStrings(
+      timestampSeconds: timestampSeconds ?? this.timestampSeconds,
+      string1: string1 ?? this.string1,
+      string2: string2 ?? this.string2,
+      string3: string3 ?? this.string3,
+      string4: string4 ?? this.string4,
+      timestampMilliseconds:
+          timestampMilliseconds ?? this.timestampMilliseconds,
+    );
+  }
+
+  factory MpptStrings.parse(ByteData data_) {
+    if (data_.lengthInBytes < MpptStrings.mavlinkEncodedLength) {
+      var len = MpptStrings.mavlinkEncodedLength - data_.lengthInBytes;
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+          List<int>.filled(len, 0);
+      data_ = Uint8List.fromList(d).buffer.asByteData();
+    }
+    var timestampSeconds = data_.getUint32(0, Endian.little);
+    var string1 = data_.getUint16(4, Endian.little);
+    var string2 = data_.getUint16(6, Endian.little);
+    var string3 = data_.getUint16(8, Endian.little);
+    var string4 = data_.getUint16(10, Endian.little);
+    var timestampMilliseconds = data_.getUint16(12, Endian.little);
+
+    return MpptStrings(
+        timestampSeconds: timestampSeconds,
+        string1: string1,
+        string2: string2,
+        string3: string3,
+        string4: string4,
+        timestampMilliseconds: timestampMilliseconds);
+  }
+
+  @override
+  ByteData serialize() {
+    var data_ = ByteData(mavlinkEncodedLength);
+    data_.setUint32(0, timestampSeconds, Endian.little);
+    data_.setUint16(4, string1, Endian.little);
+    data_.setUint16(6, string2, Endian.little);
+    data_.setUint16(8, string3, Endian.little);
+    data_.setUint16(10, string4, Endian.little);
+    data_.setUint16(12, timestampMilliseconds, Endian.little);
     return data_;
   }
 }
@@ -2344,9 +2584,15 @@ class ParamRequestRead implements MavlinkMessage {
   /// param_id
   final List<char> paramId;
 
-  ParamRequestRead({required this.paramIndex, required this.paramId});
+  ParamRequestRead({
+    required this.paramIndex,
+    required this.paramId,
+  });
 
-  ParamRequestRead copyWith({int16_t? paramIndex, List<char>? paramId}) {
+  ParamRequestRead copyWith({
+    int16_t? paramIndex,
+    List<char>? paramId,
+  }) {
     return ParamRequestRead(
       paramIndex: paramIndex ?? this.paramIndex,
       paramId: paramId ?? this.paramId,
@@ -2356,8 +2602,7 @@ class ParamRequestRead implements MavlinkMessage {
   factory ParamRequestRead.parse(ByteData data_) {
     if (data_.lengthInBytes < ParamRequestRead.mavlinkEncodedLength) {
       var len = ParamRequestRead.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -2456,8 +2701,7 @@ class ParamValue implements MavlinkMessage {
   factory ParamValue.parse(ByteData data_) {
     if (data_.lengthInBytes < ParamValue.mavlinkEncodedLength) {
       var len = ParamValue.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -2468,12 +2712,11 @@ class ParamValue implements MavlinkMessage {
     var paramType = data_.getUint8(24);
 
     return ParamValue(
-      paramValue: paramValue,
-      paramCount: paramCount,
-      paramIndex: paramIndex,
-      paramId: paramId,
-      paramType: paramType,
-    );
+        paramValue: paramValue,
+        paramCount: paramCount,
+        paramIndex: paramIndex,
+        paramId: paramId,
+        paramType: paramType);
   }
 
   @override
@@ -2550,8 +2793,7 @@ class ParamSet implements MavlinkMessage {
   factory ParamSet.parse(ByteData data_) {
     if (data_.lengthInBytes < ParamSet.mavlinkEncodedLength) {
       var len = ParamSet.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -2560,10 +2802,7 @@ class ParamSet implements MavlinkMessage {
     var paramType = data_.getUint8(20);
 
     return ParamSet(
-      paramValue: paramValue,
-      paramId: paramId,
-      paramType: paramType,
-    );
+        paramValue: paramValue, paramId: paramId, paramType: paramType);
   }
 
   @override
@@ -2655,8 +2894,7 @@ class RadioStatus implements MavlinkMessage {
   factory RadioStatus.parse(ByteData data_) {
     if (data_.lengthInBytes < RadioStatus.mavlinkEncodedLength) {
       var len = RadioStatus.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -2667,12 +2905,11 @@ class RadioStatus implements MavlinkMessage {
     var rssi = data_.getUint8(9);
 
     return RadioStatus(
-      timestampSeconds: timestampSeconds,
-      rxerrors: rxerrors,
-      timestampMilliseconds: timestampMilliseconds,
-      instance: instance,
-      rssi: rssi,
-    );
+        timestampSeconds: timestampSeconds,
+        rxerrors: rxerrors,
+        timestampMilliseconds: timestampMilliseconds,
+        instance: instance,
+        rssi: rssi);
   }
 
   @override
@@ -2768,8 +3005,7 @@ class NamedValueFloat implements MavlinkMessage {
   factory NamedValueFloat.parse(ByteData data_) {
     if (data_.lengthInBytes < NamedValueFloat.mavlinkEncodedLength) {
       var len = NamedValueFloat.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -2780,12 +3016,11 @@ class NamedValueFloat implements MavlinkMessage {
     var name = MavlinkMessage.asInt8List(data_, 14, 10);
 
     return NamedValueFloat(
-      timeBootMs: timeBootMs,
-      value: value,
-      timestampSeconds: timestampSeconds,
-      timestampMilliseconds: timestampMilliseconds,
-      name: name,
-    );
+        timeBootMs: timeBootMs,
+        value: value,
+        timestampSeconds: timestampSeconds,
+        timestampMilliseconds: timestampMilliseconds,
+        name: name);
   }
 
   @override
@@ -2881,8 +3116,7 @@ class NamedValueInt implements MavlinkMessage {
   factory NamedValueInt.parse(ByteData data_) {
     if (data_.lengthInBytes < NamedValueInt.mavlinkEncodedLength) {
       var len = NamedValueInt.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -2893,12 +3127,11 @@ class NamedValueInt implements MavlinkMessage {
     var name = MavlinkMessage.asInt8List(data_, 14, 10);
 
     return NamedValueInt(
-      timeBootMs: timeBootMs,
-      value: value,
-      timestampSeconds: timestampSeconds,
-      timestampMilliseconds: timestampMilliseconds,
-      name: name,
-    );
+        timeBootMs: timeBootMs,
+        value: value,
+        timestampSeconds: timestampSeconds,
+        timestampMilliseconds: timestampMilliseconds,
+        name: name);
   }
 
   @override
@@ -3012,8 +3245,7 @@ class Statustext implements MavlinkMessage {
   factory Statustext.parse(ByteData data_) {
     if (data_.lengthInBytes < Statustext.mavlinkEncodedLength) {
       var len = Statustext.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -3025,13 +3257,12 @@ class Statustext implements MavlinkMessage {
     var timestampMilliseconds = data_.getUint16(58, Endian.little);
 
     return Statustext(
-      severity: severity,
-      text: text,
-      id: id,
-      chunkSeq: chunkSeq,
-      timestampSeconds: timestampSeconds,
-      timestampMilliseconds: timestampMilliseconds,
-    );
+        severity: severity,
+        text: text,
+        id: id,
+        chunkSeq: chunkSeq,
+        timestampSeconds: timestampSeconds,
+        timestampMilliseconds: timestampMilliseconds);
   }
 
   @override
@@ -3086,9 +3317,17 @@ class Debug implements MavlinkMessage {
   /// ind
   final uint8_t ind;
 
-  Debug({required this.timeBootMs, required this.value, required this.ind});
+  Debug({
+    required this.timeBootMs,
+    required this.value,
+    required this.ind,
+  });
 
-  Debug copyWith({uint32_t? timeBootMs, float? value, uint8_t? ind}) {
+  Debug copyWith({
+    uint32_t? timeBootMs,
+    float? value,
+    uint8_t? ind,
+  }) {
     return Debug(
       timeBootMs: timeBootMs ?? this.timeBootMs,
       value: value ?? this.value,
@@ -3099,8 +3338,7 @@ class Debug implements MavlinkMessage {
   factory Debug.parse(ByteData data_) {
     if (data_.lengthInBytes < Debug.mavlinkEncodedLength) {
       var len = Debug.mavlinkEncodedLength - data_.lengthInBytes;
-      var d =
-          data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
+      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
           List<int>.filled(len, 0);
       data_ = Uint8List.fromList(d).buffer.asByteData();
     }
@@ -3150,6 +3388,10 @@ class MavlinkDialectArariboat implements MavlinkDialect {
         return EzkontrolMcuMeterDataIi.parse(data);
       case 10:
         return Pumps.parse(data);
+      case 11:
+        return EletronicPropulsion.parse(data);
+      case 12:
+        return MpptStrings.parse(data);
       case 20:
         return ParamRequestRead.parse(data);
       case 22:
@@ -3194,6 +3436,10 @@ class MavlinkDialectArariboat implements MavlinkDialect {
         return EzkontrolMcuMeterDataIi._mavlinkCrcExtra;
       case 10:
         return Pumps._mavlinkCrcExtra;
+      case 11:
+        return EletronicPropulsion._mavlinkCrcExtra;
+      case 12:
+        return MpptStrings._mavlinkCrcExtra;
       case 20:
         return ParamRequestRead._mavlinkCrcExtra;
       case 22:
