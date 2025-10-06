@@ -25,7 +25,7 @@ class _ConsoleViewState extends State<ConsoleView> {
     super.dispose();
   }
 
-  ConsoleViewModel _logsNotifier =  ConsoleViewModel();
+  final ConsoleViewModel _logsNotifier =  ConsoleViewModel();
   
   @override
   Widget build(BuildContext context) {
@@ -98,6 +98,10 @@ class LogListBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListenableBuilder(listenable: listNotifer, 
     builder: (BuildContext context, Widget? child) {
+      print('DrewList');
+      if (listNotifer.isNotEmpty()) {
+        print(listNotifer.logs.first.contents );
+      }
       if (listNotifer.logs.isNotEmpty) {
         final List<ConsoleLog> list = listNotifer.logs;
         return ListView.builder(

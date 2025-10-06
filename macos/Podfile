@@ -1,4 +1,12 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
 platform :osx, '10.15'
+=======
+platform :osx, '10.15'
+>>>>>>> de8ffff (Moded console view and backend to fit mvvm standards w/o dependency injection)
+=======
+platform :osx, '10.15'
+>>>>>>> d669b31 (Added code to ensure widgets initialization to prevent errors)
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'

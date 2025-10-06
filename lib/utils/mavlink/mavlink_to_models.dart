@@ -11,7 +11,9 @@ import 'package:arari_next/domain/models/radio_status_data.dart';
 import 'package:arari_next/domain/models/temperature_data.dart';
 import 'package:arari_next/utils/mavlink/mavlink_dialect/arariboat.dart';
 
+
 class MavlinkToModels {
+  
   static GPSData toGPS(Gps gps){
     return GPSData(latitude: gps.latitude / 1e7, longitude: gps.longitude / 1e7, speed: gps.speed * (3600.0 / 100000.0), course: gps.course, heading: gps.heading, visibleSatellites: gps.satellitesVisible, hdop: gps.hdop / 10.0);
   }

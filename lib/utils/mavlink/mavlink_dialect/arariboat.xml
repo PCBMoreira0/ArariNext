@@ -1,0 +1,721 @@
+<?xml version="1.0"?>
+<mavlink>
+  <version>3</version>
+  <enums>
+
+    <enum name="MAV_COMPONENT">
+      <description>Component ids (values) for the different types and instances of onboard hardware/software that might make up a MAVLink system (autopilot, cameras, servos, GPS systems, avoidance systems etc.).
+      Components must use the appropriate ID in their source address when sending messages. Components can also use IDs to determine if they are the intended recipient of an incoming message. The MAV_COMP_ID_ALL value is used to indicate messages that must be processed by all components.
+      When creating new entries, components that can have multiple instances (e.g. cameras, servos etc.) should be allocated sequential values. An appropriate number of values should be left free after these components to allow the number of instances to be expanded.</description>
+      <entry value="0" name="MAV_COMP_ID_ALL">
+        <description>Target id (target_component) used to broadcast messages to all components of the receiving system. Components should attempt to process messages with this component ID and forward to components on any other interfaces. Note: This is not a valid *source* component id for a message.</description>
+      </entry>
+      <entry value="1" name="MAV_COMP_ID_RADIO_915">
+        <description>TTGO Lora Radio(100mW)</description>
+      </entry>
+      <entry value="2" name="MAV_COMP_ID_RADIO_433">
+        <description>EByte Lora Radio(2W)</description>
+      </entry>
+      <entry value="3" name="MAV_COMP_ID_INTERNET">
+        <description>Message sent via internet</description>
+      </entry>
+    </enum>
+
+    <enum name="MPPT_BATTERY_STATUS">
+      <description>Represents the status of the battery. Derived from input register 3200.</description>
+      <entry value="0" name="MPPT_STATUS_NORMAL">
+        <description>All monitored parameters are normal. For battery (ID=3200): Voltage Normal (D3-D0=00H), Temp Normal (D7-D4=00H), Internal Resistance Normal (D8=0), Rated Voltage ID Normal (D15=0).</description>
+      </entry>
+      <entry value="1" name="MPPT_STATUS_OVERVOLTAGE">
+        <description>Battery overvoltage detected (e.g., ID=3200, D3-D0 = 01H).</description>
+      </entry>
+      <entry value="2" name="MPPT_STATUS_UNDERVOLTAGE">
+        <description>Battery undervoltage detected (e.g., ID=3200, D3-D0 = 02H).</description>
+      </entry>
+      <entry value="3" name="MPPT_STATUS_VOLTAGE_LOW_VOLT_DISCONNECT">
+        <description>Battery low voltage disconnect activated (e.g., ID=3200, D3-D0 = 03H).</description>
+      </entry>
+      <entry value="4" name="MPPT_STATUS_VOLTAGE_FAULT">
+        <description>A general battery voltage fault detected (e.g., ID=3200, D3-D0 = 04H).</description>
+      </entry>
+      <entry value="5" name="MPPT_STATUS_TEMP_OVER">
+        <description>Over temperature detected (e.g., ID=3200, D7-D4 = 01H).</description>
+      </entry>
+      <entry value="6" name="MPPT_STATUS_TEMP_LOW">
+        <description>Low temperature detected (e.g., ID=3200, D7-D4 = 02H).</description>
+      </entry>
+      <entry value="7" name="MPPT_STATUS_INTERNAL_RESISTANCE_ABNORMAL">
+        <description>Battery internal resistance is abnormal (e.g., ID=3200, D8 = 1).</description>
+      </entry>
+      <entry value="8" name="MPPT_STATUS_RATED_VOLTAGE_ID_WRONG">
+        <description>Wrong identification for rated voltage (e.g., ID=3200, D15 = 1).</description>
+      </entry>
+      <entry value="255" name="MPPT_STATUS_UNKNOWN">
+        <description>The status is unknown or not yet determined.</description>
+      </entry>
+    </enum>
+
+    <enum name="MPPT_CHARGING_EQUIPMENT_STATUS">
+      <description>Represents the primary status of the charging equipment. Derived by interpreting bits in input register 3201. The reported status may depend on the priority logic implemented in the monitoring software if multiple conditions are present.</description>
+
+      <entry value="0" name="MPPT_CHARGING_STATUS_RUNNING_STANDBY">
+        <description>Equipment is running mode, else standby (register 3201: D0=1 = running). Typically implies no active charging and no faults.</description>
+      </entry>
+      <entry value="1" name="MPPT_CHARGING_STATUS_NORMAL_FAULT">
+        <description>Equipment has detected a fault (D1=1=Fault)</description>
+      </entry>
+      <entry value="2" name="MPPT_CHARGING_STATUS_FLOAT">
+        <description>Equipment is in float charging mode (register 3201: D0=1, D1=0 (No Fault), D3-D2=01H (Float), and D15-D14=00H (Input Volt Normal)).</description>
+      </entry>
+      <entry value="3" name="MPPT_CHARGING_STATUS_BOOST">
+        <description>Equipment is in boost charging mode (register 3201: D0=1, D1=0 (No Fault), D3-D2=02H (Boost), and D15-D14=00H (Input Volt Normal)).</description>
+      </entry>
+      <entry value="4" name="MPPT_CHARGING_STATUS_EQUALIZATION">
+        <description>Equipment is in equalization charging mode (register 3201: D0=1, D1=0 (No Fault), D3-D2=03H (Equalization), and D15-D14=00H (Input Volt Normal)).</description>
+      </entry>
+      <entry value="5" name="MPPT_CHARGING_INPUT_VOLTAGE_NONE">
+        <description>No power connected to input (register 3201: D15-D14=01H). Equipment may be off or in a pre-start state.</description>
+      </entry>
+      <entry value="6" name="MPPT_CHARGING_INPUT_VOLTAGE_HIGH">
+        <description>Input voltage is too high (register 3201: D15-D14=02H). This may lead to a fault condition (D1=1).</description>
+      </entry>
+      <entry value="7" name="MPPT_CHARGING_INPUT_VOLTAGE_ERROR">
+        <description>General input voltage error detected (register 3201: D15-D14=03H). This may lead to a fault condition (D1=1).</description>
+      </entry>
+      <entry value="8" name="MPPT_CHARGING_FAULT_PV_SHORT">
+        <description>PV input short circuit detected (register 3201: D4=1. Typically, D1=1 will also be set).</description>
+      </entry>
+      <entry value="9" name="MPPT_CHARGING_FAULT_LOAD_SIDE">
+        <description>Fault on the load side, such as load over current (D9=1), load short circuit (D8=1), or load MOSFET short (D7=1) (register 3201. Typically, D1=1 will also be set).</description>
+      </entry>
+      <entry value="10" name="MPPT_CHARGING_FAULT_INPUT_OVERCURRENT">
+        <description>Input over current detected (register 3201: D10=1. Typically, D1=1 will also be set).</description>
+      </entry>
+      <entry value="11" name="MPPT_CHARGING_FAULT_MOSFET_SHORT">
+        <description>Internal MOSFET short circuit detected (Charging MOSFET D13=1, Charging or Anti-reverse MOSFET D12=1, or Anti-reverse MOSFET D11=1) (register 3201. Typically, D1=1 will also be set).</description>
+      </entry>
+      <entry value="12" name="MPPT_CHARGING_FAULT_SYSTEM">
+        <description>A general system fault is active (register 3201: D1=1), not covered by other more specific fault entries in this enum.</description>
+      </entry>
+      <entry value="13" name="MPPT_CHARGING_STATUS_NO_CHARGING">
+        <description>Equipment is running but not actively charging (register 3201: D0=1, D1=0 (No Fault), D3-D2=00H (No Charging), and D15-D14=00H (Input Volt Normal)).</description>
+      </entry>
+      <entry value="255" name="MPPT_CHARGING_STATUS_UNKNOWN">
+        <description>The charging equipment status is unknown or not yet determined.</description>
+      </entry>
+    </enum>
+
+    <enum name="BMS_CHARGE_DISCHARGE_STATUS_FLAGS" bitmask="true">
+      <description>
+        Flags to describe the charge/discharge status of a battery system, designed to be packed into a single byte.
+        The status is composed of three parts:
+        1. Operational State (2 bits, bits 0-1): Indicates if the system is stationary, charging, or discharging.
+           - 0 (00b): Stationary
+           - 1 (01b): Charging
+           - 2 (10b): Discharging
+           - 3 (11b): Reserved for future use.
+        2. Charge MOSFET State (1 bit, bit 2): Indicates if the charge MOSFET is ON (1) or OFF (0).
+        3. Discharge MOSFET State (1 bit, bit 3): Indicates if the discharge MOSFET is ON (1) or OFF (0).
+
+        The enum entries provide values that can be ORed together to form the complete status byte.
+        For example, to represent 'Charging' with 'Charge MOS ON' and 'Discharge MOS OFF':
+        (CHARGE_DISCHARGE_STATE_CHARGING | CHARGE_DISCHARGE_CHARGE_MOS_ON)
+        This would result in a value of (1 | 4) = 5.
+
+        To decode:
+        - state = value and 0x03;
+        - charge_mos_on = (value and CHARGE_DISCHARGE_CHARGE_MOS_ON) != 0
+        - discharge_mos_on = (value and CHARGE_DISCHARGE_DISCHARGE_MOS_ON) != 0
+      </description>
+
+      <entry value="1" name="CHARGE_DISCHARGE_STATE_STATIONARY">
+        <description>Operational state is Stationary (neither charging nor discharging). This value (00b) occupies bits 0-1.</description>
+      </entry>
+      <entry value="2" name="CHARGE_DISCHARGE_STATE_CHARGING">
+        <description>Operational state is Charging. This value (01b) occupies bits 0-1.</description>
+      </entry>
+      <entry value="4" name="CHARGE_DISCHARGE_STATE_DISCHARGING">
+        <description>Operational state is Discharging. This value (10b) occupies bits 0-1.</description>
+      </entry>
+      <entry value="8" name="CHARGE_DISCHARGE_CHARGE_MOS_ON"> <description>Charge MOSFET is ON. This flag occupies bit 2. If this flag is not set, Charge MOS is OFF.</description>
+      </entry>
+      <entry value="16" name="CHARGE_DISCHARGE_DISCHARGE_MOS_ON"> <description>Discharge MOSFET is ON. This flag occupies bit 3. If this flag is not set, Discharge MOS is OFF.</description>
+      </entry>
+    </enum>
+
+  <!-- 
+    MAVLink enums for the Daly BMS "Battery failure status" message (Data ID 0x98).
+    The failure status is spread across multiple bytes, where each bit indicates a specific fault.
+    Each byte of flags gets its own MAVLink enum with bitmask="true".
+    Byte 7 of the original message is a "Fault code" and should be handled as a separate
+    uint8_t field in the MAVLink message, not as part of these bitmask enums.
+  -->
+    <enum name="DALY_FAILURE_BYTE0_VOLTAGE_FLAGS" bitmask="true">
+      <description>Flags for Byte 0 of the Daly BMS failure status: Voltage-related failures.</description>
+      <entry value="1" name="DALY_FAILURE_CELL_VOLT_HIGH_LVL1">
+        <description>Cell voltage high level 1 alarm.</description>
+      </entry>
+      <entry value="2" name="DALY_FAILURE_CELL_VOLT_HIGH_LVL2">
+        <description>Cell voltage high level 2 alarm.</description>
+      </entry>
+      <entry value="4" name="DALY_FAILURE_CELL_VOLT_LOW_LVL1">
+        <description>Cell voltage low level 1 alarm.</description>
+      </entry>
+      <entry value="8" name="DALY_FAILURE_CELL_VOLT_LOW_LVL2">
+        <description>Cell voltage low level 2 alarm.</description>
+      </entry>
+      <entry value="16" name="DALY_FAILURE_SUM_VOLT_HIGH_LVL1">
+        <description>Sum voltage high level 1 alarm.</description>
+      </entry>
+      <entry value="32" name="DALY_FAILURE_SUM_VOLT_HIGH_LVL2">
+        <description>Sum voltage high level 2 alarm.</description>
+      </entry>
+      <entry value="64" name="DALY_FAILURE_SUM_VOLT_LOW_LVL1">
+        <description>Sum voltage low level 1 alarm.</description>
+      </entry>
+      <entry value="128" name="DALY_FAILURE_SUM_VOLT_LOW_LVL2">
+        <description>Sum voltage low level 2 alarm.</description>
+      </entry>
+    </enum>
+
+    <enum name="DALY_FAILURE_BYTE1_TEMP_FLAGS" bitmask="true">
+      <description>Flags for Byte 1 of the Daly BMS failure status: Temperature-related failures.</description>
+      <entry value="1" name="DALY_FAILURE_CHG_TEMP_HIGH_LVL1">
+        <description>Charge temperature high level 1 alarm.</description>
+      </entry>
+      <entry value="2" name="DALY_FAILURE_CHG_TEMP_HIGH_LVL2">
+        <description>Charge temperature high level 2 alarm.</description>
+      </entry>
+      <entry value="4" name="DALY_FAILURE_CHG_TEMP_LOW_LVL1">
+        <description>Charge temperature low level 1 alarm.</description>
+      </entry>
+      <entry value="8" name="DALY_FAILURE_CHG_TEMP_LOW_LVL2">
+        <description>Charge temperature low level 2 alarm.</description>
+      </entry>
+      <entry value="16" name="DALY_FAILURE_DISCHG_TEMP_HIGH_LVL1">
+        <description>Discharge temperature high level 1 alarm.</description>
+      </entry>
+      <entry value="32" name="DALY_FAILURE_DISCHG_TEMP_HIGH_LVL2">
+        <description>Discharge temperature high level 2 alarm.</description>
+      </entry>
+      <entry value="64" name="DALY_FAILURE_DISCHG_TEMP_LOW_LVL1">
+        <description>Discharge temperature low level 1 alarm.</description>
+      </entry>
+      <entry value="128" name="DALY_FAILURE_DISCHG_TEMP_LOW_LVL2">
+        <description>Discharge temperature low level 2 alarm.</description>
+      </entry>
+    </enum>
+
+    <enum name="DALY_FAILURE_BYTE2_CURRENT_SOC_FLAGS" bitmask="true">
+      <description>Flags for Byte 2 of the Daly BMS failure status: Current and SOC related failures.</description>
+      <entry value="1" name="DALY_FAILURE_CHG_OVERCURRENT_LVL1">
+        <description>Charge overcurrent level 1 alarm.</description>
+      </entry>
+      <entry value="2" name="DALY_FAILURE_CHG_OVERCURRENT_LVL2">
+        <description>Charge overcurrent level 2 alarm.</description>
+      </entry>
+      <entry value="4" name="DALY_FAILURE_DISCHG_OVERCURRENT_LVL1">
+        <description>Discharge overcurrent level 1 alarm.</description>
+      </entry>
+      <entry value="8" name="DALY_FAILURE_DISCHG_OVERCURRENT_LVL2">
+        <description>Discharge overcurrent level 2 alarm.</description>
+      </entry>
+      <entry value="16" name="DALY_FAILURE_SOC_HIGH_LVL1">
+        <description>SOC high level 1 alarm.</description>
+      </entry>
+      <entry value="32" name="DALY_FAILURE_SOC_HIGH_LVL2">
+        <description>SOC high level 2 alarm.</description>
+      </entry>
+      <entry value="64" name="DALY_FAILURE_SOC_LOW_LVL1">
+        <description>SOC low level 1 alarm.</description>
+      </entry>
+      <entry value="128" name="DALY_FAILURE_SOC_LOW_LVL2">
+        <description>SOC low level 2 alarm.</description>
+      </entry>
+    </enum>
+
+    <enum name="DALY_FAILURE_BYTE3_DIFFERENTIAL_FLAGS" bitmask="true">
+      <description>Flags for Byte 3 of the Daly BMS failure status: Differential voltage/temperature failures. Bits 4-7 are reserved.</description>
+      <entry value="1" name="DALY_FAILURE_DIFF_VOLT_LVL1">
+        <description>Differential voltage level 1 alarm.</description>
+      </entry>
+      <entry value="2" name="DALY_FAILURE_DIFF_VOLT_LVL2">
+        <description>Differential voltage level 2 alarm.</description>
+      </entry>
+      <entry value="4" name="DALY_FAILURE_DIFF_TEMP_LVL1">
+        <description>Differential temperature level 1 alarm.</description>
+      </entry>
+      <entry value="8" name="DALY_FAILURE_DIFF_TEMP_LVL2">
+        <description>Differential temperature level 2 alarm.</description>
+      </entry>
+      </enum>
+
+    <enum name="DALY_FAILURE_BYTE4_MOSFET_SENSOR_FLAGS" bitmask="true">
+      <description>Flags for Byte 4 of the Daly BMS failure status: MOSFET and related sensor failures.</description>
+      <entry value="1" name="DALY_FAILURE_CHG_MOS_TEMP_HIGH_ALARM">
+        <description>Charge MOS temperature high alarm.</description>
+      </entry>
+      <entry value="2" name="DALY_FAILURE_DISCHG_MOS_TEMP_HIGH_ALARM">
+        <description>Discharge MOS temperature high alarm.</description>
+      </entry>
+      <entry value="4" name="DALY_FAILURE_CHG_MOS_TEMP_SENSOR_ERR">
+        <description>Charge MOS temperature sensor error.</description>
+      </entry>
+      <entry value="8" name="DALY_FAILURE_DISCHG_MOS_TEMP_SENSOR_ERR">
+        <description>Discharge MOS temperature sensor error.</description>
+      </entry>
+      <entry value="16" name="DALY_FAILURE_CHG_MOS_ADHESION_ERR">
+        <description>Charge MOS adhesion error.</description>
+      </entry>
+      <entry value="32" name="DALY_FAILURE_DISCHG_MOS_ADHESION_ERR">
+        <description>Discharge MOS adhesion error.</description>
+      </entry>
+      <entry value="64" name="DALY_FAILURE_CHG_MOS_OPEN_CIRCUIT_ERR">
+        <description>Charge MOS open circuit error.</description>
+      </entry>
+      <entry value="128" name="DALY_FAILURE_DISCHG_MOS_OPEN_CIRCUIT_ERR">
+        <description>Discharge MOS open circuit error (Corrected from 'Discrg' in PDF).</description>
+      </entry>
+    </enum>
+
+    <enum name="DALY_FAILURE_BYTE5_SYSTEM_COMPONENT_FLAGS" bitmask="true">
+      <description>Flags for Byte 5 of the Daly BMS failure status: System/Component failures.</description>
+      <entry value="1" name="DALY_FAILURE_AFE_COLLECT_CHIP_ERR">
+        <description>AFE collect chip error.</description>
+      </entry>
+      <entry value="2" name="DALY_FAILURE_VOLTAGE_COLLECT_DROPPED">
+        <description>Voltage collect dropped.</description>
+      </entry>
+      <entry value="4" name="DALY_FAILURE_CELL_TEMP_SENSOR_ERR">
+        <description>Cell temperature sensor error.</description>
+      </entry>
+      <entry value="8" name="DALY_FAILURE_EEPROM_ERR">
+        <description>EEPROM error.</description>
+      </entry>
+      <entry value="16" name="DALY_FAILURE_RTC_ERR">
+        <description>RTC error.</description>
+      </entry>
+      <entry value="32" name="DALY_FAILURE_PRECHARGE_FAILURE">
+        <description>Precharge failure.</description>
+      </entry>
+      <entry value="64" name="DALY_FAILURE_COMMUNICATION_FAILURE">
+        <description>Communication failure (external).</description>
+      </entry>
+      <entry value="128" name="DALY_FAILURE_INTERNAL_COMM_FAILURE">
+        <description>Internal communication failure.</description>
+      </entry>
+    </enum>
+
+    <enum name="DALY_FAILURE_BYTE6_OTHER_FAULTS_FLAGS" bitmask="true">
+      <description>Flags for Byte 6 of the Daly BMS failure status: Other faults. Bits 4-7 are reserved.</description>
+      <entry value="1" name="DALY_FAILURE_CURRENT_MODULE_FAULT">
+        <description>Current module fault.</description>
+      </entry>
+      <entry value="2" name="DALY_FAILURE_SUM_VOLTAGE_DETECT_FAULT">
+        <description>Sum voltage detect fault.</description>
+      </entry>
+      <entry value="4" name="DALY_FAILURE_SHORT_CIRCUIT_PROTECT_FAULT">
+        <description>Short circuit protect fault.</description>
+      </entry>
+      <entry value="8" name="DALY_FAILURE_LOW_VOLT_FORBIDDEN_CHG_FAULT">
+        <description>Low voltage forbidden charge fault.</description>
+      </entry>
+      </enum>
+
+    <enum name="EZKONTROL_STATUS_GEAR">
+      <description>ESC Gear status derived from bits 2-0 from message II, byte 3</description>
+      <entry value="0" name="EZKONTROL_GEAR_NO">
+        <description>Gear: NO (Neutral/No Gear)</description>
+      </entry>
+      <entry value="1" name="EZKONTROL_GEAR_R">
+        <description>Gear: R (Reverse)</description>
+      </entry>
+      <entry value="2" name="EZKONTROL_GEAR_N">
+        <description>Gear: N (Neutral)</description>
+      </entry>
+      <entry value="3" name="EZKONTROL_GEAR_D1">
+        <description>Gear: D1 (Drive 1)</description>
+      </entry>
+      <entry value="4" name="EZKONTROL_GEAR_D2">
+        <description>Gear: D2 (Drive 2)</description>
+      </entry>
+      <entry value="5" name="EZKONTROL_GEAR_D3">
+        <description>Gear: D3 (Drive 3)</description>
+      </entry>
+      <entry value="6" name="EZKONTROL_GEAR_S">
+        <description>Gear: S (Sport/Special)</description>
+      </entry>
+      <entry value="7" name="EZKONTROL_GEAR_P">
+        <description>Gear: P (Park)</description>
+      </entry>
+    </enum>
+
+    <enum name="EZKONTROL_STATUS_OPERATION_MODE">
+      <description>ESC operation mode derived from bits 6-4 from message II, byte 3</description>
+      <entry value="0" name="EZKONTROL_OP_MODE_STOP">
+        <description>Operation Mode: Stop</description>
+      </entry>
+      <entry value="1" name="EZKONTROL_OP_MODE_DRIVE">
+        <description>Operation Mode: Drive</description>
+      </entry>
+      <entry value="2" name="EZKONTROL_OP_MODE_CRUISE">
+        <description>Operation Mode: Cruise</description>
+      </entry>
+      <entry value="3" name="EZKONTROL_OP_MODE_EBS">
+        <description>Operation Mode: EBS (Electronic Braking System)</description>
+      </entry>
+      <entry value="4" name="EZKONTROL_OP_MODE_HOLD">
+        <description>Operation Mode: Hold</description>
+      </entry>
+      </enum>
+
+    <enum name="EZKONTROL_STATUS_BYTE3_FLAGS" bitmask="true">
+      <description>Status flags from Byte 3 of EZkontrol MCU Message II (Brake, DC Contactor).</description>
+      <entry value="8" name="EZKONTROL_STATUS_BRAKE_ACTIVE"> <description>Brake is active.</description>
+      </entry>
+      <entry value="128" name="EZKONTROL_STATUS_DC_CONTACTOR_ON"> <description>DC Contactor is ON.</description>
+      </entry>
+    </enum>
+
+    <enum name="EZKONTROL_ERROR_BYTE4_FLAGS" bitmask="true">
+      <description>Error flags from Byte 4 of EZkontrol MCU Message II.</description>
+      <entry value="1" name="EZKONTROL_ERROR_OVERCURRENT"> <description>Error: Overcurrent.</description>
+      </entry>
+      <entry value="2" name="EZKONTROL_ERROR_OVERLOAD"> <description>Error: Overload.</description>
+      </entry>
+      <entry value="4" name="EZKONTROL_ERROR_OVERVOLTAGE"> <description>Error: Overvoltage.</description>
+      </entry>
+      <entry value="8" name="EZKONTROL_ERROR_UNDERVOLTAGE"> <description>Error: Undervoltage.</description>
+      </entry>
+      <entry value="16" name="EZKONTROL_ERROR_CONTROLLER_OVERHEAT"> <description>Error: Controller Overheat.</description>
+      </entry>
+      <entry value="32" name="EZKONTROL_ERROR_MOTOR_OVERHEAT"> <description>Error: Motor Overheat.</description>
+      </entry>
+      <entry value="64" name="EZKONTROL_ERROR_MOTOR_STALLED"> <description>Error: Motor Stalled.</description>
+      </entry>
+      <entry value="128" name="EZKONTROL_ERROR_MOTOR_OUT_OF_PHASE"> <description>Error: Motor Out of phase.</description>
+      </entry>
+    </enum>
+
+    <enum name="EZKONTROL_ERROR_BYTE5_FLAGS" bitmask="true">
+      <description>Error flags from Byte 5 of EZkontrol MCU Message II.</description>
+      <entry value="1" name="EZKONTROL_ERROR_MOTOR_SENSOR"> <description>Error: Motor Sensor.</description>
+      </entry>
+      <entry value="2" name="EZKONTROL_ERROR_MOTOR_AUX_SENSOR"> <description>Error: Motor AUX Sensor.</description>
+      </entry>
+      <entry value="4" name="EZKONTROL_ERROR_ENCODER_MISALIGNED"> <description>Error: Encoder Misaligned.</description>
+      </entry>
+      <entry value="8" name="EZKONTROL_ERROR_ANTI_RUNAWAY_ENGAGED"> <description>Error: Anti-Runaway Engaged.</description>
+      </entry>
+      <entry value="16" name="EZKONTROL_ERROR_MAIN_ACCELERATOR"> <description>Error: Main Accelerator.</description>
+      </entry>
+      <entry value="32" name="EZKONTROL_ERROR_AUX_ACCELERATOR"> <description>Error: AUX Accelerator.</description>
+      </entry>
+      <entry value="64" name="EZKONTROL_ERROR_PRE_CHARGE"> <description>Error: Pre-charge.</description>
+      </entry>
+      <entry value="128" name="EZKONTROL_ERROR_DC_CONTACTOR_FAULT"> <description>Error: DC Contactor fault (distinct from status).</description>
+      </entry>
+    </enum>
+
+    <enum name="EZKONTROL_ERROR_BYTE6_FLAGS" bitmask="true">
+      <description>Error flags from Byte 6 of EZkontrol MCU Message II.</description>
+      <entry value="1" name="EZKONTROL_ERROR_POWER_VALVE"> <description>Error: Power valve.</description>
+      </entry>
+      <entry value="2" name="EZKONTROL_ERROR_CURRENT_SENSOR"> <description>Error: Current Sensor.</description>
+      </entry>
+      <entry value="4" name="EZKONTROL_ERROR_AUTO_TUNE"> <description>Error: Auto-tune.</description>
+      </entry>
+      <entry value="8" name="EZKONTROL_ERROR_RS485"> <description>Error: RS485 communication.</description>
+      </entry>
+      <entry value="16" name="EZKONTROL_ERROR_CAN_COMM"> <description>Error: CAN communication.</description>
+      </entry>
+      <entry value="32" name="EZKONTROL_ERROR_SOFTWARE"> <description>Error: Software.</description>
+      </entry>
+      </enum>
+
+    <enum name="MAV_PARAM_TYPE">
+      <description>Specifies the datatype of a MAVLink parameter.</description>
+      <entry value="1" name="MAV_PARAM_TYPE_UINT8">
+        <description>8-bit unsigned integer</description>
+      </entry>
+      <entry value="2" name="MAV_PARAM_TYPE_INT8">
+        <description>8-bit signed integer</description>
+      </entry>
+      <entry value="3" name="MAV_PARAM_TYPE_UINT16">
+        <description>16-bit unsigned integer</description>
+      </entry>
+      <entry value="4" name="MAV_PARAM_TYPE_INT16">
+        <description>16-bit signed integer</description>
+      </entry>
+      <entry value="5" name="MAV_PARAM_TYPE_UINT32">
+        <description>32-bit unsigned integer</description>
+      </entry>
+      <entry value="6" name="MAV_PARAM_TYPE_INT32">
+        <description>32-bit signed integer</description>
+      </entry>
+      <entry value="7" name="MAV_PARAM_TYPE_UINT64">
+        <description>64-bit unsigned integer</description>
+      </entry>
+      <entry value="8" name="MAV_PARAM_TYPE_INT64">
+        <description>64-bit signed integer</description>
+      </entry>
+      <entry value="9" name="MAV_PARAM_TYPE_REAL32">
+        <description>32-bit floating-point</description>
+      </entry>
+      <entry value="10" name="MAV_PARAM_TYPE_REAL64">
+        <description>64-bit floating-point</description>
+      </entry>
+    </enum>
+
+    <enum name="MAV_SEVERITY">
+      <description>Indicates the severity level, generally used for status messages to indicate their relative urgency. Based on RFC-5424 using expanded definitions at: http://www.kiwisyslog.com/kb/info:-syslog-message-levels/.</description>
+      <entry value="0" name="MAV_SEVERITY_EMERGENCY">
+        <description>System is unusable. This is a "panic" condition.</description>
+      </entry>
+      <entry value="1" name="MAV_SEVERITY_ALERT">
+        <description>Action should be taken immediately. Indicates error in non-critical systems.</description>
+      </entry>
+      <entry value="2" name="MAV_SEVERITY_CRITICAL">
+        <description>Action must be taken immediately. Indicates failure in a primary system.</description>
+      </entry>
+      <entry value="3" name="MAV_SEVERITY_ERROR">
+        <description>Indicates an error in secondary/redundant systems.</description>
+      </entry>
+      <entry value="4" name="MAV_SEVERITY_WARNING">
+        <description>Indicates about a possible future error if this is not resolved within a given timeframe. Example would be a low battery warning.</description>
+      </entry>
+      <entry value="5" name="MAV_SEVERITY_NOTICE">
+        <description>An unusual event has occurred, though not an error condition. This should be investigated for the root cause.</description>
+      </entry>
+      <entry value="6" name="MAV_SEVERITY_INFO">
+        <description>Normal operational messages. Useful for logging. No action is required for these messages.</description>
+      </entry>
+      <entry value="7" name="MAV_SEVERITY_DEBUG">
+        <description>Useful non-operational messages that can assist in debugging. These should not occur during normal operation.</description>
+      </entry>
+    </enum>
+
+  </enums>
+
+  <messages>
+    <message id="1" name="INSTRUMENTATION">
+      <description>Instrumentation PCBs</description>
+      <field type="int16_t" name="battery_current" units ="cA"></field>
+      <field type="int16_t" name="motor_current_left" units="cA"></field>
+      <field type="int16_t" name="motor_current_right" units ="cA"></field>
+      <field type="int16_t" name="mppt_current" units ="cA"></field>
+      <field type="int16_t" name="auxiliary_battery_current" units ="cA"></field>
+      <field type="uint16_t" name="battery_voltage" units ="cV"></field>
+      <field type="uint16_t" name="auxiliary_battery_voltage" units ="cV"></field>
+      <field type="uint16_t" name="irradiance" units ="W/m^2"></field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="2" name ="TEMPERATURES">
+      <description> Temperature data for motor and MPPT.</description>
+      <field type="int16_t" name="temperature_battery_left" units="cdegC">Left side of battery pack</field>
+      <field type="int16_t" name="temperature_battery_right" units ="cdegC">Right side of battery pack</field>
+      <field type="int16_t" name="temperature_mppt_left" units ="cdegC">MPPT temperature on its left side.</field>
+      <field type="int16_t" name="temperature_mppt_right" units ="cdegC">MPPT temperature on its left side.</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+  
+    <message id="3" name="GPS">
+      <description></description>
+      <field type="int32_t" name="latitude" units="degE7"></field>
+      <field type="int32_t" name="longitude" units="degE7"></field>
+      <field type="uint16_t" name="speed" units="cm/s"></field>
+      <field type="uint8_t" name="course" units="deg">Direction of movement(not heading)</field>
+      <field type="uint8_t" name="heading" units="deg">Direction of the bow (source not from GPS, but from IMU)</field>
+      <field type="uint8_t" name="satellites_visible"></field>
+      <field type="uint8_t" name="hdop">Horizontal dilution of precision. Represents quality of GPS constellation. Values close to 1 are best. Above 5 is poor</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="4" name="MPPT">
+      <description>MPPT data fields</description>
+      <field type="uint16_t" name="pv_voltage" units ="cV">Solar array voltage,ID=3100</field>
+      <field type="int16_t" name="pv_current" units ="cV">Solar array current,ID=3101</field>
+      <field type="uint16_t" name="battery_voltage" units ="cV">Battery voltage,ID=3104</field>
+      <field type="int16_t" name="battery_current" units ="cA">Net battery current(positive=charging),ID=331B</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="5" name="MPPT_STATE">
+      <description>MPPT error codes</description>
+      <field type="uint16_t" name="battery_status" enum="MPPT_BATTERY_STATUS">Status of the battery,ID=3200.</field>
+      <field type="uint16_t" name="charging_equipment_status" enum="MPPT_CHARGING_EQUIPMENT_STATUS">Status of the MPPT,ID=3201.</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="6" name="BMS">
+      <description>Battery information.</description>
+      <field type="uint16_t[16]" name="voltages" units="mV">Voltage of each cell.</field>
+      <field type="int16_t[2]" name="temperatures" units="cdegC">Temperature of the battery</field>
+      <field type="int16_t" name="current_battery" units="dA">Battery current</field>
+      <field type="int16_t" name="state_of_charge" units="%">Remaining battery energy. Values: [0-100]</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="7" name="BMS_STATUS">
+      <description>
+        Daly BMS battery failure status (corresponds to original message 0x98).
+        Contains multiple bytes of failure flags and a final fault code.
+        Also includes temperatures and status bitfield of the battery management system (FET states, stationary, charging or discharging)
+      </description>
+      <field type="int16_t[2]" name="temperatures" units="cdegC">Temperature of the battery</field>
+      <field type="uint8_t" name="status" enum="BMS_CHARGE_DISCHARGE_STATUS_FLAGS">Charge/Discharge FET status and current charging status</field>
+      <field type="uint8_t" name="failure_flags_byte0" enum="DALY_FAILURE_BYTE0_VOLTAGE_FLAGS">Failure flags: Voltage related (Byte 0).</field>
+      <field type="uint8_t" name="failure_flags_byte1" enum="DALY_FAILURE_BYTE1_TEMP_FLAGS">Failure flags: Temperature related (Byte 1).</field>
+      <field type="uint8_t" name="failure_flags_byte2" enum="DALY_FAILURE_BYTE2_CURRENT_SOC_FLAGS">Failure flags: Current and SOC related (Byte 2).</field>
+      <field type="uint8_t" name="failure_flags_byte3" enum="DALY_FAILURE_BYTE3_DIFFERENTIAL_FLAGS">Failure flags: Differential V/T related (Byte 3).</field>
+      <field type="uint8_t" name="failure_flags_byte4" enum="DALY_FAILURE_BYTE4_MOSFET_SENSOR_FLAGS">Failure flags: MOSFET and sensor related (Byte 4).</field>
+      <field type="uint8_t" name="failure_flags_byte5" enum="DALY_FAILURE_BYTE5_SYSTEM_COMPONENT_FLAGS">Failure flags: System/Component related (Byte 5).</field>
+      <field type="uint8_t" name="failure_flags_byte6" enum="DALY_FAILURE_BYTE6_OTHER_FAULTS_FLAGS">Failure flags: Other faults (Byte 6).</field>
+      <field type="uint8_t" name="fault_code_byte7">Raw fault code (Byte 7 from original message).</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <!-- 
+      Accelerator Opening is intentionally sent here with a higher frequency
+    -->
+    <message id="8" name="EZKONTROL_MCU_METER_DATA_I">
+      <description>
+      Electrical data from EZkontrol ESC based on CAN Message I, including accelerator opening for higher frequency publishing.
+      Phase current is excluded because it updates too rapidly for low bandwidth links
+      </description>
+      <field type="uint16_t" name="bus_voltage" units="dV">0.1V/bit, offset= 0</field>
+      <field type="int16_t" name="bus_current" units="dA">0.1A/bit, offset= -32000</field>
+      <field type="int16_t" name="rpm" units="drpm/bit">0.1rpm/bit, offset= -32000</field>
+      <field type="uint8_t" name="accelerator_opening">1%/bit, throttle signal</field>
+      <field type="uint8_t" name="instance">0 for left motor, 1 for right motor</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <!-- 
+      Accelerator Opening (Byte 2) is intentionally omitted to be sent with a higher frequency on another message
+    -->
+    <message id="9" name="EZKONTROL_MCU_METER_DATA_II">
+      <description>Status data from EZkontrol ESC based on CAN Message II, excluding accelerator opening. Temperatures have an offset of -40 degrees Celsius.</description>
+      <field type="int8_t" name="controller_temperature">Controller temperature. Actual value = MAVLink value - 40. Unit: degC</field>
+      <field type="int8_t" name="motor_temperature">Motor temperature. Actual value = MAVLink value - 40. Unit: degC</field>
+      <field type="uint8_t" name="status">Gear, brake, operation mode and DC contactor.</field>
+      <field type="uint8_t" name="error_flags_byte4" enum="EZKONTROL_ERROR_BYTE4_FLAGS">Error flags from Byte 4.</field>
+      <field type="uint8_t" name="error_flags_byte5" enum="EZKONTROL_ERROR_BYTE5_FLAGS">Error flags from Byte 5.</field>
+      <field type="uint8_t" name="error_flags_byte6" enum="EZKONTROL_ERROR_BYTE6_FLAGS">Error flags from Byte 6.</field>
+      <field type="uint8_t" name="life_signal">Life signal counter derived from bits 7-4 from byte 7, msg II.</field>
+      <field type="uint8_t" name="instance">0 for left motor, 1 for right motor</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="10" name="PUMPS">
+      <description>State of bilge pumps.</description>
+      <field type="uint8_t" name="pump_states">Bitmask of pump states. Bit 0: Pump Left, Bit 1: Pump Right</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="11" name="ELETRONIC_PROPULSION">
+      <description>Data from eletronic controlled propulsion.</description>
+      <field type="uint16_t" name="helm_potentiometer" units="mV">Helm potenciometer value.</field>
+      <field type="uint16_t" name="throttle_left_potentiometer" units="mV">Left throttle potenciometer value.</field>
+      <field type="uint16_t" name="throttle_right_potentiometer" units="mV">Right throttle potenciometer value.</field>
+      <field type="uint8_t" name="state">Bit 0: OFF, Bit 1: ON</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="12" name="MPPT_STRINGS">
+      <description>Current data from each string.</description>
+      <field type="uint16_t" name="string_1" units="mA">Current from string 1</field>
+      <field type="uint16_t" name="string_2" units="mA">Current from string 2</field>
+      <field type="uint16_t" name="string_3" units="mA">Current from string 3</field>
+      <field type="uint16_t" name="string_4" units="mA">Current from string 4</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="20" name="PARAM_REQUEST_READ">
+      <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -&gt; value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also https://mavlink.io/en/services/parameter.html for a full documentation of QGroundControl and IMU code.</description>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="int16_t" name="param_index" invalid="-1">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
+    </message>
+
+    <!-- <message id="21" name="PARAM_REQUEST_LIST">
+      <description>Request all parameters of this component. After this request, all parameters are emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+    </message> -->
+
+    <message id="22" name="PARAM_VALUE">
+      <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Onboard parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+      <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
+      <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
+    </message>
+
+    <message id="23" name="PARAM_SET">
+      <description>Set a parameter value (write new value to permanent storage).
+        The receiving component should acknowledge the new parameter value by broadcasting a PARAM_VALUE message (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters). If the sending GCS did not receive a PARAM_VALUE within its timeout time, it should re-send the PARAM_SET message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.
+      </description>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Onboard parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+    </message>
+
+    <message id="109" name="RADIO_STATUS">
+      <description>Status generated by radio and injected into MAVLink stream.</description>
+      <field type="uint8_t" name="instance">Radio instance, 0 for primary radio, 1 for secondary radio.</field>
+      <field type="uint8_t" name="rssi" invalid="UINT8_MAX">Local (message sender) received signal strength indication in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.</field>
+      <field type="uint16_t" name="rxerrors">Count of radio packet receive errors (since boot).</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="251" name="NAMED_VALUE_FLOAT">
+      <description>Send a key-value pair as float. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="char[10]" name="name" instance="true">Name of the debug variable</field>
+      <field type="float" name="value">Floating point value</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="252" name="NAMED_VALUE_INT">
+      <description>Send a key-value pair as integer. The use of this message is discouraged for normal packets, but a quite efficient way for testing new messages and getting experimental debug output.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="char[10]" name="name" instance="true">Name of the debug variable</field>
+      <field type="int32_t" name="value">Signed integer value</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="253" name="STATUSTEXT">
+      <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
+      <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
+      <field type="char[50]" name="text">Status text message, without null termination character</field>
+      <extensions/>
+      <field type="uint16_t" name="id">Unique (opaque) identifier for this statustext message.  May be used to reassemble a logical long-statustext message from a sequence of chunks.  A value of zero indicates this is the only chunk in the sequence and the message can be emitted immediately.</field>
+      <field type="uint8_t" name="chunk_seq">This chunk's sequence number; indexing is from zero.  Any null character in the text field is taken to mean this was the last chunk.</field>
+      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
+      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
+    </message>
+
+    <message id="254" name="DEBUG">
+      <description>Send a debug value. The index is used to discriminate between values. These values show up in the plot of QGroundControl as DEBUG N.</description>
+      <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
+      <field type="uint8_t" name="ind">index of debug variable</field>
+      <field type="float" name="value">DEBUG value</field>
+    </message>
+
+  </messages>
+</mavlink>

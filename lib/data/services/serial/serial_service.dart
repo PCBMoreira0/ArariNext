@@ -56,7 +56,6 @@ class SerialService implements ISerialService {
   /// 
   /// Recebe um [error] como parâmetro
   void handleError(dynamic error){
-    print(error);
     _errorController.add(error);
   }
 

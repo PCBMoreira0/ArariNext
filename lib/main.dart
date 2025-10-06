@@ -9,7 +9,6 @@ import 'package:arari_next/routing/router.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
 
   SettingsManager settingsManager = await SettingsManager.create();
