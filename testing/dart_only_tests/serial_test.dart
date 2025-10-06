@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:arari_next/data/services/serial/serial_connector_refactor.dart';
+import 'package:arari_next/data/services/serial/serial_connector.dart';
 
 
 void main() {

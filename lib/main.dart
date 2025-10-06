@@ -1,7 +1,7 @@
 import 'package:arari_next/config/settings_manager.dart';
 import 'package:arari_next/data/repositories/mavlink_repository.dart';
 import 'package:arari_next/data/repositories/packet_repository.dart';
-import 'package:arari_next/data/services/serial/serial_connector_refactor.dart';
+import 'package:arari_next/data/services/serial/serial_connector.dart';
 import 'package:arari_next/data/services/serial/serial_service.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:flutter/material.dart';

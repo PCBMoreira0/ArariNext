@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:arari_next/config/settings_manager.dart';
-import 'package:arari_next/data/services/serial/serial_connector_refactor.dart';
+import 'package:arari_next/data/services/serial/serial_connector.dart';
 import 'package:arari_next/data/services/serial/serial_service_interface.dart';
 import 'package:libserialport/libserialport.dart';
 
