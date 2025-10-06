@@ -7,7 +7,7 @@ final class BMSData implements IBoatData{
   final int stateOfCharge;
   final double totalVoltage;
 
-  BMSData({required List<int> voltagesMillivolts, required List<int> temperatures, required this.batteryCurrent, required this.stateOfCharge}) : cellsVoltagesMillivolts = List.unmodifiable(voltagesMillivolts), temperatures = List.unmodifiable(temperatures), totalVoltage = voltagesMillivolts.fold(0, (previousValue, value) => previousValue + value);  
+  BMSData({required List<int> voltagesMillivolts, required List<int> temperatures, required this.batteryCurrent, required this.stateOfCharge}) : cellsVoltagesMillivolts = List.unmodifiable(voltagesMillivolts), temperatures = List.unmodifiable(temperatures), totalVoltage = (voltagesMillivolts.fold(0, (previousValue, value) => previousValue + value) / 1000.0);  
   factory BMSData.empty() {
     return BMSData(voltagesMillivolts: List.empty(), temperatures: List.empty(), batteryCurrent: 0, stateOfCharge: 0);
   }
