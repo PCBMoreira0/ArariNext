@@ -38,7 +38,7 @@ class _ArariNextAppState extends State<ArariNextApp> {
     return MaterialApp(
       title: 'MavBoia',
       theme: ThemeData(primarySwatch: Colors.blue),
-      // Initially display FirstPage
+      // Carrega a pagina inicial.
       initialRoute: Routes.dashboard,
       onGenerateRoute: RouteGenerator.generateRoute,
     );

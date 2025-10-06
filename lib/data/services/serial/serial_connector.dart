@@ -60,7 +60,7 @@ class SerialConnector {
   }
   
   
-  // setting the baud rate 
+  // setando a baud rate
 
   void setBaudRate(int baud) {
 
@@ -80,13 +80,11 @@ class SerialConnector {
     // lista de portas existentes.
     List<SerialPortData> readyPortList = []; 
 
-    // checa se a plataforma é linux e aplica patch
-    if (Platform.isLinux || Platform.isMacOS) { availablePorts = availablePorts.sublist(1);}
-
     // para cada campo de endereço de porta checa se existem dados, se sim, os escreve nos campos, se não escreve N/D(Não Definido) nos campos, após isso adicona a porta a lista.
       for (final adress in availablePorts) {
-      final port = SerialPort(adress);
-      readyPortList.add(SerialPortData(
+      try {
+        final port = SerialPort(adress);
+        readyPortList.add(SerialPortData(
         adress,
         port.address,
         port.description ?? 'N/D',
@@ -99,7 +97,10 @@ class SerialConnector {
         port.productName ?? 'N/D',
         port.serialNumber ?? 'N/D',
         port.macAddress ?? 'N/D'
-      ));
+        ));
+      } catch (e) {
+        // todo errror handling
+      }
     }
     
 

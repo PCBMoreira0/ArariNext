@@ -34,7 +34,6 @@ class ConsoleViewModel with ChangeNotifier {
   void log (LogType logtype, String contents) {
     ConsoleLog info = ConsoleLog(type: logtype, datetime: DateTime.now(), contents: contents);
     _consoleCache.add(info);
-    print("Dentro do cache: ${logs.first.contents}");
     notifyListeners();
   }
 
