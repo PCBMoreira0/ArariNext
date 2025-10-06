@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:arari_next/data/services/serial/serial.dart';
+import 'package:arari_next/data/services/serial/serial_connector_refactor.dart';
 
 
 void main() {
   SerialConnector con = SerialConnector();
-  print(con.readPorts());
-  con.selectPort(con.readPorts().first);
+  print(SerialConnector.readPorts());
+  con.selectPort(SerialConnector.readPorts().first);
   con.setBaudRate(115200);
   con.open();
 
