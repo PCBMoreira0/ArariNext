@@ -19,7 +19,7 @@ class MavlinkToModels {
   }
 
   static BMSData toBms(Bms bms){
-    return BMSData(voltagesMillivolts: bms.voltages, temperatures: bms.temperatures, batteryCurrent: bms.currentBattery / 10.0, stateOfCharge: bms.stateOfCharge);
+    return BMSData(voltagesMillivolts: bms.voltages, temperatures: bms.temperatures, batteryCurrent: bms.currentBattery / 10.0, stateOfCharge: bms.stateOfCharge / 10.0);
   }
 
   static BMSStatusData toBmsStatus(BmsStatus bmsStatus){

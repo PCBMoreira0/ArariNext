@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:arari_next/data/repositories/packet_repository.dart';
 import 'package:arari_next/domain/models/bms_data.dart';
+import 'package:arari_next/domain/models/iboat_data.dart';
 import 'package:arari_next/domain/models/instrumentation_data.dart';
 import 'package:arari_next/domain/models/motor_eletrical_data.dart';
 import 'package:arari_next/domain/models/motor_state_data.dart';
 import 'package:arari_next/domain/models/mppt_data.dart';
 import 'package:arari_next/domain/models/temperature_data.dart';
-import 'package:arari_next/utils/mavlink/mavlink_dialect/arariboat.dart';
 import 'package:flutter/widgets.dart';
 
 class DashboardViewmodel {
@@ -35,12 +35,37 @@ class DashboardViewmodel {
   
 
   DashboardViewmodel({required PacketRepository repository}) : _packetRepository = repository {
-    bmsStream = _packetRepository.bmsData.listen(updateBMS);
-    motorStream = _packetRepository.motorEletricalData.listen(updateMotor);
-    motorStateStream = _packetRepository.motorStateData.listen(updateMotorState);
-    instrumentationStream = _packetRepository.instrumentationData.listen(updateInstrumentation);
-    temperatureStream = _packetRepository.temperatureData.listen(updateTemperature);
-    mpptStream = _packetRepository.mpptData.listen(updateMppt);
+  _packetRepository.data.listen((data) => _processModel(data));
+  }
+
+  void _processModel(IBoatData? data){
+    if(data == null) return;
+
+    switch(data){
+      case BMSData bms:
+        updateBMS(bms);
+        break;
+      
+      case MotorEletricalData motor:
+        updateMotor(motor);
+        break;
+
+      case MotorStateData motorState:
+        updateMotorState(motorState);
+        break;
+
+      case InstrumentationData inst:
+        updateInstrumentation(inst);
+        break;
+
+      case TemperatureData temp:
+        updateTemperature(temp);
+        break;
+      
+      case MPPTData mppt:
+        updateMppt(mppt);
+        break;
+    }
   }
 
   void updateBMS(BMSData data){

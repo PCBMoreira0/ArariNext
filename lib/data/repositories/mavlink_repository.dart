@@ -3,58 +3,16 @@ import 'dart:async';
 import 'package:arari_next/data/repositories/packet_repository.dart';
 import 'package:arari_next/data/services/serial/serial_service.dart';
 import 'package:arari_next/domain/models/bms_data.dart';
-import 'package:arari_next/domain/models/bms_status_data.dart';
-import 'package:arari_next/domain/models/gps_data.dart';
-import 'package:arari_next/domain/models/instrumentation_data.dart';
-import 'package:arari_next/domain/models/motor_eletrical_data.dart';
-import 'package:arari_next/domain/models/motor_state_data.dart';
-import 'package:arari_next/domain/models/mppt_data.dart';
-import 'package:arari_next/domain/models/mppt_state_data.dart';
-import 'package:arari_next/domain/models/pump_data.dart';
-import 'package:arari_next/domain/models/radio_status_data.dart';
-import 'package:arari_next/domain/models/temperature_data.dart';
+import 'package:arari_next/domain/models/iboat_data.dart';
 import 'package:arari_next/utils/mavlink/mavlink_dialect/arariboat.dart';
 import 'package:arari_next/utils/mavlink/mavlink_to_models.dart';
 import 'package:dart_mavlink/mavlink.dart';
+import 'package:flutter/material.dart';
 
 class MavlinkRepository extends PacketRepository {
-
-  /* Stream Controllers */
-  final StreamController<BMSData> _bmsDataController = StreamController.broadcast();
-  final StreamController<BMSStatusData> _bmsStatusDataController = StreamController.broadcast();
-  final StreamController<GPSData> _gpsDataController = StreamController.broadcast();
-  final StreamController<InstrumentationData> _instrumentationDataController = StreamController.broadcast();
-  final StreamController<MotorEletricalData> _motorEletricalDataController = StreamController.broadcast();
-  final StreamController<MotorStateData> _motorStateDataController = StreamController.broadcast();
-  final StreamController<MPPTData> _mpptDataController = StreamController.broadcast();
-  final StreamController<MPPTStateData> _mpptStateDataController = StreamController.broadcast();
-  final StreamController<PumpData> _pumpDataController = StreamController.broadcast();
-  final StreamController<RadioStatusData> _radioStatusDataController = StreamController.broadcast();
-  final StreamController<TemperatureData> _temperatureDataController = StreamController.broadcast();
-
-  /* Streams */
+  StreamController<IBoatData?> streamController = StreamController.broadcast();
   @override
-  Stream<BMSData> get bmsData => _bmsDataController.stream;
-  @override
-  Stream<BMSStatusData> get bmsStatusData => _bmsStatusDataController.stream;
-  @override
-  Stream<GPSData> get gpsData => _gpsDataController.stream;
-  @override
-  Stream<InstrumentationData> get instrumentationData => _instrumentationDataController.stream;
-  @override
-  Stream<MotorEletricalData> get motorEletricalData => _motorEletricalDataController.stream;
-  @override
-  Stream<MotorStateData> get motorStateData => _motorStateDataController.stream;
-  @override
-  Stream<MPPTData> get mpptData => _mpptDataController.stream;
-  @override
-  Stream<MPPTStateData> get mpptStateData => _mpptStateDataController.stream;
-  @override
-  Stream<PumpData> get pumpData => _pumpDataController.stream;
-  @override
-  Stream<RadioStatusData> get radioStatusData => _radioStatusDataController.stream;
-  @override
-  Stream<TemperatureData> get temperatureData => _temperatureDataController.stream;
+  Stream<IBoatData?> get data => streamController.stream;
 
   final MavlinkParser _mavlinkParser = MavlinkParser(MavlinkDialectArariboat());
 
@@ -65,54 +23,47 @@ class MavlinkRepository extends PacketRepository {
     _serialService.read().listen((data) => _mavlinkParser.parse(data));
   }
 
-  void _processPackage(MavlinkFrame frame){
+  IBoatData? _getModelFromMavlink(MavlinkFrame frame){
     switch (frame.message) {
       case Bms bms:
-        _bmsDataController.add(MavlinkToModels.toBms(bms));       
-        break;
+        return MavlinkToModels.toBms(bms);
       
       case BmsStatus bmsStatus:
-        _bmsStatusDataController.add(MavlinkToModels.toBmsStatus(bmsStatus));
-        break;
+        return MavlinkToModels.toBmsStatus(bmsStatus);
 
       case Gps gps:
-        _gpsDataController.add(MavlinkToModels.toGPS(gps));
-        break;
+        return MavlinkToModels.toGPS(gps);
 
       case Instrumentation instrumentation:
-        _instrumentationDataController.add(MavlinkToModels.toInstrumentation(instrumentation));
-        break;
+        return MavlinkToModels.toInstrumentation(instrumentation);
 
       case EzkontrolMcuMeterDataI motorData1:
-        _motorEletricalDataController.add(MavlinkToModels.toMotor1(motorData1));
-        break;
+        return MavlinkToModels.toMotor1(motorData1);
 
       case EzkontrolMcuMeterDataIi motorData2:
-        _motorStateDataController.add(MavlinkToModels.toMotor2(motorData2));
-        break;
+        return MavlinkToModels.toMotor2(motorData2);
       
       case Mppt mppt:
-        _mpptDataController.add(MavlinkToModels.toMppt(mppt));
-        break;
+        return MavlinkToModels.toMppt(mppt);
       
       case MpptState mpptState:
-        _mpptStateDataController.add(MavlinkToModels.toMpptState(mpptState));
-        break;
+        return MavlinkToModels.toMpptState(mpptState);
 
       case Pumps pump:
-        _pumpDataController.add(MavlinkToModels.toPump(pump));
-        break;
+        return MavlinkToModels.toPump(pump);
       
       case RadioStatus radio:
-        _radioStatusDataController.add(MavlinkToModels.toRadioStatus(radio));
-        break;
+        return MavlinkToModels.toRadioStatus(radio);
 
       case Temperatures temperatures:
-        _temperatureDataController.add(MavlinkToModels.toTemperature(temperatures));
-        break;
+        return MavlinkToModels.toTemperature(temperatures);
+
       default:
+        return null;
     }
   }
 
-  
+  void _processPackage(MavlinkFrame frame){
+    streamController.add(_getModelFromMavlink(frame));
+  }  
 }
