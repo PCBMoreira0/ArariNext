@@ -46,7 +46,7 @@ class _DashboardViewState extends State<DashboardView> {
                             TableRow(
                               children: [
                                 Text('Corrente:'),
-                                Text('${data.batteryCurrent} A'),
+                                Text('${-data.batteryCurrent} A'),
                               ],
                             ),
                             TableRow(
