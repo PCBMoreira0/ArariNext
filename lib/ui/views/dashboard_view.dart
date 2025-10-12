@@ -348,61 +348,52 @@ class _TemperatureGroupBox extends StatelessWidget {
                       Text('${data.temperatureMPPTRight} °C'),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text('Temp. Motor:'),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ValueListenableBuilder(
-                            valueListenable:
-                                viewmodel.motorStateLeftValueNotifier,
-                            builder: (context, motor, child) {
-                              return Text('(BR) ${motor.motorTemperature} °C');
-                            },
-                          ),
-                          ValueListenableBuilder(
-                            valueListenable:
-                                viewmodel.motorStateRightValueNotifier,
-                            builder: (context, motor, child) {
-                              return Text('(BR) ${motor.motorTemperature} °C');
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Text('Temp. ESC:'),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ValueListenableBuilder(
-                            valueListenable:
-                                viewmodel.motorStateLeftValueNotifier,
-                            builder: (context, motor, child) {
-                              return Text(
-                                '(BB) ${motor.controllerTemperature} °C',
-                              );
-                            },
-                          ),
-                          ValueListenableBuilder(
-                            valueListenable:
-                                viewmodel.motorStateRightValueNotifier,
-                            builder: (context, motor, child) {
-                              return Text(
-                                '(BR) ${motor.controllerTemperature} °C',
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                 ],
               );
             },
+          ),
+          Divider(),
+          Table(
+            children: [
+              TableRow(
+                children: [Container(), Text('Bombordo'), Text('Boreste')],
+              ),
+
+              TableRow(
+                children: [
+                  Text('Temp. Motor:'),
+                  ValueListenableBuilder(
+                    valueListenable: viewmodel.motorStateLeftValueNotifier,
+                    builder: (context, motor, child) {
+                      return Text('(BR) ${motor.motorTemperature} °C');
+                    },
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: viewmodel.motorStateRightValueNotifier,
+                    builder: (context, motor, child) {
+                      return Text('(BR) ${motor.motorTemperature} °C');
+                    },
+                  ),
+                ],
+              ),
+              TableRow(
+                children: [
+                  Text('Temp. ESC:'),
+                  ValueListenableBuilder(
+                    valueListenable: viewmodel.motorStateLeftValueNotifier,
+                    builder: (context, motor, child) {
+                      return Text('(BB) ${motor.controllerTemperature} °C');
+                    },
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: viewmodel.motorStateRightValueNotifier,
+                    builder: (context, motor, child) {
+                      return Text('(BR) ${motor.controllerTemperature} °C');
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
