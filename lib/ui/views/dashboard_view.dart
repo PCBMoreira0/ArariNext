@@ -112,37 +112,74 @@ class _MPPTGroupBox extends StatelessWidget {
       child: ValueListenableBuilder(
         valueListenable: viewmodel.mpptValueNotifier,
         builder: (context, data, child) {
-          return Table(
+          return Column(
             children: [
-              TableRow(
+              Table(
                 children: [
-                  Text('Tensão dos painel:'),
-                  Text('${data.pvVoltage} V'),
+                  TableRow(
+                    children: [
+                      Text('Tensão dos painel:'),
+                      Text('${data.pvVoltage} V'),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('Corrente dos paineis:'),
+                      Text('${data.pvCurrent} A'),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('Tensão da bateria:'),
+                      Text('${data.batteryVoltage} V'),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('Corrente da bateria:'),
+                      Text('${data.batteryCurrent} A'),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('Corrente do mppt:'),
+                      Text('${data.mpptCurrent} A'),
+                    ],
+                  ),
                 ],
               ),
-              TableRow(
-                children: [
-                  Text('Corrente dos paineis:'),
-                  Text('${data.pvCurrent} A'),
-                ],
-              ),
-              TableRow(
-                children: [
-                  Text('Tensão da bateria:'),
-                  Text('${data.batteryVoltage} V'),
-                ],
-              ),
-              TableRow(
-                children: [
-                  Text('Corrente da bateria:'),
-                  Text('${data.batteryCurrent} A'),
-                ],
-              ),
-              TableRow(
-                children: [
-                  Text('Corrente do mppt:'),
-                  Text('${data.mpptCurrent} A'),
-                ],
+              ValueListenableBuilder(
+                valueListenable: viewmodel.instrumentationValueNotifier,
+                builder: (context, data, child) {
+                  return Table(
+                    children: [
+                      TableRow(
+                        children: [
+                          Text('String 1:'),
+                          Text('${data.panelStrings.string1}'),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Text('String 2:'),
+                          Text('${data.panelStrings.string2}'),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Text('String 3:'),
+                          Text('${data.panelStrings.string3}'),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          Text('String 4:'),
+                          Text('${data.panelStrings.string4}'),
+                        ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           );

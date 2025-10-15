@@ -812,9 +812,9 @@ const MavSeverity mavSeverityDebug = 7;
 class Instrumentation implements MavlinkMessage {
   static const int _mavlinkMessageId = 1;
 
-  static const int _mavlinkCrcExtra = 83;
+  static const int _mavlinkCrcExtra = 239;
 
-  static const int mavlinkEncodedLength = 22;
+  static const int mavlinkEncodedLength = 30;
 
   @override
   int get mavlinkMessageId => _mavlinkMessageId;
@@ -865,6 +865,15 @@ class Instrumentation implements MavlinkMessage {
   /// mppt_current
   final int16_t mpptCurrent;
 
+  /// Current panel string
+  ///
+  /// MAVLink type: uint16_t[4]
+  ///
+  /// units: mA
+  ///
+  /// panel_strings
+  final List<int16_t> panelStrings;
+
   ///
   ///
   /// MAVLink type: int16_t
@@ -914,6 +923,7 @@ class Instrumentation implements MavlinkMessage {
     required this.motorCurrentLeft,
     required this.motorCurrentRight,
     required this.mpptCurrent,
+    required this.panelStrings,
     required this.auxiliaryBatteryCurrent,
     required this.batteryVoltage,
     required this.auxiliaryBatteryVoltage,
@@ -927,6 +937,7 @@ class Instrumentation implements MavlinkMessage {
     int16_t? motorCurrentLeft,
     int16_t? motorCurrentRight,
     int16_t? mpptCurrent,
+    List<int16_t>? panelStrings,
     int16_t? auxiliaryBatteryCurrent,
     uint16_t? batteryVoltage,
     uint16_t? auxiliaryBatteryVoltage,
@@ -939,6 +950,7 @@ class Instrumentation implements MavlinkMessage {
       motorCurrentLeft: motorCurrentLeft ?? this.motorCurrentLeft,
       motorCurrentRight: motorCurrentRight ?? this.motorCurrentRight,
       mpptCurrent: mpptCurrent ?? this.mpptCurrent,
+      panelStrings: panelStrings ?? this.panelStrings,
       auxiliaryBatteryCurrent:
           auxiliaryBatteryCurrent ?? this.auxiliaryBatteryCurrent,
       batteryVoltage: batteryVoltage ?? this.batteryVoltage,
@@ -962,11 +974,12 @@ class Instrumentation implements MavlinkMessage {
     var motorCurrentLeft = data_.getInt16(6, Endian.little);
     var motorCurrentRight = data_.getInt16(8, Endian.little);
     var mpptCurrent = data_.getInt16(10, Endian.little);
-    var auxiliaryBatteryCurrent = data_.getInt16(12, Endian.little);
-    var batteryVoltage = data_.getUint16(14, Endian.little);
-    var auxiliaryBatteryVoltage = data_.getUint16(16, Endian.little);
-    var irradiance = data_.getUint16(18, Endian.little);
-    var timestampMilliseconds = data_.getUint16(20, Endian.little);
+    var panelStrings = MavlinkMessage.asUint16List(data_, 12, 4);
+    var auxiliaryBatteryCurrent = data_.getInt16(20, Endian.little);
+    var batteryVoltage = data_.getUint16(22, Endian.little);
+    var auxiliaryBatteryVoltage = data_.getUint16(24, Endian.little);
+    var irradiance = data_.getUint16(26, Endian.little);
+    var timestampMilliseconds = data_.getUint16(28, Endian.little);
 
     return Instrumentation(
         timestampSeconds: timestampSeconds,
@@ -974,6 +987,7 @@ class Instrumentation implements MavlinkMessage {
         motorCurrentLeft: motorCurrentLeft,
         motorCurrentRight: motorCurrentRight,
         mpptCurrent: mpptCurrent,
+        panelStrings: panelStrings,
         auxiliaryBatteryCurrent: auxiliaryBatteryCurrent,
         batteryVoltage: batteryVoltage,
         auxiliaryBatteryVoltage: auxiliaryBatteryVoltage,
@@ -989,11 +1003,12 @@ class Instrumentation implements MavlinkMessage {
     data_.setInt16(6, motorCurrentLeft, Endian.little);
     data_.setInt16(8, motorCurrentRight, Endian.little);
     data_.setInt16(10, mpptCurrent, Endian.little);
-    data_.setInt16(12, auxiliaryBatteryCurrent, Endian.little);
-    data_.setUint16(14, batteryVoltage, Endian.little);
-    data_.setUint16(16, auxiliaryBatteryVoltage, Endian.little);
-    data_.setUint16(18, irradiance, Endian.little);
-    data_.setUint16(20, timestampMilliseconds, Endian.little);
+    MavlinkMessage.setUint16List(data_, 12, panelStrings);
+    data_.setInt16(20, auxiliaryBatteryCurrent, Endian.little);
+    data_.setUint16(22, batteryVoltage, Endian.little);
+    data_.setUint16(24, auxiliaryBatteryVoltage, Endian.little);
+    data_.setUint16(26, irradiance, Endian.little);
+    data_.setUint16(28, timestampMilliseconds, Endian.little);
     return data_;
   }
 }
@@ -1004,9 +1019,9 @@ class Instrumentation implements MavlinkMessage {
 class Temperatures implements MavlinkMessage {
   static const int _mavlinkMessageId = 2;
 
-  static const int _mavlinkCrcExtra = 87;
+  static const int _mavlinkCrcExtra = 214;
 
-  static const int mavlinkEncodedLength = 14;
+  static const int mavlinkEncodedLength = 26;
 
   @override
   int get mavlinkMessageId => _mavlinkMessageId;
@@ -1057,6 +1072,60 @@ class Temperatures implements MavlinkMessage {
   /// temperature_mppt_right
   final int16_t temperatureMpptRight;
 
+  /// Left motor temperature.
+  ///
+  /// MAVLink type: int16_t
+  ///
+  /// units: cdegC
+  ///
+  /// temperature_motor_left
+  final int16_t temperatureMotorLeft;
+
+  /// Right motor temperature.
+  ///
+  /// MAVLink type: int16_t
+  ///
+  /// units: cdegC
+  ///
+  /// temperature_motor_right
+  final int16_t temperatureMotorRight;
+
+  /// Left ESC temperature.
+  ///
+  /// MAVLink type: int16_t
+  ///
+  /// units: cdegC
+  ///
+  /// temperature_esc_left
+  final int16_t temperatureEscLeft;
+
+  /// Right ESC temperature.
+  ///
+  /// MAVLink type: int16_t
+  ///
+  /// units: cdegC
+  ///
+  /// temperature_esc_right
+  final int16_t temperatureEscRight;
+
+  /// Left motor cover temperature.
+  ///
+  /// MAVLink type: int16_t
+  ///
+  /// units: cdegC
+  ///
+  /// temperature_motor_cover_left
+  final int16_t temperatureMotorCoverLeft;
+
+  /// Right motor cover temperature.
+  ///
+  /// MAVLink type: int16_t
+  ///
+  /// units: cdegC
+  ///
+  /// temperature_motor_cover_right
+  final int16_t temperatureMotorCoverRight;
+
   /// Milliseconds within Unix time
   ///
   /// MAVLink type: uint16_t
@@ -1070,6 +1139,12 @@ class Temperatures implements MavlinkMessage {
     required this.temperatureBatteryRight,
     required this.temperatureMpptLeft,
     required this.temperatureMpptRight,
+    required this.temperatureMotorLeft,
+    required this.temperatureMotorRight,
+    required this.temperatureEscLeft,
+    required this.temperatureEscRight,
+    required this.temperatureMotorCoverLeft,
+    required this.temperatureMotorCoverRight,
     required this.timestampMilliseconds,
   });
 
@@ -1079,6 +1154,12 @@ class Temperatures implements MavlinkMessage {
     int16_t? temperatureBatteryRight,
     int16_t? temperatureMpptLeft,
     int16_t? temperatureMpptRight,
+    int16_t? temperatureMotorLeft,
+    int16_t? temperatureMotorRight,
+    int16_t? temperatureEscLeft,
+    int16_t? temperatureEscRight,
+    int16_t? temperatureMotorCoverLeft,
+    int16_t? temperatureMotorCoverRight,
     uint16_t? timestampMilliseconds,
   }) {
     return Temperatures(
@@ -1089,6 +1170,15 @@ class Temperatures implements MavlinkMessage {
           temperatureBatteryRight ?? this.temperatureBatteryRight,
       temperatureMpptLeft: temperatureMpptLeft ?? this.temperatureMpptLeft,
       temperatureMpptRight: temperatureMpptRight ?? this.temperatureMpptRight,
+      temperatureMotorLeft: temperatureMotorLeft ?? this.temperatureMotorLeft,
+      temperatureMotorRight:
+          temperatureMotorRight ?? this.temperatureMotorRight,
+      temperatureEscLeft: temperatureEscLeft ?? this.temperatureEscLeft,
+      temperatureEscRight: temperatureEscRight ?? this.temperatureEscRight,
+      temperatureMotorCoverLeft:
+          temperatureMotorCoverLeft ?? this.temperatureMotorCoverLeft,
+      temperatureMotorCoverRight:
+          temperatureMotorCoverRight ?? this.temperatureMotorCoverRight,
       timestampMilliseconds:
           timestampMilliseconds ?? this.timestampMilliseconds,
     );
@@ -1106,7 +1196,13 @@ class Temperatures implements MavlinkMessage {
     var temperatureBatteryRight = data_.getInt16(6, Endian.little);
     var temperatureMpptLeft = data_.getInt16(8, Endian.little);
     var temperatureMpptRight = data_.getInt16(10, Endian.little);
-    var timestampMilliseconds = data_.getUint16(12, Endian.little);
+    var temperatureMotorLeft = data_.getInt16(12, Endian.little);
+    var temperatureMotorRight = data_.getInt16(14, Endian.little);
+    var temperatureEscLeft = data_.getInt16(16, Endian.little);
+    var temperatureEscRight = data_.getInt16(18, Endian.little);
+    var temperatureMotorCoverLeft = data_.getInt16(20, Endian.little);
+    var temperatureMotorCoverRight = data_.getInt16(22, Endian.little);
+    var timestampMilliseconds = data_.getUint16(24, Endian.little);
 
     return Temperatures(
         timestampSeconds: timestampSeconds,
@@ -1114,6 +1210,12 @@ class Temperatures implements MavlinkMessage {
         temperatureBatteryRight: temperatureBatteryRight,
         temperatureMpptLeft: temperatureMpptLeft,
         temperatureMpptRight: temperatureMpptRight,
+        temperatureMotorLeft: temperatureMotorLeft,
+        temperatureMotorRight: temperatureMotorRight,
+        temperatureEscLeft: temperatureEscLeft,
+        temperatureEscRight: temperatureEscRight,
+        temperatureMotorCoverLeft: temperatureMotorCoverLeft,
+        temperatureMotorCoverRight: temperatureMotorCoverRight,
         timestampMilliseconds: timestampMilliseconds);
   }
 
@@ -1125,7 +1227,13 @@ class Temperatures implements MavlinkMessage {
     data_.setInt16(6, temperatureBatteryRight, Endian.little);
     data_.setInt16(8, temperatureMpptLeft, Endian.little);
     data_.setInt16(10, temperatureMpptRight, Endian.little);
-    data_.setUint16(12, timestampMilliseconds, Endian.little);
+    data_.setInt16(12, temperatureMotorLeft, Endian.little);
+    data_.setInt16(14, temperatureMotorRight, Endian.little);
+    data_.setInt16(16, temperatureEscLeft, Endian.little);
+    data_.setInt16(18, temperatureEscRight, Endian.little);
+    data_.setInt16(20, temperatureMotorCoverLeft, Endian.little);
+    data_.setInt16(22, temperatureMotorCoverRight, Endian.little);
+    data_.setUint16(24, timestampMilliseconds, Endian.little);
     return data_;
   }
 }
@@ -2424,136 +2532,6 @@ class EletronicPropulsion implements MavlinkMessage {
   }
 }
 
-/// Current data from each string.
-///
-/// MPPT_STRINGS
-class MpptStrings implements MavlinkMessage {
-  static const int _mavlinkMessageId = 12;
-
-  static const int _mavlinkCrcExtra = 181;
-
-  static const int mavlinkEncodedLength = 14;
-
-  @override
-  int get mavlinkMessageId => _mavlinkMessageId;
-
-  @override
-  int get mavlinkCrcExtra => _mavlinkCrcExtra;
-
-  /// Seconds since Unix time
-  ///
-  /// MAVLink type: uint32_t
-  ///
-  /// timestamp_seconds
-  final uint32_t timestampSeconds;
-
-  /// Current from string 1
-  ///
-  /// MAVLink type: uint16_t
-  ///
-  /// units: mA
-  ///
-  /// string_1
-  final uint16_t string1;
-
-  /// Current from string 2
-  ///
-  /// MAVLink type: uint16_t
-  ///
-  /// units: mA
-  ///
-  /// string_2
-  final uint16_t string2;
-
-  /// Current from string 3
-  ///
-  /// MAVLink type: uint16_t
-  ///
-  /// units: mA
-  ///
-  /// string_3
-  final uint16_t string3;
-
-  /// Current from string 4
-  ///
-  /// MAVLink type: uint16_t
-  ///
-  /// units: mA
-  ///
-  /// string_4
-  final uint16_t string4;
-
-  /// Milliseconds within Unix time
-  ///
-  /// MAVLink type: uint16_t
-  ///
-  /// timestamp_milliseconds
-  final uint16_t timestampMilliseconds;
-
-  MpptStrings({
-    required this.timestampSeconds,
-    required this.string1,
-    required this.string2,
-    required this.string3,
-    required this.string4,
-    required this.timestampMilliseconds,
-  });
-
-  MpptStrings copyWith({
-    uint32_t? timestampSeconds,
-    uint16_t? string1,
-    uint16_t? string2,
-    uint16_t? string3,
-    uint16_t? string4,
-    uint16_t? timestampMilliseconds,
-  }) {
-    return MpptStrings(
-      timestampSeconds: timestampSeconds ?? this.timestampSeconds,
-      string1: string1 ?? this.string1,
-      string2: string2 ?? this.string2,
-      string3: string3 ?? this.string3,
-      string4: string4 ?? this.string4,
-      timestampMilliseconds:
-          timestampMilliseconds ?? this.timestampMilliseconds,
-    );
-  }
-
-  factory MpptStrings.parse(ByteData data_) {
-    if (data_.lengthInBytes < MpptStrings.mavlinkEncodedLength) {
-      var len = MpptStrings.mavlinkEncodedLength - data_.lengthInBytes;
-      var d = data_.buffer.asUint8List().sublist(0, data_.lengthInBytes) +
-          List<int>.filled(len, 0);
-      data_ = Uint8List.fromList(d).buffer.asByteData();
-    }
-    var timestampSeconds = data_.getUint32(0, Endian.little);
-    var string1 = data_.getUint16(4, Endian.little);
-    var string2 = data_.getUint16(6, Endian.little);
-    var string3 = data_.getUint16(8, Endian.little);
-    var string4 = data_.getUint16(10, Endian.little);
-    var timestampMilliseconds = data_.getUint16(12, Endian.little);
-
-    return MpptStrings(
-        timestampSeconds: timestampSeconds,
-        string1: string1,
-        string2: string2,
-        string3: string3,
-        string4: string4,
-        timestampMilliseconds: timestampMilliseconds);
-  }
-
-  @override
-  ByteData serialize() {
-    var data_ = ByteData(mavlinkEncodedLength);
-    data_.setUint32(0, timestampSeconds, Endian.little);
-    data_.setUint16(4, string1, Endian.little);
-    data_.setUint16(6, string2, Endian.little);
-    data_.setUint16(8, string3, Endian.little);
-    data_.setUint16(10, string4, Endian.little);
-    data_.setUint16(12, timestampMilliseconds, Endian.little);
-    return data_;
-  }
-}
-
 /// Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -> value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also https://mavlink.io/en/services/parameter.html for a full documentation of QGroundControl and IMU code.
 ///
 /// PARAM_REQUEST_READ
@@ -3390,8 +3368,6 @@ class MavlinkDialectArariboat implements MavlinkDialect {
         return Pumps.parse(data);
       case 11:
         return EletronicPropulsion.parse(data);
-      case 12:
-        return MpptStrings.parse(data);
       case 20:
         return ParamRequestRead.parse(data);
       case 22:
@@ -3438,8 +3414,6 @@ class MavlinkDialectArariboat implements MavlinkDialect {
         return Pumps._mavlinkCrcExtra;
       case 11:
         return EletronicPropulsion._mavlinkCrcExtra;
-      case 12:
-        return MpptStrings._mavlinkCrcExtra;
       case 20:
         return ParamRequestRead._mavlinkCrcExtra;
       case 22:

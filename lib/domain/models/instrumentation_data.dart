@@ -1,11 +1,19 @@
 import 'package:arari_next/domain/models/iboat_data.dart';
 
+final class PanelStrings {
+  final double string1;
+  final double string2;
+  final double string3;
+  final double string4;  PanelStrings({required this.string1, required this.string2, required this.string3, required this.string4});
+}
+
 final class InstrumentationData implements IBoatData {
   final double batteryCurrent;
   final double batteryVoltage;
   final double motorCurrentLeft;
   final double motorCurrentRight;
   final double mpptCurrent;
+  final PanelStrings panelStrings;
   final double auxBatteryCurrent;
   final double auxBatteryVoltage;
   final int irradiance;
@@ -15,9 +23,9 @@ final class InstrumentationData implements IBoatData {
   double get motorPowerRight => motorCurrentRight * batteryVoltage;
   double get resultantPower => batteryPower * batteryVoltage;
 
-  InstrumentationData({required this.batteryCurrent, required this.batteryVoltage, required this.motorCurrentLeft, required this.motorCurrentRight, required this.mpptCurrent, required this.auxBatteryCurrent, required this.auxBatteryVoltage, required this.irradiance});
+  InstrumentationData({required this.batteryCurrent, required this.batteryVoltage, required this.motorCurrentLeft, required this.motorCurrentRight, required this.mpptCurrent, required List<double> panelStrings, required this.auxBatteryCurrent, required this.auxBatteryVoltage, required this.irradiance}) : panelStrings = PanelStrings(string1: panelStrings[0], string2: panelStrings[1], string3: panelStrings[2], string4: panelStrings[3]);
 
   factory InstrumentationData.empty() {
-    return InstrumentationData(batteryCurrent: 0, batteryVoltage: 0, motorCurrentLeft: 0, motorCurrentRight: 0, mpptCurrent: 0, auxBatteryCurrent: 0, auxBatteryVoltage: 0, irradiance: 0);
+    return InstrumentationData(batteryCurrent: 0, batteryVoltage: 0, motorCurrentLeft: 0, motorCurrentRight: 0, mpptCurrent: 0, panelStrings: [0, 0, 0, 0], auxBatteryCurrent: 0, auxBatteryVoltage: 0, irradiance: 0);
   }
 }

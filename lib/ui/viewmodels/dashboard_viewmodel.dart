@@ -72,8 +72,8 @@ class DashboardViewmodel {
     bmsValueNotifier.value = data;
 
     if(data.batteryCurrent != 0){
-      double remaningHours = -1 * (((data.stateOfCharge / 100.0) * 40.0) / data.batteryCurrent);
-      batteryRemainingTime.value = (remaningHours.floor(), ((remaningHours - remaningHours.floor()) * 60).round());
+      double remainingHours = -1 * (((data.stateOfCharge / 100.0) * 40.0) / data.batteryCurrent);
+      batteryRemainingTime.value = (remainingHours.floor(), ((remainingHours - remainingHours.floor()) * 60).round());
     }
     else{
       batteryRemainingTime.value = (0, 0);

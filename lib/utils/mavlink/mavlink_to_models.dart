@@ -27,7 +27,7 @@ class MavlinkToModels {
   }
 
   static InstrumentationData toInstrumentation(Instrumentation instrumentation){
-    return InstrumentationData(batteryCurrent: instrumentation.batteryCurrent / 100.0, batteryVoltage: instrumentation.batteryVoltage / 100.0, motorCurrentLeft: instrumentation.motorCurrentLeft / 100.0, motorCurrentRight: instrumentation.motorCurrentRight / 100.0, mpptCurrent: instrumentation.mpptCurrent / 100.0, auxBatteryCurrent: instrumentation.auxiliaryBatteryCurrent / 100.0, auxBatteryVoltage: instrumentation.auxiliaryBatteryVoltage / 100.0, irradiance: instrumentation.irradiance);
+    return InstrumentationData(batteryCurrent: instrumentation.batteryCurrent / 100.0, batteryVoltage: instrumentation.batteryVoltage / 100.0, motorCurrentLeft: instrumentation.motorCurrentLeft / 100.0, motorCurrentRight: instrumentation.motorCurrentRight / 100.0, mpptCurrent: instrumentation.mpptCurrent / 100.0, panelStrings: instrumentation.panelStrings.map((number) => number.toDouble() / 1000.0).toList(), auxBatteryCurrent: instrumentation.auxiliaryBatteryCurrent / 100.0, auxBatteryVoltage: instrumentation.auxiliaryBatteryVoltage / 100.0, irradiance: instrumentation.irradiance);
   }
 
   static MotorEletricalData toMotor1(EzkontrolMcuMeterDataI motorData1){
@@ -55,6 +55,6 @@ class MavlinkToModels {
   }
 
   static TemperatureData toTemperature(Temperatures temperatures){
-    return TemperatureData(temperatureBatteryLeft: temperatures.temperatureBatteryLeft / 100.0, temperatureBatteryRight: temperatures.temperatureBatteryRight / 100.0, temperatureMPPTLeft: temperatures.temperatureMpptLeft / 100.0, temperatureMPPTRight: temperatures.temperatureMpptRight / 100.0);
+    return TemperatureData(temperatureBatteryLeft: temperatures.temperatureBatteryLeft / 100.0, temperatureBatteryRight: temperatures.temperatureBatteryRight / 100.0, temperatureMPPTLeft: temperatures.temperatureMpptLeft / 100.0, temperatureMPPTRight: temperatures.temperatureMpptRight / 100.0, temperatureMotorLeft: temperatures.temperatureMotorLeft / 100.0, temperatureMotorRight: temperatures.temperatureMotorRight / 100.0, temperatureESCRLeft: temperatures.temperatureEscLeft / 100.0, temperatureESCRRight: temperatures.temperatureEscRight / 100.0, temperatureMotorCoverLeft: temperatures.temperatureMotorCoverLeft / 100.0, temperatureMotorCoverRight: temperatures.temperatureMotorCoverRight / 100.0);
   }
 }

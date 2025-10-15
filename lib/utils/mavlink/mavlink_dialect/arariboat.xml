@@ -504,6 +504,7 @@
       <field type="int16_t" name="motor_current_left" units="cA"></field>
       <field type="int16_t" name="motor_current_right" units ="cA"></field>
       <field type="int16_t" name="mppt_current" units ="cA"></field>
+      <field type="uint16_t[4]" name="panel_strings" units="mA">Current panel string</field>
       <field type="int16_t" name="auxiliary_battery_current" units ="cA"></field>
       <field type="uint16_t" name="battery_voltage" units ="cV"></field>
       <field type="uint16_t" name="auxiliary_battery_voltage" units ="cV"></field>
@@ -518,6 +519,12 @@
       <field type="int16_t" name="temperature_battery_right" units ="cdegC">Right side of battery pack</field>
       <field type="int16_t" name="temperature_mppt_left" units ="cdegC">MPPT temperature on its left side.</field>
       <field type="int16_t" name="temperature_mppt_right" units ="cdegC">MPPT temperature on its left side.</field>
+      <field type="int16_t" name="temperature_motor_left" units ="cdegC">Left motor temperature.</field>
+      <field type="int16_t" name="temperature_motor_right" units ="cdegC">Right motor temperature.</field>
+      <field type="int16_t" name="temperature_esc_left" units ="cdegC">Left ESC temperature.</field>
+      <field type="int16_t" name="temperature_esc_right" units ="cdegC">Right ESC temperature.</field>
+      <field type="int16_t" name="temperature_motor_cover_left" units ="cdegC">Left motor cover temperature.</field>
+      <field type="int16_t" name="temperature_motor_cover_right" units ="cdegC">Right motor cover temperature.</field>
       <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
       <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
     </message>
@@ -630,16 +637,6 @@
       <field type="uint16_t" name="throttle_left_potentiometer" units="mV">Left throttle potenciometer value.</field>
       <field type="uint16_t" name="throttle_right_potentiometer" units="mV">Right throttle potenciometer value.</field>
       <field type="uint8_t" name="state">Bit 0: OFF, Bit 1: ON</field>
-      <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
-      <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
-    </message>
-
-    <message id="12" name="MPPT_STRINGS">
-      <description>Current data from each string.</description>
-      <field type="uint16_t" name="string_1" units="mA">Current from string 1</field>
-      <field type="uint16_t" name="string_2" units="mA">Current from string 2</field>
-      <field type="uint16_t" name="string_3" units="mA">Current from string 3</field>
-      <field type="uint16_t" name="string_4" units="mA">Current from string 4</field>
       <field type="uint32_t" name="timestamp_seconds">Seconds since Unix time</field> 
       <field type="uint16_t" name="timestamp_milliseconds">Milliseconds within Unix time</field> 
     </message>
