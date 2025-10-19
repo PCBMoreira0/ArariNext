@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:arari_next/data/repositories/packet_repository.dart';
 import 'package:arari_next/domain/models/bms_data.dart';
+import 'package:arari_next/domain/models/gps_data.dart';
 import 'package:arari_next/domain/models/iboat_data.dart';
 import 'package:arari_next/domain/models/instrumentation_data.dart';
 import 'package:arari_next/domain/models/motor_eletrical_data.dart';
@@ -31,8 +32,9 @@ class DashboardViewmodel {
   StreamSubscription? temperatureStream;
 
   ValueNotifier<MPPTData> mpptValueNotifier = ValueNotifier(MPPTData.empty());
-  StreamSubscription? mpptStream;
-  
+  StreamSubscription? mpptStream; 
+
+  ValueNotifier<GPSData> gpsValueNotifier = ValueNotifier(GPSData.empty());
 
   DashboardViewmodel({required PacketRepository repository}) : _packetRepository = repository {
   _packetRepository.data.listen((data) => _processModel(data));
@@ -65,7 +67,15 @@ class DashboardViewmodel {
       case MPPTData mppt:
         updateMppt(mppt);
         break;
+      
+      case GPSData gps:
+        updateGPS(gps);
+        break;
     }
+  }
+
+  void updateGPS(GPSData data){
+    gpsValueNotifier.value = data;
   }
 
   void updateBMS(BMSData data){

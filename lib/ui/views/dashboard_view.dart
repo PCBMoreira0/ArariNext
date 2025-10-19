@@ -43,6 +43,7 @@ class _DashboardViewState extends State<DashboardView> {
                 Expanded(
                   child: _TemperatureGroupBox(viewmodel: widget.viewmodel),
                 ),
+                Expanded(child: _GPSGroupBox(viewmodel: widget.viewmodel)),
               ],
             ),
           ],
@@ -206,49 +207,80 @@ class _InstrumentationGroupBox extends StatelessWidget {
               TableRow(
                 children: [
                   Text('Corrente Bateria:'),
-                  Text('${data.batteryCurrent} A'),
+                  Text('${data.batteryCurrent.toStringAsFixed(2)} A'),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Tensão Bateria:'),
-                  Text('${data.batteryVoltage} V'),
+                  Text('${data.batteryVoltage.toStringAsFixed(2)} V'),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Corrente Motor Bombordo:'),
-                  Text('${data.motorCurrentLeft} A'),
+                  Text('${data.motorCurrentLeft.toStringAsFixed(2)} A'),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Corrente Motor Boreste:'),
-                  Text('${data.motorCurrentRight} A'),
+                  Text('${(data.motorCurrentRight * -1).toStringAsFixed(2)} A'),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Corrente MPPT:'),
-                  Text('${data.mpptCurrent} A'),
+                  Text('${data.mpptCurrent.toStringAsFixed(2)} A'),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Corrente Bateria Auxiliar:'),
-                  Text('${data.auxBatteryCurrent} A'),
+                  Text('${data.auxBatteryCurrent.toStringAsFixed(2)} A'),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Tensão Bateria Auxiliar:'),
-                  Text('${data.auxBatteryVoltage} V'),
+                  Text('${data.auxBatteryVoltage.toStringAsFixed(2)} V'),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Irradiância:'),
-                  Text('${data.irradiance} W/m²'),
+                  Text('${data.irradiance.toStringAsFixed(2)} W/m²'),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _GPSGroupBox extends StatelessWidget {
+  const _GPSGroupBox({required this.viewmodel});
+
+  final DashboardViewmodel viewmodel;
+
+  @override
+  Widget build(BuildContext context) {
+    return GroupBox(
+      title: 'GPS',
+      child: ValueListenableBuilder(
+        valueListenable: viewmodel.gpsValueNotifier,
+        builder: (context, data, child) {
+          return Table(
+            children: [
+              TableRow(
+                children: [Text('Velocidade:'), Text('${data.speed * 0.0194384} knt')],
+              ),
+              TableRow(
+                children: [
+                  Text('Satélites:'),
+                  Text('${data.visibleSatellites}'),
                 ],
               ),
             ],
