@@ -1,16 +1,11 @@
 import 'package:arari_next/domain/models/iboat_data.dart';
 import 'package:arari_next/domain/models/motor_eletrical_data.dart';
 
-enum MotorStatus {
-  gear,
-  breaking,
-  operationMode,
-  dcContactor
-}
+enum MotorStatus { gear, breaking, operationMode, dcContactor }
 
 // DO NOT REORDER
 enum EzkontrolErrorFlag {
-  // byte 4 
+  // byte 4
   overcurrent,
   overload,
   overvoltage,
@@ -36,7 +31,7 @@ enum EzkontrolErrorFlag {
   autoTune,
   rs485,
   can,
-  software
+  software,
 }
 
 final class MotorStateData implements IBoatData {
@@ -47,42 +42,66 @@ final class MotorStateData implements IBoatData {
   final int lifeSignal;
   final MotorInstance instance;
 
-  MotorStateData._({required this.controllerTemperature, required this.motorTemperature, required this.status, required List<EzkontrolErrorFlag> errorFlags, required this.lifeSignal, required this.instance}) : errorFlags = List.unmodifiable(errorFlags);
+  MotorStateData._({
+    required this.controllerTemperature,
+    required this.motorTemperature,
+    required this.status,
+    required List<EzkontrolErrorFlag> errorFlags,
+    required this.lifeSignal,
+    required this.instance,
+  }) : errorFlags = List.unmodifiable(errorFlags);
 
-  factory MotorStateData({required int controllerTemperature, required int motorTemperature, required int status, int errorFlagByte4 = 0, int errorFlagByte5 = 0, int errorFlagByte6 = 0, required int lifeSignal, required MotorInstance instance}){
-
-    List<EzkontrolErrorFlag> errorFlags = []; 
+  factory MotorStateData({
+    required int controllerTemperature,
+    required int motorTemperature,
+    required int status,
+    int errorFlagByte4 = 0,
+    int errorFlagByte5 = 0,
+    int errorFlagByte6 = 0,
+    required int lifeSignal,
+    required MotorInstance instance,
+  }) {
+    List<EzkontrolErrorFlag> errorFlags = [];
 
     // byte4
-    for (int i = 0; i < 8; i++)
-    {
-        if((errorFlagByte4 & (128 >> i)) != 0)
-        {
-            errorFlags.add(EzkontrolErrorFlag.values[(i + 8 * 0)]);
-        }
+    for (int i = 0; i < 8; i++) {
+      if ((errorFlagByte4 & (1 << i)) != 0) {
+        errorFlags.add(EzkontrolErrorFlag.values[i + 8 * 0]);
+      }
     }
 
     // byte5
-    for (int i = 0; i < 8; i++)
-    {
-        if((errorFlagByte5 & (128 >> i)) != 0)
-        {
-            errorFlags.add(EzkontrolErrorFlag.values[(i + 8 * 1)]);
-        }
+    for (int i = 0; i < 8; i++) {
+      if ((errorFlagByte5 & (1 << i)) != 0) {
+        errorFlags.add(EzkontrolErrorFlag.values[i + 8 * 1]);
+      }
     }
 
-    for (int i = 0; i < 6; i++)
-    {
-        if((errorFlagByte6 & (128 >> i)) != 0)
-        {
-            errorFlags.add(EzkontrolErrorFlag.values[(i + 8 * 2)]);
-        }
+    // byte6 (só 6 bits)
+    for (int i = 0; i < 6; i++) {
+      if ((errorFlagByte6 & (1 << i)) != 0) {
+        errorFlags.add(EzkontrolErrorFlag.values[i + 8 * 2]);
+      }
     }
 
-    return MotorStateData._(controllerTemperature: controllerTemperature, motorTemperature: motorTemperature, status: status,  errorFlags: errorFlags,lifeSignal: lifeSignal, instance: instance);
+    return MotorStateData._(
+      controllerTemperature: controllerTemperature,
+      motorTemperature: motorTemperature,
+      status: status,
+      errorFlags: errorFlags,
+      lifeSignal: lifeSignal,
+      instance: instance,
+    );
   }
 
   factory MotorStateData.empty() {
-    return MotorStateData._(controllerTemperature: 0, motorTemperature: 0, status: 0, errorFlags: [], lifeSignal: 0, instance: MotorInstance.left);
+    return MotorStateData._(
+      controllerTemperature: 0,
+      motorTemperature: 0,
+      status: 0,
+      errorFlags: [],
+      lifeSignal: 0,
+      instance: MotorInstance.left,
+    );
   }
 }

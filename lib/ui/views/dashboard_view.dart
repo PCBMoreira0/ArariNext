@@ -275,7 +275,10 @@ class _GPSGroupBox extends StatelessWidget {
           return Table(
             children: [
               TableRow(
-                children: [Text('Velocidade:'), Text('${data.speed * 0.0194384} knt')],
+                children: [
+                  Text('Velocidade:'),
+                  Text('${(data.speed * 0.0194384).toStringAsFixed(2)} knt'),
+                ],
               ),
               TableRow(
                 children: [
@@ -300,6 +303,89 @@ class _MotorGroupBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return GroupBox(
       title: 'Motores',
+      sideWidget: IconButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true, // permite altura maior
+            builder: (context) {
+              return Container(
+                padding: EdgeInsets.all(16),
+                height:
+                    MediaQuery.of(context).size.height * 0.6, // altura do modal
+                child: Row(
+                  children: [
+                    // Bombordo
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Bombordo',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 8),
+                          Expanded(
+                            child: ValueListenableBuilder(
+                              valueListenable:
+                                  viewmodel.motorStateLeftValueNotifier,
+                              builder: (context, motor, child) {
+                                if (motor.errorFlags.isEmpty) {
+                                  return Center(child: Text('Nenhum erro'));
+                                }
+                                return ListView.builder(
+                                  itemCount: motor.errorFlags.length,
+                                  itemBuilder: (context, index) {
+                                    return Text(motor.errorFlags[index].name);
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(width: 16),
+
+                    // Boreste
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Boreste',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 8),
+                          Expanded(
+                            child: ValueListenableBuilder(
+                              valueListenable:
+                                  viewmodel.motorStateRightValueNotifier,
+                              builder: (context, motor, child) {
+                                if (motor.errorFlags.isEmpty) {
+                                  return Center(child: Text('Nenhum erro'));
+                                }
+                                return ListView.builder(
+                                  itemCount: motor.errorFlags.length,
+                                  itemBuilder: (context, index) {
+                                    return Text(motor.errorFlags[index].name);
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+        icon: Icon(Icons.email),
+      ),
       child: Table(
         children: [
           TableRow(children: [Container(), Text('Bombordo'), Text('Boreste')]),
