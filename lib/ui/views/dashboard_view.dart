@@ -84,9 +84,20 @@ class _BMSGroupBox extends StatelessWidget {
               ),
               TableRow(
                 children: [
-                  Text('Tempo Restante:'),
+                  Text('Tempo R. c/ geracao:'),
                   ValueListenableBuilder(
-                    valueListenable: viewmodel.batteryRemainingTime,
+                    valueListenable: viewmodel.batteryRemainingTimeWithGeneration,
+                    builder: (context, time, child) {
+                      return Text('${time.$1}h ${time.$2}m');
+                    },
+                  ),
+                ],
+              ),
+               TableRow(
+                children: [
+                  Text('Tempo R. s/ geracao:'),
+                  ValueListenableBuilder(
+                    valueListenable: viewmodel.batteryRemainingTimeWithoutGeneration,
                     builder: (context, time, child) {
                       return Text('${time.$1}h ${time.$2}m');
                     },
@@ -289,7 +300,7 @@ class _GPSGroupBox extends StatelessWidget {
               TableRow(
                 children: [
                   Text('Velocidade:'),
-                  Text('${(data.speed * 0.0194384).toStringAsFixed(2)} Knt'),
+                  Text('${(data.speed).toStringAsFixed(2)} Knt'),
                 ],
               ),
               TableRow(

@@ -11,10 +11,15 @@ import 'package:arari_next/domain/models/temperature_data.dart';
 import 'package:flutter/widgets.dart';
 
 class DashboardViewmodel {
+  BMSData? lastBatteryValue;
+  MotorEletricalData? lastMotorValueRight;
+  MotorEletricalData? lastMotorValueLeft;
+
   final PacketRepository _packetRepository;
 
   ValueNotifier<BMSData> bmsValueNotifier = ValueNotifier(BMSData.empty());
-  ValueNotifier<(int, int)> batteryRemainingTime = ValueNotifier((0,0));
+  ValueNotifier<(int, int)> batteryRemainingTimeWithGeneration = ValueNotifier((0,0));
+  ValueNotifier<(int, int)> batteryRemainingTimeWithoutGeneration = ValueNotifier((0,0));
   StreamSubscription? bmsStream;
 
   ValueNotifier<MotorEletricalData> motorLeftValueNotifier = ValueNotifier(MotorEletricalData.empty());
@@ -42,6 +47,16 @@ class DashboardViewmodel {
 
   void _processModel(IBoatData? data){
     if(data == null) return;
+    if ((lastBatteryValue != null) && (lastMotorValueRight != null) && (lastMotorValueLeft != null) ) {
+        double currentSum = (lastMotorValueLeft!.busCurrent + lastMotorValueRight!.busCurrent);
+       if( currentSum != 0){
+        double remainingHours = -1 * (((lastBatteryValue!.stateOfCharge / 100.0) * 40.0) / currentSum);
+        batteryRemainingTimeWithGeneration.value = (remainingHours.floor(), ((remainingHours - remainingHours.floor()) * 60).round());
+        }
+        else{
+        batteryRemainingTimeWithGeneration.value = (0, 0);
+        }
+    }
 
     switch(data){
       case BMSData bms:
@@ -79,22 +94,26 @@ class DashboardViewmodel {
   }
 
   void updateBMS(BMSData data){
+    lastBatteryValue = data;
     bmsValueNotifier.value = data;
 
     if(data.batteryCurrent != 0){
       double remainingHours = -1 * (((data.stateOfCharge / 100.0) * 40.0) / data.batteryCurrent);
-      batteryRemainingTime.value = (remainingHours.floor(), ((remainingHours - remainingHours.floor()) * 60).round());
+      batteryRemainingTimeWithGeneration.value = (remainingHours.floor(), ((remainingHours - remainingHours.floor()) * 60).round());
     }
     else{
-      batteryRemainingTime.value = (0, 0);
+      batteryRemainingTimeWithGeneration.value = (0, 0);
     }
   }
 
   void updateMotor(MotorEletricalData data){
+    
     if(data.instance == MotorInstance.left){
+      lastMotorValueLeft = data;
       motorLeftValueNotifier.value = data;
     }
     else{
+      lastMotorValueRight = data;
       motorRightValueNotifier.value = data;
     }
   }
@@ -102,6 +121,7 @@ class DashboardViewmodel {
   void updateMotorState(MotorStateData data){
     if(data.instance == MotorInstance.left){
       motorStateLeftValueNotifier.value = data;
+
     }
     else{
       motorStateRightValueNotifier.value = data;
