@@ -1,7 +1,9 @@
 import 'package:arari_next/config/settings_manager.dart';
+import 'package:arari_next/data/services/logging_service_influx.dart';
 import 'package:arari_next/data/services/serial/model/serial_port_data.dart';
 import 'package:arari_next/data/services/serial/serial_connector.dart';
 import 'package:arari_next/data/services/serial/serial_service.dart';
+import 'package:arari_next/domain/models/bms_data.dart';
 import 'package:flutter/material.dart';
 
 class SettingsViewmodel extends ChangeNotifier {
@@ -10,16 +12,20 @@ class SettingsViewmodel extends ChangeNotifier {
   SerialPortData? _selectedSerialPort;
   int _selectedBaudrate = 9600;
   bool get isSerialOpen => _serial.isPortOpen(); 
+  String _loggingPath = "";
+  bool get isLogOpen => _log.isOpen;
 
   List<SerialPortData> get serialPorts => _serialPorts;
   List<int> get baudRates => _baudrates; 
+  String get loggingPath => _loggingPath;
 
   SerialPortData? get selectedSerialPort => _selectedSerialPort;
   int get selectedBaudrate => _selectedBaudrate;
   final SettingsManager _settings;
   final SerialService _serial;
+  final LoggingServiceInflux _log;
 
-  SettingsViewmodel({required SerialService serial, required SettingsManager settings}) :  _serial = serial, _settings = settings;
+  SettingsViewmodel({required SerialService serial, required SettingsManager settings, required LoggingServiceInflux log}) :  _serial = serial, _settings = settings, _log = log;
   
   void downloadSettings() async {
     _serialPorts = SerialConnector.readPorts();
@@ -34,6 +40,8 @@ class SettingsViewmodel extends ChangeNotifier {
     _selectedSerialPort ??= null;
 
     _selectedBaudrate = _settings.selectedBaudrate;
+
+    _loggingPath = _settings.getLogDirectory() ?? "";
     
     notifyListeners();
   }
@@ -58,6 +66,27 @@ class SettingsViewmodel extends ChangeNotifier {
   Future<void> setBaudrate(int baudrate) async{
     await _settings.setBaudrate(baudrate);
     _selectedBaudrate = baudrate;
+    notifyListeners();
+  }
+
+  Future<void> setLogDirectory(String dir) async{
+    await _settings.setLoggingDirectory(dir);
+    _loggingPath = dir;
+    notifyListeners();
+  }
+
+  void toggleLogging() async {
+    try{
+       if(_log.isOpen){
+       await _log.close();  
+    }
+    else{
+      await _log.openFile(_loggingPath, "ararilog");
+    }
+    }catch(e){
+      print(e.toString());
+    }
+
     notifyListeners();
   }
 }

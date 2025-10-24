@@ -12,11 +12,13 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
+  TextEditingController logTextController = TextEditingController();
   @override
   void initState() {
     super.initState();
 
     widget.viewmodel.downloadSettings();
+    logTextController.text = widget.viewmodel.loggingPath;
   }
 
   @override
@@ -38,7 +40,7 @@ class _SettingsViewState extends State<SettingsView> {
                 }
               },
               child: Text(
-                '${widget.viewmodel.isSerialOpen ? 'Desconectar' : 'Conectar'}',
+                widget.viewmodel.isSerialOpen ? 'Desconectar' : 'Conectar',
               ),
             ),
           ),
@@ -77,6 +79,29 @@ class _SettingsViewState extends State<SettingsView> {
             },
             label: const Text("Baudrate"),
             enableSearch: false,
+          ),
+          SizedBox(height: 20.0),
+          TextField(
+            controller: logTextController,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Digite o caminho',
+              labelText: 'Diretório do Log',
+            ),
+            onSubmitted: (value) => widget.viewmodel.setLogDirectory(value),
+          ),
+          ListenableBuilder(
+            listenable: widget.viewmodel,
+            builder: (context, child) {
+              return ElevatedButton(
+                onPressed: () async {
+                  widget.viewmodel.toggleLogging();
+                },
+                child: Text(
+                  widget.viewmodel.isLogOpen ? 'Finalizar' : 'Começar',
+                ),
+              );
+            },
           ),
         ],
       ),

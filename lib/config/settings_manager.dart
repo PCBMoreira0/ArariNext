@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingsKeys {
   static const String selectedSerialPort = "serialPort";
   static const String selectedBaudrate = "baudrate";
+  static const String logDirectory = "logDirectory";
 }
 
 class SettingsManager {
@@ -38,5 +39,13 @@ class SettingsManager {
   Future<void> setBaudrate(int baudrate) async {
     await _prefs.setInt(SettingsKeys.selectedBaudrate, baudrate);
     _baudrateStreamController.add(baudrate);
+  }
+
+  Future<void> setLoggingDirectory(String dir) async {
+    await _prefs.setString(SettingsKeys.logDirectory, dir);
+  }
+
+  String? getLogDirectory(){
+    return _prefs.getString(SettingsKeys.logDirectory);
   }
 }

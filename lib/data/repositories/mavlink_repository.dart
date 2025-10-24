@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:arari_next/data/repositories/packet_repository.dart';
+import 'package:arari_next/data/services/logging_service_influx.dart';
 import 'package:arari_next/data/services/serial/serial_service.dart';
 import 'package:arari_next/domain/models/bms_data.dart';
 import 'package:arari_next/domain/models/iboat_data.dart';
@@ -17,8 +18,9 @@ class MavlinkRepository extends PacketRepository {
   final MavlinkParser _mavlinkParser = MavlinkParser(MavlinkDialectArariboat());
 
   final SerialService _serialService;
+  final LoggingServiceInflux _log;
 
-  MavlinkRepository({required SerialService serialService}) : _serialService = serialService {
+  MavlinkRepository({required SerialService serialService, required LoggingServiceInflux log}) : _serialService = serialService, _log = log {
     _mavlinkParser.stream.listen(_processPackage);
     _serialService.read().listen((data) => _mavlinkParser.parse(data));
   }
@@ -64,6 +66,10 @@ class MavlinkRepository extends PacketRepository {
   }
 
   void _processPackage(MavlinkFrame frame){
-    streamController.add(_getModelFromMavlink(frame));
+    IBoatData? model = _getModelFromMavlink(frame);
+    streamController.add(model);
+    if(_log.isOpen) {
+      _log.save(model);
+    }
   }  
 }

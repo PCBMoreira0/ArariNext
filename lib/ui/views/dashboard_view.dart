@@ -431,7 +431,7 @@ class _MotorGroupBox extends StatelessWidget {
                     return ListView.builder(
                       itemCount: motor.errorFlags.length,
                       itemBuilder: (context, index) {
-                        return Text('${motor.errorFlags[index]}');
+                        return Text('${motor.errorFlags[index].name}');
                       },
                     );
                   },
@@ -445,7 +445,7 @@ class _MotorGroupBox extends StatelessWidget {
                     return ListView.builder(
                       itemCount: motor.errorFlags.length,
                       itemBuilder: (context, index) {
-                        return Text('${motor.errorFlags[index]}');
+                        return Text('${motor.errorFlags[index].name}');
                       },
                     );
                   },
