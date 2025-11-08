@@ -74,13 +74,13 @@ enum BMSFailureFlag {
 }
 
 
-final class BMSStatusData implements IBoatData {
+final class BMSStatusData extends IBoatData {
   final List<double> temperatures;
   final int status;
   final List<BMSFailureFlag> failureFlags;
   final int faultCodeByte7;
   
-  BMSStatusData._({required List<double> temperatures, required this.status, required List<BMSFailureFlag> failureFlags, required this.faultCodeByte7}) 
+  BMSStatusData._({required List<double> temperatures, required this.status, required List<BMSFailureFlag> failureFlags, required this.faultCodeByte7, required super.timestamp}) 
     : temperatures = List.unmodifiable(temperatures),
     failureFlags = List.unmodifiable(failureFlags);
 
@@ -94,7 +94,8 @@ final class BMSStatusData implements IBoatData {
         int failureFlagsByte4 = 0, 
         int failureFlagsByte5 = 0, 
         int failureFlagsByte6 = 0,
-        int faultCodeByte7 = 0
+        int faultCodeByte7 = 0,
+        required int timestamp
     }) {
         List<BMSFailureFlag> failureFlags = [];
 
@@ -161,6 +162,10 @@ final class BMSStatusData implements IBoatData {
             }
         }
 
-        return BMSStatusData._(temperatures: temperatures, status: status, failureFlags: failureFlags, faultCodeByte7: faultCodeByte7);
+        return BMSStatusData._(temperatures: temperatures, status: status, failureFlags: failureFlags, faultCodeByte7: faultCodeByte7, timestamp: timestamp);
+  }
+
+  factory BMSStatusData.empty() {
+    return BMSStatusData(temperatures: List.empty(), status: 0, timestamp: 0);
   }
 }

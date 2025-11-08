@@ -13,6 +13,8 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   TextEditingController logTextController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -81,27 +83,48 @@ class _SettingsViewState extends State<SettingsView> {
             enableSearch: false,
           ),
           SizedBox(height: 20.0),
-          TextField(
-            controller: logTextController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Digite o caminho',
-              labelText: 'Diretório do Log',
-            ),
-            onSubmitted: (value) => widget.viewmodel.setLogDirectory(value),
-          ),
-          ListenableBuilder(
-            listenable: widget.viewmodel,
-            builder: (context, child) {
-              return ElevatedButton(
-                onPressed: () async {
-                  widget.viewmodel.toggleLogging();
-                },
-                child: Text(
-                  widget.viewmodel.isLogOpen ? 'Finalizar' : 'Começar',
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: logTextController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Digite o caminho',
+                    labelText: 'Diretório do Log',
+                  ),
+                  onChanged: (value) {
+                    widget.viewmodel.setLogDirectory(value);
+                  },
+                  validator: (value) {
+                    final regex = RegExp(r'^[^\\]*$');
+                    if (value == null || value.isEmpty) {
+                      return 'O campo não pode ficar vazio';
+                    }
+                    if (!regex.hasMatch(value)) {
+                      return 'O campo não pode conter \'\\\'';
+                    }
+                    return null;
+                  },
                 ),
-              );
-            },
+                ListenableBuilder(
+                  listenable: widget.viewmodel,
+                  builder: (context, child) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          widget.viewmodel.toggleLogging();
+                        }
+                      },
+                      child: Text(
+                        widget.viewmodel.isLogOpen ? 'Finalizar' : 'Começar',
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -34,7 +34,7 @@ enum EzkontrolErrorFlag {
   software,
 }
 
-final class MotorStateData implements IBoatData {
+final class MotorStateData extends IBoatData {
   final int controllerTemperature;
   final int motorTemperature;
   final int status;
@@ -49,6 +49,7 @@ final class MotorStateData implements IBoatData {
     required List<EzkontrolErrorFlag> errorFlags,
     required this.lifeSignal,
     required this.instance,
+    required super.timestamp
   }) : errorFlags = List.unmodifiable(errorFlags);
 
   factory MotorStateData({
@@ -60,6 +61,7 @@ final class MotorStateData implements IBoatData {
     int errorFlagByte6 = 0,
     required int lifeSignal,
     required MotorInstance instance,
+    required int timestamp
   }) {
     List<EzkontrolErrorFlag> errorFlags = [];
 
@@ -91,6 +93,7 @@ final class MotorStateData implements IBoatData {
       errorFlags: errorFlags,
       lifeSignal: lifeSignal,
       instance: instance,
+      timestamp: timestamp
     );
   }
 
@@ -102,6 +105,7 @@ final class MotorStateData implements IBoatData {
       errorFlags: [],
       lifeSignal: 0,
       instance: MotorInstance.left,
+      timestamp: 0
     );
   }
 }

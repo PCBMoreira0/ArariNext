@@ -9,11 +9,11 @@ enum MpptBatteryStatus {
   unknown
 }
 
-final class MPPTStateData implements IBoatData {
+final class MPPTStateData extends IBoatData {
   final int batteryStatus;
   final int chargingEquipmentStatus;
 
-  MPPTStateData({required this.batteryStatus, required this.chargingEquipmentStatus});
+  MPPTStateData({required this.batteryStatus, required this.chargingEquipmentStatus, required super.timestamp});
 
 
   // MpptBatteryStatus _getStatus(int status){

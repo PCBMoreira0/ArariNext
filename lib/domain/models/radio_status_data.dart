@@ -5,10 +5,14 @@ enum RadioInstance {
   secondary
 }
 
-final class RadioStatusData implements IBoatData {
+final class RadioStatusData extends IBoatData {
   final int rxErrors;
   final RadioInstance instance;
   final int rssi;
 
-  RadioStatusData({required this.rxErrors, required this.instance, required this.rssi});
+  RadioStatusData({required this.rxErrors, required this.instance, required this.rssi, required super.timestamp});
+  
+  factory RadioStatusData.empty(){
+    return RadioStatusData(rxErrors: 0, instance: RadioInstance.primary, rssi: 0, timestamp: 0);
+  }
 }

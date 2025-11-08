@@ -5,8 +5,12 @@ enum PumpState {
   right
 }
 
-final class PumpData implements IBoatData {
+final class PumpData extends IBoatData {
   final PumpState state;
 
-  PumpData(this.state);
+  PumpData(this.state, {required super.timestamp});
+
+  factory PumpData.empty() {
+    return PumpData(PumpState.left, timestamp: 0);
+  }
 }
