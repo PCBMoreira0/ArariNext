@@ -22,9 +22,18 @@ class LoggingServiceInflux implements ILoggingService {
       await directory.create(recursive: true);
     }
 
+    DateTime date = DateTime.now();
+    String formatted = "${date.year.toString().padLeft(4, '0')}-"
+                   "${date.month.toString().padLeft(2, '0')}-"
+                   "${date.day.toString().padLeft(2, '0')}-"
+                   "${date.hour.toString().padLeft(2, '0')}-"
+                   "${date.minute.toString().padLeft(2, '0')}-"
+                   "${date.second.toString().padLeft(2, '0')}";
+                   
     currentFile = File(
-      '${directory.path}/${fileName}_${DateTime.now().microsecondsSinceEpoch}.txt',
+      '${directory.path}/${fileName}_$formatted.txt',
     );
+    
     _sink = currentFile?.openWrite(mode: FileMode.append);
     _isOpen = true;
   }
