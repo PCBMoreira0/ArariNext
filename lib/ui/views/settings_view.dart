@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:arari_next/ui/viewmodels/settings_viewmodel.dart';
 import 'package:arari_next/ui/core/ui/side_menu.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,10 @@ class _SettingsViewState extends State<SettingsView> {
   void initState() {
     super.initState();
 
-    widget.viewmodel.downloadSettings();
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      widget.viewmodel.downloadSettings();
+    }
+
     logTextController.text = widget.viewmodel.loggingPath;
   }
 
@@ -31,58 +36,9 @@ class _SettingsViewState extends State<SettingsView> {
       body: ListView(
         padding: EdgeInsets.all(20.0),
         children: <Widget>[
-          ListenableBuilder(
-            listenable: widget.viewmodel,
-            builder: (context, child) => ElevatedButton(
-              onPressed: () {
-                try {
-                  widget.viewmodel.toggleSerialPort();
-                } catch (e) {
-                  handleError(e);
-                }
-              },
-              child: Text(
-                widget.viewmodel.isSerialOpen ? 'Desconectar' : 'Conectar',
-              ),
-            ),
-          ),
-          SizedBox(height: 20.0),
-          DropdownMenu(
-            dropdownMenuEntries: widget.viewmodel.serialPorts
-                .map(
-                  (entrie) =>
-                      DropdownMenuEntry(value: entrie, label: entrie.name),
-                )
-                .toList(),
-            initialSelection: widget.viewmodel.selectedSerialPort,
-            label: const Text("Porta Serial"),
-            enableSearch: false,
-            onSelected: (value) async {
-              if (value != null) {
-                await widget.viewmodel.setSerialPort(value);
-              }
-            },
-          ),
-          SizedBox(height: 20.0),
-          DropdownMenu(
-            dropdownMenuEntries: widget.viewmodel.baudRates
-                .map(
-                  (entrie) => DropdownMenuEntry(
-                    value: entrie,
-                    label: entrie.toString(),
-                  ),
-                )
-                .toList(),
-            initialSelection: widget.viewmodel.selectedBaudrate,
-            onSelected: (value) async {
-              if (value != null) {
-                await widget.viewmodel.setBaudrate(value);
-              }
-            },
-            label: const Text("Baudrate"),
-            enableSearch: false,
-          ),
-          SizedBox(height: 20.0),
+          if (!Platform.isAndroid && !Platform.isIOS)
+            _SerialSettings(viewmodel: widget.viewmodel),
+          SizedBox(height: 40.0),
           Form(
             key: _formKey,
             child: Column(
@@ -130,14 +86,77 @@ class _SettingsViewState extends State<SettingsView> {
       ),
     );
   }
+}
 
-  handleError(Object e) {
-    return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Ocorreu um erro: $e"),
-        backgroundColor: Colors.red,
-        duration: Duration(seconds: 3),
-      ),
+handleError(Object e, BuildContext context) {
+  return ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text("Ocorreu um erro: $e"),
+      backgroundColor: Colors.red,
+      duration: Duration(seconds: 3),
+    ),
+  );
+}
+
+class _SerialSettings extends StatelessWidget {
+  final SettingsViewmodel _viewModel;
+
+  const _SerialSettings({super.key, required SettingsViewmodel viewmodel})
+    : _viewModel = viewmodel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownMenu(
+          dropdownMenuEntries: _viewModel.serialPorts
+              .map(
+                (entrie) =>
+                    DropdownMenuEntry(value: entrie, label: entrie.name),
+              )
+              .toList(),
+          initialSelection: _viewModel.selectedSerialPort,
+          label: const Text("Porta Serial"),
+          enableSearch: false,
+          onSelected: (value) async {
+            if (value != null) {
+              await _viewModel.setSerialPort(value);
+            }
+          },
+        ),
+        SizedBox(height: 20.0),
+        DropdownMenu(
+          dropdownMenuEntries: _viewModel.baudRates
+              .map(
+                (entrie) =>
+                    DropdownMenuEntry(value: entrie, label: entrie.toString()),
+              )
+              .toList(),
+          initialSelection: _viewModel.selectedBaudrate,
+          onSelected: (value) async {
+            if (value != null) {
+              await _viewModel.setBaudrate(value);
+            }
+          },
+          label: const Text("Baudrate"),
+          enableSearch: false,
+        ),
+        SizedBox(height: 20.0),
+        ListenableBuilder(
+          listenable: _viewModel,
+          builder: (context, child) => ElevatedButton(
+            onPressed: () {
+              try {
+                _viewModel.toggleSerialPort();
+              } catch (e) {
+                handleError(e, context);
+              }
+            },
+            child: Text(_viewModel.isSerialOpen ? 'Desconectar' : 'Conectar'),
+          ),
+        ),
+      ],
     );
   }
 }

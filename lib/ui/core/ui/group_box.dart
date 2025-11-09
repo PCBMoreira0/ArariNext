@@ -5,7 +5,7 @@ class GroupBox extends StatelessWidget {
   final Widget child;
   final Widget? sideWidget;
 
-  GroupBox({super.key, required this.title, required this.child, this.sideWidget});
+  const GroupBox({super.key, required this.title, required this.child, this.sideWidget});
 
   @override
   Widget build(BuildContext context) {
