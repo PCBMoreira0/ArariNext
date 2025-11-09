@@ -3,7 +3,6 @@ import 'package:arari_next/data/services/logging_service_influx.dart';
 import 'package:arari_next/data/services/serial/model/serial_port_data.dart';
 import 'package:arari_next/data/services/serial/serial_connector.dart';
 import 'package:arari_next/data/services/serial/serial_service.dart';
-import 'package:arari_next/domain/models/bms_data.dart';
 import 'package:flutter/material.dart';
 
 class SettingsViewmodel extends ChangeNotifier {
