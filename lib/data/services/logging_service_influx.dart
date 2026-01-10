@@ -23,16 +23,16 @@ class LoggingServiceInflux implements ILoggingService {
     }
 
     DateTime date = DateTime.now();
-    String formatted = "${date.year.toString().padLeft(4, '0')}-"
-                   "${date.month.toString().padLeft(2, '0')}-"
-                   "${date.day.toString().padLeft(2, '0')}-"
-                   "${date.hour.toString().padLeft(2, '0')}-"
-                   "${date.minute.toString().padLeft(2, '0')}-"
-                   "${date.second.toString().padLeft(2, '0')}";
-                   
-    currentFile = File(
-      '${directory.path}/${fileName}_${formatted}.txt',
-    );
+    String formatted =
+        "${date.year.toString().padLeft(4, '0')}-"
+        "${date.month.toString().padLeft(2, '0')}-"
+        "${date.day.toString().padLeft(2, '0')}-"
+        "${date.hour.toString().padLeft(2, '0')}-"
+        "${date.minute.toString().padLeft(2, '0')}-"
+        "${date.second.toString().padLeft(2, '0')}";
+
+    currentFile = File('${directory.path}/${fileName}_$formatted.txt');
+
     _sink = currentFile?.openWrite(mode: FileMode.append);
     _isOpen = true;
   }
@@ -82,6 +82,22 @@ class LoggingServiceInflux implements ILoggingService {
     return buffer;
   }
 
+  String lineProtocolAddFieldString(
+    String buffer,
+    List<({String key, String value})> pair,
+  ) {
+    buffer += " ";
+
+    int i;
+    for (i = 0; i < pair.length - 1; i++) {
+      buffer += "${pair[i].key}=\"${pair[i].value}\",";
+    }
+
+    buffer += "${pair[i].key}=\"${pair[i].value}\"";
+
+    return buffer;
+  }
+
   String lineProtocolAddTimestamp(String buffer, int timestamp) {
     buffer += " $timestamp";
     return buffer;
@@ -91,22 +107,22 @@ class LoggingServiceInflux implements ILoggingService {
     String buffer,
     MotorEletricalData data,
   ) {
-    
     buffer = lineProtocolAddTable(buffer, "motorEletricalData");
 
-    buffer = lineProtocolAddTag(buffer, 
-    [
-      (key: "instance", value: data.instance == MotorInstance.left ? "left" : "right")
+    buffer = lineProtocolAddTag(buffer, [
+      (
+        key: "instance",
+        value: data.instance == MotorInstance.left ? "left" : "right",
+      ),
     ]);
-    
-    buffer = lineProtocolAddField(buffer, 
-    [
+
+    buffer = lineProtocolAddField(buffer, [
       (key: "busVoltage", value: data.busVoltage),
       (key: "busCurrent", value: data.busCurrent),
       (key: "rpm", value: data.rpm),
-      (key: "acceleratorOpening", value: data.acceleratorOpening)
+      (key: "acceleratorOpening", value: data.acceleratorOpening),
     ]);
-    
+
     buffer = lineProtocolAddTimestamp(buffer, data.timestamp);
 
     return buffer;
@@ -114,18 +130,36 @@ class LoggingServiceInflux implements ILoggingService {
 
   String mavlinkEzkontrolIItoLineProtocol(String buffer, MotorStateData data) {
     buffer = lineProtocolAddTable(buffer, "motorStateData");
-    buffer = lineProtocolAddTag(buffer, 
-    [
-      (key: "instance", value: data.instance == MotorInstance.left ? "left" : "right")
+    buffer = lineProtocolAddTag(buffer, [
+      (
+        key: "instance",
+        value: data.instance == MotorInstance.left ? "left" : "right",
+      ),
     ]);
-    
-    buffer = lineProtocolAddField(buffer, 
-    [
+
+    buffer = lineProtocolAddField(buffer, [
       (key: "controllerTemperature", value: data.controllerTemperature),
-      (key: "motorTemperature", value: data.motorTemperature)
+      (key: "motorTemperature", value: data.motorTemperature),
     ]);
 
     buffer = lineProtocolAddTimestamp(buffer, data.timestamp);
+
+    if (data.errorFlags.isNotEmpty) {
+      for (var flag in data.errorFlags) {
+        buffer += "\n";
+        buffer = lineProtocolAddTable(buffer, "motorErrorFlags");
+        buffer = lineProtocolAddTag(buffer, [
+          (
+            key: "instance",
+            value: data.instance == MotorInstance.left ? "left" : "right",
+          ),
+        ]);
+        buffer = lineProtocolAddFieldString(buffer, [
+          (key: "errorFlag", value: flag.name),
+        ]);
+        buffer = lineProtocolAddTimestamp(buffer, data.timestamp);
+      }
+    }
 
     return buffer;
   }
@@ -133,8 +167,7 @@ class LoggingServiceInflux implements ILoggingService {
   String mavlinkBMSToLineProtocol(String buffer, BMSData data) {
     buffer = lineProtocolAddTable(buffer, "bms");
 
-    buffer = lineProtocolAddField(buffer, 
-    [
+    buffer = lineProtocolAddField(buffer, [
       (key: "batteryCurrent", value: data.batteryCurrent),
       (key: "stateOfCharge", value: data.stateOfCharge),
       (key: "temperature1", value: data.temperatures[0]),
@@ -154,7 +187,7 @@ class LoggingServiceInflux implements ILoggingService {
       (key: "voltageCell13", value: data.cellsVoltagesMillivolts[12]),
       (key: "voltageCell14", value: data.cellsVoltagesMillivolts[13]),
       (key: "voltageCell15", value: data.cellsVoltagesMillivolts[14]),
-      (key: "voltageCell16", value: data.cellsVoltagesMillivolts[15])
+      (key: "voltageCell16", value: data.cellsVoltagesMillivolts[15]),
     ]);
 
     buffer = lineProtocolAddTimestamp(buffer, data.timestamp);
@@ -165,11 +198,10 @@ class LoggingServiceInflux implements ILoggingService {
   String mavlinkGPSToLineProtocol(String buffer, GPSData data) {
     buffer = lineProtocolAddTable(buffer, "gps");
 
-    buffer = lineProtocolAddField(buffer, 
-    [
+    buffer = lineProtocolAddField(buffer, [
       (key: "speed", value: data.speed),
       (key: "latitude", value: data.latitude),
-      (key: "longitude",value: data.longitude)
+      (key: "longitude", value: data.longitude),
     ]);
 
     buffer = lineProtocolAddTimestamp(buffer, data.timestamp);
@@ -183,8 +215,7 @@ class LoggingServiceInflux implements ILoggingService {
   ) {
     buffer = lineProtocolAddTable(buffer, "instrumentation");
 
-    buffer = lineProtocolAddField(buffer, 
-    [
+    buffer = lineProtocolAddField(buffer, [
       (key: "batteryCurrent", value: data.batteryCurrent),
       (key: "batteryVoltage", value: data.batteryVoltage),
       (key: "motorCurrentLeft", value: data.motorCurrentLeft),
@@ -193,7 +224,7 @@ class LoggingServiceInflux implements ILoggingService {
       (key: "mppt_string1", value: data.panelStrings.string1),
       (key: "mppt_string2", value: data.panelStrings.string2),
       (key: "mppt_string3", value: data.panelStrings.string3),
-      (key: "mppt_string4", value: data.panelStrings.string4)
+      (key: "mppt_string4", value: data.panelStrings.string4),
     ]);
 
     buffer = lineProtocolAddTimestamp(buffer, data.timestamp);
@@ -201,16 +232,15 @@ class LoggingServiceInflux implements ILoggingService {
     return buffer;
   }
 
-  String mavlinkMPPTToLineProtocol(String buffer, MPPTData data){
+  String mavlinkMPPTToLineProtocol(String buffer, MPPTData data) {
     buffer = lineProtocolAddTable(buffer, "mppt");
-    
-    buffer = lineProtocolAddField(buffer, 
-    [
+
+    buffer = lineProtocolAddField(buffer, [
       (key: "pvVoltage", value: data.pvVoltage),
       (key: "pvCurrent", value: data.pvCurrent),
       (key: "batteryVoltage", value: data.batteryVoltage),
       (key: "batteryCurrent", value: data.batteryCurrent),
-      (key: "mpptCurrent", value: data.mpptCurrent)
+      (key: "mpptCurrent", value: data.mpptCurrent),
     ]);
 
     buffer = lineProtocolAddTimestamp(buffer, data.timestamp);
@@ -221,7 +251,7 @@ class LoggingServiceInflux implements ILoggingService {
   @override
   Future<void> save(IBoatData? data) async {
     if (data == null) return;
-    
+
     String buffer = '';
 
     switch (data) {

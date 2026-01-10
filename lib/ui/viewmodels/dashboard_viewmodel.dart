@@ -14,6 +14,7 @@ class DashboardViewmodel {
   BMSData? lastBatteryValue;
   MotorEletricalData? lastMotorValueRight;
   MotorEletricalData? lastMotorValueLeft;
+  InstrumentationData? lastInstrumentationValue;
 
   final PacketRepository _packetRepository;
 
@@ -62,12 +63,15 @@ class DashboardViewmodel {
   }
 
   void _processModel(IBoatData? data) {
+    // This calculates the battery remaining time using only the sum of the motor currents
+    // It is not following the correct fundamentals of software design, but it works for now
     if (data == null) return;
     if ((lastBatteryValue != null) &&
         (lastMotorValueRight != null) &&
-        (lastMotorValueLeft != null)) {
+        (lastMotorValueLeft != null) &&
+        (lastInstrumentationValue != null)) {
       double currentSum =
-          (lastMotorValueLeft!.busCurrent + lastMotorValueRight!.busCurrent);
+          (lastInstrumentationValue!.motorCurrentLeft + lastInstrumentationValue!.motorCurrentRight);
       if (currentSum != 0) {
         double remainingHours =
             -1 *
@@ -83,8 +87,10 @@ class DashboardViewmodel {
       lastBatteryValue = null;
       lastMotorValueRight = null;
       lastMotorValueLeft = null;
+      lastInstrumentationValue = null;
     }
 
+    // Update the specific data model
     switch (data) {
       case BMSData bms:
         updateBMS(bms);
@@ -155,6 +161,7 @@ class DashboardViewmodel {
   }
 
   void updateInstrumentation(InstrumentationData data) {
+    lastInstrumentationValue = data;
     instrumentationValueNotifier.value = data;
   }
 
