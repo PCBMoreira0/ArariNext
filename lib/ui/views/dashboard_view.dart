@@ -63,44 +63,41 @@ class _BMSGroupBox extends StatelessWidget {
     return GroupBox(
       title: 'Bateria',
       child: ValueListenableBuilder(
-        valueListenable: viewmodel.bmsValueNotifier,
+        valueListenable: viewmodel.fullBoatDataValueNotifier,
         builder: (context, data, child) {
           return Table(
             children: [
               TableRow(
                 children: [
                   Text('Tensão Total:'),
-                  Text('${data.totalVoltage} V'),
+                  Text('${data.bmsData.totalVoltage} V'),
                 ],
               ),
               TableRow(
-                children: [Text('Corrente:'), Text('${data.batteryCurrent} A')],
+                children: [
+                  Text('Corrente:'),
+                  Text('${data.bmsData.batteryCurrent} A'),
+                ],
               ),
               TableRow(
                 children: [
                   Text('Estado de carga:'),
-                  Text('${data.stateOfCharge} %'),
+                  Text('${data.bmsData.stateOfCharge} %'),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Tempo R. c/ geracao:'),
-                  ValueListenableBuilder(
-                    valueListenable: viewmodel.batteryRemainingTimeWithGeneration,
-                    builder: (context, time, child) {
-                      return Text('${time.$1}h ${time.$2}m');
-                    },
+                  Text(
+                    '${data.batteryRemainingTimeEstimation.hora}h ${data.batteryRemainingTimeEstimation.minuto}m',
                   ),
                 ],
               ),
-               TableRow(
+              TableRow(
                 children: [
                   Text('Tempo R. s/ geracao:'),
-                  ValueListenableBuilder(
-                    valueListenable: viewmodel.batteryRemainingTimeWithoutGeneration,
-                    builder: (context, time, child) {
-                      return Text('${time.$1}h ${time.$2}m');
-                    },
+                  Text(
+                    '${data.batteryTimeWithoutGeneration.hora}h ${data.batteryTimeWithoutGeneration.minuto}m',
                   ),
                 ],
               ),
@@ -122,7 +119,7 @@ class _MPPTGroupBox extends StatelessWidget {
     return GroupBox(
       title: 'MPPT',
       child: ValueListenableBuilder(
-        valueListenable: viewmodel.mpptValueNotifier,
+        valueListenable: viewmodel.fullBoatDataValueNotifier,
         builder: (context, data, child) {
           return Column(
             children: [
@@ -131,37 +128,37 @@ class _MPPTGroupBox extends StatelessWidget {
                   TableRow(
                     children: [
                       Text('Tensão dos painel:'),
-                      Text('${data.pvVoltage} V'),
+                      Text('${data.mpptData.pvVoltage} V'),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text('Corrente dos paineis:'),
-                      Text('${data.pvCurrent} A'),
+                      Text('${data.mpptData.pvCurrent} A'),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text('Tensão da bateria:'),
-                      Text('${data.batteryVoltage} V'),
+                      Text('${data.mpptData.batteryVoltage} V'),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text('Corrente da bateria:'),
-                      Text('${data.batteryCurrent} A'),
+                      Text('${data.mpptData.batteryCurrent} A'),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text('Corrente do mppt:'),
-                      Text('${data.mpptCurrent} A'),
+                      Text('${data.mpptData.mpptCurrent} A'),
                     ],
                   ),
                 ],
               ),
               ValueListenableBuilder(
-                valueListenable: viewmodel.instrumentationValueNotifier,
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
                   return Table(
                     children: [
@@ -172,13 +169,17 @@ class _MPPTGroupBox extends StatelessWidget {
                               TableRow(
                                 children: [
                                   Text('String 1:'),
-                                  Text('${data.panelStrings.string1}'),
+                                  Text(
+                                    '${data.instrumentationData.panelStrings.string1}',
+                                  ),
                                 ],
                               ),
                               TableRow(
                                 children: [
                                   Text('String 2:'),
-                                  Text('${data.panelStrings.string2}'),
+                                  Text(
+                                    '${data.instrumentationData.panelStrings.string2}',
+                                  ),
                                 ],
                               ),
                             ],
@@ -188,13 +189,17 @@ class _MPPTGroupBox extends StatelessWidget {
                               TableRow(
                                 children: [
                                   Text('String 3:'),
-                                  Text('${data.panelStrings.string3}'),
+                                  Text(
+                                    '${data.instrumentationData.panelStrings.string3}',
+                                  ),
                                 ],
                               ),
                               TableRow(
                                 children: [
                                   Text('String 4:'),
-                                  Text('${data.panelStrings.string4}'),
+                                  Text(
+                                    '${data.instrumentationData.panelStrings.string4}',
+                                  ),
                                 ],
                               ),
                             ],
@@ -223,56 +228,72 @@ class _InstrumentationGroupBox extends StatelessWidget {
     return GroupBox(
       title: 'Instrumentação',
       child: ValueListenableBuilder(
-        valueListenable: viewmodel.instrumentationValueNotifier,
+        valueListenable: viewmodel.fullBoatDataValueNotifier,
         builder: (context, data, child) {
           return Table(
             children: [
               TableRow(
                 children: [
                   Text('Corrente Bateria:'),
-                  Text('${data.batteryCurrent.toStringAsFixed(2)} A'),
+                  Text(
+                    '${data.instrumentationData.batteryCurrent.toStringAsFixed(2)} A',
+                  ),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Tensão Bateria:'),
-                  Text('${data.batteryVoltage.toStringAsFixed(2)} V'),
+                  Text(
+                    '${data.instrumentationData.batteryVoltage.toStringAsFixed(2)} V',
+                  ),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Corrente Motor Bombordo:'),
-                  Text('${data.motorCurrentLeft.toStringAsFixed(2)} A'),
+                  Text(
+                    '${data.instrumentationData.motorCurrentLeft.toStringAsFixed(2)} A',
+                  ),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Corrente Motor Boreste:'),
-                  Text('${(data.motorCurrentRight * -1).toStringAsFixed(2)} A'),
+                  Text(
+                    '${(data.instrumentationData.motorCurrentRight * -1).toStringAsFixed(2)} A',
+                  ),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Corrente MPPT:'),
-                  Text('${data.mpptCurrent.toStringAsFixed(2)} A'),
+                  Text(
+                    '${data.instrumentationData.mpptCurrent.toStringAsFixed(2)} A',
+                  ),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Corrente Bateria Auxiliar:'),
-                  Text('${data.auxBatteryCurrent.toStringAsFixed(2)} A'),
+                  Text(
+                    '${data.instrumentationData.auxBatteryCurrent.toStringAsFixed(2)} A',
+                  ),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Tensão Bateria Auxiliar:'),
-                  Text('${data.auxBatteryVoltage.toStringAsFixed(2)} V'),
+                  Text(
+                    '${data.instrumentationData.auxBatteryVoltage.toStringAsFixed(2)} V',
+                  ),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Irradiância:'),
-                  Text('${data.irradiance.toStringAsFixed(2)} W/m²'),
+                  Text(
+                    '${data.instrumentationData.irradiance.toStringAsFixed(2)} W/m²',
+                  ),
                 ],
               ),
             ],
@@ -293,20 +314,20 @@ class _GPSGroupBox extends StatelessWidget {
     return GroupBox(
       title: 'GPS',
       child: ValueListenableBuilder(
-        valueListenable: viewmodel.gpsValueNotifier,
+        valueListenable: viewmodel.fullBoatDataValueNotifier,
         builder: (context, data, child) {
           return Table(
             children: [
               TableRow(
                 children: [
                   Text('Velocidade:'),
-                  Text('${(data.speed).toStringAsFixed(2)} Knt'),
+                  Text('${(data.gpsData.speed).toStringAsFixed(2)} Knt'),
                 ],
               ),
               TableRow(
                 children: [
                   Text('Satélites:'),
-                  Text('${data.visibleSatellites}'),
+                  Text('${data.gpsData.visibleSatellites}'),
                 ],
               ),
             ],
@@ -333,15 +354,15 @@ class _MotorGroupBox extends StatelessWidget {
             children: [
               Text('Tensão:'),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorLeftValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.busVoltage} V');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text('${data.motorEletricalData.busVoltage} V');
                 },
               ),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorRightValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.busVoltage} V');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text('${data.motorEletricalData.busVoltage} V');
                 },
               ),
             ],
@@ -350,15 +371,15 @@ class _MotorGroupBox extends StatelessWidget {
             children: [
               Text('Corrente:'),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorLeftValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.busCurrent} A');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text('${data.motorEletricalData.busCurrent} A');
                 },
               ),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorRightValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.busCurrent} A');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text('${data.motorEletricalData.busCurrent} A');
                 },
               ),
             ],
@@ -367,15 +388,15 @@ class _MotorGroupBox extends StatelessWidget {
             children: [
               Text('RPM:'),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorLeftValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.rpm} rpm');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text('${data.motorEletricalData.rpm} rpm');
                 },
               ),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorRightValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.rpm} rpm');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text('${data.motorEletricalData.rpm} rpm');
                 },
               ),
             ],
@@ -384,15 +405,19 @@ class _MotorGroupBox extends StatelessWidget {
             children: [
               Text('Abertura:'),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorLeftValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.acceleratorOpening} %');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text(
+                    '${data.motorEletricalData.acceleratorOpening} %',
+                  );
                 },
               ),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorRightValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.acceleratorOpening} %');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text(
+                    '${data.motorEletricalData.acceleratorOpening} %',
+                  );
                 },
               ),
             ],
@@ -401,15 +426,15 @@ class _MotorGroupBox extends StatelessWidget {
             children: [
               Text('Temp. Motor:'),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorStateLeftValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.motorTemperature} °C');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text('${data.motorStateData.motorTemperature} °C');
                 },
               ),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorStateRightValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.motorTemperature} °C');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text('${data.motorStateData.motorTemperature} °C');
                 },
               ),
             ],
@@ -418,15 +443,19 @@ class _MotorGroupBox extends StatelessWidget {
             children: [
               Text('Temp. ESC:'),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorStateLeftValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.controllerTemperature} °C');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text(
+                    '${data.motorStateData.controllerTemperature} °C',
+                  );
                 },
               ),
               ValueListenableBuilder(
-                valueListenable: viewmodel.motorStateRightValueNotifier,
-                builder: (context, motor, child) {
-                  return Text('${motor.controllerTemperature} °C');
+                valueListenable: viewmodel.fullBoatDataValueNotifier,
+                builder: (context, data, child) {
+                  return Text(
+                    '${data.motorStateData.controllerTemperature} °C',
+                  );
                 },
               ),
             ],
@@ -437,12 +466,12 @@ class _MotorGroupBox extends StatelessWidget {
               SizedBox(
                 height: 80, // altura mínima/fixa da célula
                 child: ValueListenableBuilder(
-                  valueListenable: viewmodel.motorStateLeftValueNotifier,
-                  builder: (context, motor, child) {
+                  valueListenable: viewmodel.fullBoatDataValueNotifier,
+                  builder: (context, data, child) {
                     return ListView.builder(
-                      itemCount: motor.errorFlags.length,
+                      itemCount: data.motorStateData.errorFlags.length,
                       itemBuilder: (context, index) {
-                        return Text('${motor.errorFlags[index].name}');
+                        return Text(data.motorStateData.errorFlags[index].name);
                       },
                     );
                   },
@@ -451,12 +480,12 @@ class _MotorGroupBox extends StatelessWidget {
               SizedBox(
                 height: 80, // altura mínima/fixa da célula
                 child: ValueListenableBuilder(
-                  valueListenable: viewmodel.motorStateRightValueNotifier,
-                  builder: (context, motor, child) {
+                  valueListenable: viewmodel.fullBoatDataValueNotifier,
+                  builder: (context, data, child) {
                     return ListView.builder(
-                      itemCount: motor.errorFlags.length,
+                      itemCount: data.motorStateData.errorFlags.length,
                       itemBuilder: (context, index) {
-                        return Text('${motor.errorFlags[index].name}');
+                        return Text(data.motorStateData.errorFlags[index].name);
                       },
                     );
                   },
@@ -482,32 +511,34 @@ class _TemperatureGroupBox extends StatelessWidget {
       child: Column(
         children: [
           ValueListenableBuilder(
-            valueListenable: viewmodel.temperatureValueNotifier,
+            valueListenable: viewmodel.fullBoatDataValueNotifier,
             builder: (context, data, child) {
               return Table(
                 children: [
                   TableRow(
                     children: [
                       Text('Temp. Bateria Esquerda:'),
-                      Text('${data.temperatureBatteryLeft} °C'),
+                      Text('${data.temperatureData.temperatureBatteryLeft} °C'),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text('Temp. Bateria Direita:'),
-                      Text('${data.temperatureBatteryRight} °C'),
+                      Text(
+                        '${data.temperatureData.temperatureBatteryRight} °C',
+                      ),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text('Temp. MPPT Esquerdo:'),
-                      Text('${data.temperatureMPPTLeft} °C'),
+                      Text('${data.temperatureData.temperatureMPPTLeft} °C'),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text('Temp. MPPT Direito:'),
-                      Text('${data.temperatureMPPTRight} °C'),
+                      Text('${data.temperatureData.temperatureMPPTRight} °C'),
                     ],
                   ),
                 ],
