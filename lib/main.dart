@@ -1,9 +1,9 @@
 import 'package:arari_next/config/settings_manager.dart';
 import 'package:arari_next/data/repositories/mavlink_repository.dart';
 import 'package:arari_next/data/repositories/packet_repository.dart';
+import 'package:arari_next/data/services/data_source_interface.dart';
 import 'package:arari_next/data/services/logging_service_influx.dart';
-import 'package:arari_next/data/services/serial/serial_connector.dart';
-import 'package:arari_next/data/services/serial/serial_service.dart';
+import 'package:arari_next/data/services/serial/serial_datasource.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/routing/router.dart';
@@ -17,8 +17,10 @@ void main() async {
   runApp(MultiProvider(providers: [
     Provider.value(value: settingsManager),
     Provider.value(value: LoggingServiceInflux()),
-    Provider(create: (context) => SerialService(serial: SerialConnector(), settings: context.read())),
-    Provider(create: (context) => MavlinkRepository(serialService: context.read(), log: context.read()) as PacketRepository, )
+    
+    Provider(create: (context) => SerialDatasource()),
+    Provider<IDataSource>(create: (context) => context.read<SerialDatasource>()),
+    Provider(create: (context) => MavlinkRepository(dataSource: context.read(), log: context.read()) as PacketRepository, )
   ], child: const ArariNextApp()));
 }
 

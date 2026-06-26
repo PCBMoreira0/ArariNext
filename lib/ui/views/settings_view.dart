@@ -113,7 +113,7 @@ class _SerialSettings extends StatelessWidget {
           dropdownMenuEntries: _viewModel.serialPorts
               .map(
                 (entrie) =>
-                    DropdownMenuEntry(value: entrie, label: entrie.name),
+                    DropdownMenuEntry(value: entrie, label: entrie),
               )
               .toList(),
           initialSelection: _viewModel.selectedSerialPort,
@@ -153,7 +153,7 @@ class _SerialSettings extends StatelessWidget {
                 handleError(e, context);
               }
             },
-            child: Text(_viewModel.isSerialOpen ? 'Desconectar' : 'Conectar'),
+            child: Text(_viewModel.isSerialConnected ? 'Desconectar' : 'Conectar'),
           ),
         ),
       ],

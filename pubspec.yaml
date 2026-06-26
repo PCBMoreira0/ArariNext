@@ -12,10 +12,12 @@ dependencies:
     sdk: flutter
     
   flutter_libserialport: ^0.6.0
+  mqtt_client: ^10.11.11
   flutter_serial_communication: ^0.2.8
   libserialport: ^0.3.0+1
   provider: ^6.1.5+1
   shared_preferences: ^2.5.3
+  async: ^2.13.1
 
 dev_dependencies:
   flutter_test:

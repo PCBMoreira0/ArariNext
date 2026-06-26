@@ -1,37 +1,37 @@
 import 'package:arari_next/config/settings_manager.dart';
+import 'package:arari_next/data/services/connection_event.dart';
 import 'package:arari_next/data/services/logging_service_influx.dart';
-import 'package:arari_next/data/services/serial/model/serial_port_data.dart';
-import 'package:arari_next/data/services/serial/serial_connector.dart';
-import 'package:arari_next/data/services/serial/serial_service.dart';
+import 'package:arari_next/data/services/serial/serial_config.dart';
+import 'package:arari_next/data/services/serial/serial_datasource.dart';
 import 'package:flutter/material.dart';
 
 class SettingsViewmodel extends ChangeNotifier {
-  List<SerialPortData> _serialPorts = [];
+  List<String> _serialPorts = [];
   final List<int> _baudrates = [9600, 115200]; 
-  SerialPortData? _selectedSerialPort;
+  String? _selectedSerialPort;
   int _selectedBaudrate = 9600;
-  bool get isSerialOpen => _serial.isPortOpen(); 
+  bool get isSerialConnected => _serial.status == ConnectionStatus.connected; 
   String _loggingPath = "";
   bool get isLogOpen => _log.isOpen;
 
-  List<SerialPortData> get serialPorts => _serialPorts;
+  List<String> get serialPorts => _serialPorts;
   List<int> get baudRates => _baudrates; 
   String get loggingPath => _loggingPath;
 
-  SerialPortData? get selectedSerialPort => _selectedSerialPort;
+  String? get selectedSerialPort => _selectedSerialPort;
   int get selectedBaudrate => _selectedBaudrate;
   final SettingsManager _settings;
-  final SerialService _serial;
+  final SerialDatasource _serial;
   final LoggingServiceInflux _log;
 
-  SettingsViewmodel({required SerialService serial, required SettingsManager settings, required LoggingServiceInflux log}) :  _serial = serial, _settings = settings, _log = log;
+  SettingsViewmodel({required SerialDatasource serial, required SettingsManager settings, required LoggingServiceInflux log}) :  _serial = serial, _settings = settings, _log = log;
   
   void downloadSettings() async {
-    _serialPorts = SerialConnector.readPorts();
+    _serialPorts = SerialDatasource.availablePorts();
 
     String selectedSerial = _settings.selectedSerialPort;
     for(var serial in _serialPorts){
-      if(serial.name == selectedSerial){
+      if(serial == selectedSerial){
         _selectedSerialPort = serial;
         break;
       }
@@ -46,24 +46,26 @@ class SettingsViewmodel extends ChangeNotifier {
   }
 
   void toggleSerialPort(){
-    if(_serial.isPortOpen()){
-      _serial.close();
+    if(_serial.status == ConnectionStatus.connected){
+      _serial.disconnect();
     }
     else{
-      _serial.open();
+      _serial.connect();
     }
     
     notifyListeners();
   }
 
-  Future<void> setSerialPort(SerialPortData port) async {
-    await _settings.setSerialPort(port.name);
+  Future<void> setSerialPort(String port) async {
+    await _settings.setSerialPort(port);
+    _serial.setConfig(SerialConfig(port: port, baudrate: _selectedBaudrate));
     _selectedSerialPort = port;
     notifyListeners();
   }
 
   Future<void> setBaudrate(int baudrate) async{
     await _settings.setBaudrate(baudrate);
+    _serial.setConfig(SerialConfig(port: _selectedSerialPort ?? "", baudrate: baudrate));
     _selectedBaudrate = baudrate;
     notifyListeners();
   }
