@@ -356,13 +356,13 @@ class _MotorGroupBox extends StatelessWidget {
               ValueListenableBuilder(
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
-                  return Text('${data.motorEletricalData.busVoltage} V');
+                  return Text('${data.motorEletricalDataLeft.busVoltage} V');
                 },
               ),
               ValueListenableBuilder(
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
-                  return Text('${data.motorEletricalData.busVoltage} V');
+                  return Text('${data.motorEletricalDataRight.busVoltage} V');
                 },
               ),
             ],
@@ -373,13 +373,13 @@ class _MotorGroupBox extends StatelessWidget {
               ValueListenableBuilder(
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
-                  return Text('${data.motorEletricalData.busCurrent} A');
+                  return Text('${data.motorEletricalDataLeft.busCurrent} A');
                 },
               ),
               ValueListenableBuilder(
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
-                  return Text('${data.motorEletricalData.busCurrent} A');
+                  return Text('${data.motorEletricalDataRight.busCurrent} A');
                 },
               ),
             ],
@@ -390,13 +390,13 @@ class _MotorGroupBox extends StatelessWidget {
               ValueListenableBuilder(
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
-                  return Text('${data.motorEletricalData.rpm} rpm');
+                  return Text('${data.motorEletricalDataLeft.rpm} rpm');
                 },
               ),
               ValueListenableBuilder(
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
-                  return Text('${data.motorEletricalData.rpm} rpm');
+                  return Text('${data.motorEletricalDataRight.rpm} rpm');
                 },
               ),
             ],
@@ -408,7 +408,7 @@ class _MotorGroupBox extends StatelessWidget {
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
                   return Text(
-                    '${data.motorEletricalData.acceleratorOpening} %',
+                    '${data.motorEletricalDataLeft.acceleratorOpening} %',
                   );
                 },
               ),
@@ -416,7 +416,7 @@ class _MotorGroupBox extends StatelessWidget {
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
                   return Text(
-                    '${data.motorEletricalData.acceleratorOpening} %',
+                    '${data.motorEletricalDataRight.acceleratorOpening} %',
                   );
                 },
               ),
@@ -428,13 +428,13 @@ class _MotorGroupBox extends StatelessWidget {
               ValueListenableBuilder(
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
-                  return Text('${data.motorStateData.motorTemperature} °C');
+                  return Text('${data.motorStateDataLeft.motorTemperature} °C');
                 },
               ),
               ValueListenableBuilder(
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
-                  return Text('${data.motorStateData.motorTemperature} °C');
+                  return Text('${data.motorStateDataRight.motorTemperature} °C');
                 },
               ),
             ],
@@ -446,7 +446,7 @@ class _MotorGroupBox extends StatelessWidget {
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
                   return Text(
-                    '${data.motorStateData.controllerTemperature} °C',
+                    '${data.motorStateDataLeft.controllerTemperature} °C',
                   );
                 },
               ),
@@ -454,7 +454,7 @@ class _MotorGroupBox extends StatelessWidget {
                 valueListenable: viewmodel.fullBoatDataValueNotifier,
                 builder: (context, data, child) {
                   return Text(
-                    '${data.motorStateData.controllerTemperature} °C',
+                    '${data.motorStateDataRight.controllerTemperature} °C',
                   );
                 },
               ),
@@ -469,9 +469,9 @@ class _MotorGroupBox extends StatelessWidget {
                   valueListenable: viewmodel.fullBoatDataValueNotifier,
                   builder: (context, data, child) {
                     return ListView.builder(
-                      itemCount: data.motorStateData.errorFlags.length,
+                      itemCount: data.motorStateDataLeft.errorFlags.length,
                       itemBuilder: (context, index) {
-                        return Text(data.motorStateData.errorFlags[index].name);
+                        return Text(data.motorStateDataLeft.errorFlags[index].name);
                       },
                     );
                   },
@@ -483,9 +483,9 @@ class _MotorGroupBox extends StatelessWidget {
                   valueListenable: viewmodel.fullBoatDataValueNotifier,
                   builder: (context, data, child) {
                     return ListView.builder(
-                      itemCount: data.motorStateData.errorFlags.length,
+                      itemCount: data.motorStateDataRight.errorFlags.length,
                       itemBuilder: (context, index) {
-                        return Text(data.motorStateData.errorFlags[index].name);
+                        return Text(data.motorStateDataRight.errorFlags[index].name);
                       },
                     );
                   },

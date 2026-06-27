@@ -10,8 +10,10 @@ import 'package:arari_next/domain/models/temperature_data.dart';
 
 class FullBoatData {
   final BMSData bmsData;
-  final MotorEletricalData motorEletricalData;
-  final MotorStateData motorStateData;
+  final MotorEletricalData motorEletricalDataLeft;
+  final MotorStateData motorStateDataLeft;
+  final MotorEletricalData motorEletricalDataRight;
+  final MotorStateData motorStateDataRight;
   final MPPTData mpptData;
   final InstrumentationData instrumentationData;
   final GPSData gpsData;
@@ -90,8 +92,10 @@ class FullBoatData {
 
   FullBoatData({
     required this.bmsData,
-    required this.motorEletricalData,
-    required this.motorStateData,
+    required this.motorEletricalDataLeft,
+    required this.motorStateDataLeft,
+    required this.motorEletricalDataRight,
+    required this.motorStateDataRight,
     required this.mpptData,
     required this.instrumentationData,
     required this.gpsData,
@@ -103,8 +107,10 @@ class FullBoatData {
   factory FullBoatData.empty() {
     return FullBoatData(
       bmsData: BMSData.empty(),
-      motorEletricalData: MotorEletricalData.empty(),
-      motorStateData: MotorStateData.empty(),
+      motorEletricalDataLeft: MotorEletricalData.empty(),
+      motorStateDataLeft: MotorStateData.empty(),
+      motorEletricalDataRight: MotorEletricalData.empty(),
+      motorStateDataRight: MotorStateData.empty(),
       mpptData: MPPTData.empty(),
       instrumentationData: InstrumentationData.empty(),
       gpsData: GPSData.empty(),
@@ -116,8 +122,10 @@ class FullBoatData {
 
   FullBoatData copyWith({
     BMSData? bmsData,
-    MotorEletricalData? motorEletricalData,
-    MotorStateData? motorStateData,
+    MotorEletricalData? motorEletricalDataLeft,
+    MotorStateData? motorStateDataLeft,
+    MotorEletricalData? motorEletricalDataRight,
+    MotorStateData? motorStateDataRight,
     MPPTData? mpptData,
     InstrumentationData? instrumentationData,
     GPSData? gpsData,
@@ -127,8 +135,10 @@ class FullBoatData {
   }) {
     return FullBoatData(
       bmsData: bmsData ?? this.bmsData,
-      motorEletricalData: motorEletricalData ?? this.motorEletricalData,
-      motorStateData: motorStateData ?? this.motorStateData,
+      motorEletricalDataLeft: motorEletricalDataLeft ?? this.motorEletricalDataLeft,
+      motorStateDataLeft: motorStateDataLeft ?? this.motorStateDataLeft,
+      motorEletricalDataRight: motorEletricalDataRight ?? this.motorEletricalDataRight,
+      motorStateDataRight: motorStateDataRight ?? this.motorStateDataRight,
       mpptData: mpptData ?? this.mpptData,
       instrumentationData: instrumentationData ?? this.instrumentationData,
       gpsData: gpsData ?? this.gpsData,
