@@ -2,6 +2,7 @@ import 'package:arari_next/data/services/logging_service_influx.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:arari_next/ui/viewmodels/dashboard_viewmodel.dart';
 import 'package:arari_next/ui/viewmodels/settings_viewmodel.dart';
+import 'package:arari_next/ui/views/dashboard_screen.dart';
 import 'package:arari_next/ui/views/dashboard_view.dart';
 import 'package:arari_next/ui/views/settings_view.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +19,11 @@ class RouteGenerator {
       case Routes.console:
         return MaterialPageRoute(builder: (_) => ConsoleView());
       
-      case Routes.dashboard:
+      case Routes.oldDashboard:
         return MaterialPageRoute(builder: (context) => DashboardView(viewmodel: DashboardViewmodel(repository: context.read())));
-       
+      
+      case Routes.dashboard:
+        return MaterialPageRoute(builder: (context) => DashboardScreen());
       case Routes.settings:
         return MaterialPageRoute(builder: (context) => SettingsView(viewmodel: SettingsViewmodel(serial: context.read(), settings: context.read(), log: context.read())));
       default:

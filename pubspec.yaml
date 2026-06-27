@@ -18,6 +18,10 @@ dependencies:
   provider: ^6.1.5+1
   shared_preferences: ^2.5.3
   async: ^2.13.1
+  flutter_svg: ^2.2.4
+  geekyants_flutter_gauges: ^1.0.4
+  sliver_dashboard: ^0.9.1
+  cristalyse: ^1.17.6
 
 dev_dependencies:
   flutter_test:
