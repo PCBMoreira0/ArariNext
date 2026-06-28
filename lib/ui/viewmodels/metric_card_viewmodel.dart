@@ -1,6 +1,7 @@
 import 'package:arari_next/data/repositories/packet_repository.dart';
 import 'package:arari_next/domain/models/full_boat_data.dart';
 import 'package:arari_next/ui/core/utils/metric_selection_menu_anchor.dart';
+import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
 import 'package:flutter/material.dart';
 
 class MetricDefinition {
@@ -16,45 +17,28 @@ class MetricDefinition {
 }
 
 class MetricCardViewmodel {
-  final List<MetricDefinition> metrics = [
-    MetricDefinition(
-      label: "Corrente da Bateria",
-      unit: 'A',
-      valueExtractor: (data) => data.bmsData.batteryCurrent,
-    ),
-    MetricDefinition(
-      label: "Tensão da Bateria",
-      unit: 'V',
-      valueExtractor: (data) => data.bmsData.totalVoltage,
-    ),
-    MetricDefinition(
-      label: "Estado de Carga da Bateria",
-      unit: '%',
-      valueExtractor: (data) => data.bmsData.stateOfCharge,
-    ),
-  ];
+  FullBoatData lastKnownData = FullBoatData.empty();
 
-  late FullBoatData lastKnownData = FullBoatData.empty();
+  late final ValueNotifier<MetricData> selectedMetricValueNotifier;
 
-  late final ValueNotifier<MetricData> currentMetricNotifier;
-
-  int _selectedIndex = 0;
-  int get selectedIndex => _selectedIndex;
+  late MetricDefinition _selectedMetricDefinition;
 
   final PacketRepository packetRepository;
 
   MetricCardViewmodel({required this.packetRepository}) {
-    currentMetricNotifier = ValueNotifier<MetricData>(
-      MetricData(label: metrics[0].label, value: 0.0, unit: metrics[0].unit),
+    _selectedMetricDefinition = MetricsCatalog.bms.first;
+
+    selectedMetricValueNotifier = ValueNotifier<MetricData>(
+      MetricData(label: _selectedMetricDefinition.label, value: 0.0, unit: _selectedMetricDefinition.unit),
     );
 
     packetRepository.data.listen((data) => onNewDataReceived(data));
   }
 
-  List<String> get availableMetrics => metrics.map((m) => m.label).toList();
+  // List<String> get availableMetrics => metrics.map((m) => m.label).toList();
 
-  void changeSelection(int newIndex) {
-    _selectedIndex = newIndex;
+  void changeSelection(MetricDefinition newDefinition) {
+    _selectedMetricDefinition = newDefinition;
     _updateUI(lastKnownData);
   }
 
@@ -65,14 +49,12 @@ class MetricCardViewmodel {
   }
 
   void _updateUI(FullBoatData data) {
-    final definition = metrics[_selectedIndex];
+    final double extractedValue = _selectedMetricDefinition.valueExtractor(data);
 
-    final double extractedValue = definition.valueExtractor(data);
-
-    currentMetricNotifier.value = MetricData(
-      label: definition.label,
+    selectedMetricValueNotifier.value = MetricData(
+      label: _selectedMetricDefinition.label,
       value: extractedValue,
-      unit: definition.unit,
+      unit: _selectedMetricDefinition.unit,
     );
   }
 }
