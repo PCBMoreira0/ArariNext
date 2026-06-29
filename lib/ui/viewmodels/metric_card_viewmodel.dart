@@ -4,17 +4,6 @@ import 'package:arari_next/ui/core/utils/metric_selection_menu_anchor.dart';
 import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
 import 'package:flutter/material.dart';
 
-class MetricDefinition {
-  final String label;
-  final String unit;
-  final double Function(FullBoatData rawData) valueExtractor;
-
-  MetricDefinition({
-    required this.label,
-    required this.unit,
-    required this.valueExtractor,
-  });
-}
 
 class MetricCardViewmodel {
   FullBoatData lastKnownData = FullBoatData.empty();

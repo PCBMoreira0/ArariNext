@@ -1,9 +1,11 @@
 import 'package:arari_next/ui/core/ui/side_menu.dart';
 import 'package:arari_next/ui/core/widgets/cards/battery_card.dart';
+import 'package:arari_next/ui/core/widgets/cards/chart_card.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
 import 'package:arari_next/ui/core/widgets/cards/metric_card.dart';
 import 'package:arari_next/ui/core/widgets/cards/propulsion_card.dart';
 import 'package:arari_next/ui/viewmodels/battery_card_viewmodel.dart';
+import 'package:arari_next/ui/viewmodels/chart_card_viewmodel.dart';
 import 'package:arari_next/ui/viewmodels/metric_card_viewmodel.dart';
 import 'package:arari_next/ui/viewmodels/propulsion_card_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -68,11 +70,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           IconButton(
             onPressed: () {
-              if (count.value == 100.0) {
-                count.value = 0.0;
-              } else {
-                count.value += 5.0;
-              }
+              String time = DateTime.now().microsecondsSinceEpoch.toString();
+              setState(() {
+                cards[time] = "chart";
+              });
+              dashboardController.addItem(
+                LayoutItem(id: time, x: -1, y: -1, w: 1, h: 1),
+              );
             },
             icon: Icon(Icons.add, color: Colors.purple),
           ),
@@ -101,6 +105,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 case "propulsion":
                   return PropulsionCard(
                     viewModel: PropulsionCardViewmodel(
+                      packetRepository: context.read(),
+                    ),
+                  );
+                case "chart":
+                  return ChartCard(
+                    viewmodel: ChartCardViewmodel(
                       packetRepository: context.read(),
                     ),
                   );
