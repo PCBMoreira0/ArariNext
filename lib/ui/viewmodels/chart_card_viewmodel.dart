@@ -8,14 +8,22 @@ class ChartCardViewmodel extends ChangeNotifier {
   final PacketRepository packetRepository;
   StreamSubscription? _subscription;
 
-  final int maxPontos = 60;
+  Duration selectedInterval = const Duration(minutes: 1);
+  final Duration maxHistory = const Duration(minutes: 5);
+  final int maxPointsLimit = 1500;
 
   List<MetricDefinition> selectedMetrics = [];
 
   final Map<String, List<Map<String, dynamic>>> _seriesData = {};
 
   List<Map<String, dynamic>> get chartData {
-    return _seriesData.values.expand((pontos) => pontos).toList();
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final int viewportCutoff = now - selectedInterval.inMilliseconds;
+
+    return _seriesData.values
+        .expand((pontos) => pontos)
+        .where((ponto) => ponto['timestamp'] >= viewportCutoff)
+        .toList();
   }
 
   ChartCardViewmodel({required this.packetRepository}) {
@@ -28,6 +36,9 @@ class ChartCardViewmodel extends ChangeNotifier {
     if (data == null || selectedMetrics.isEmpty) return;
 
     bool hasUpdates = false;
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final int cutoffTimeMemory = now - maxHistory.inMilliseconds;
 
     for (var metric in selectedMetrics) {
       final double newValue = metric.valueExtractor(data);
@@ -44,8 +55,13 @@ class ChartCardViewmodel extends ChangeNotifier {
           'category': metric.label,
         });
 
-        if (currentList.length > maxPontos) {
+        while (currentList.isNotEmpty &&
+            currentList.first['timestamp'] < cutoffTimeMemory) {
           currentList.removeAt(0);
+        }
+
+        if (currentList.length > maxPointsLimit) {
+          currentList.removeRange(0, currentList.length - maxPointsLimit);
         }
 
         hasUpdates = true;
@@ -57,8 +73,13 @@ class ChartCardViewmodel extends ChangeNotifier {
     }
   }
 
-  void updateSelectedMetrics(List<MetricDefinition> newSelection) {
+  void updateSettings(
+    List<MetricDefinition> newSelection,
+    Duration newInterval,
+  ) {
     selectedMetrics = newSelection;
+    selectedInterval = newInterval;
+
     _seriesData.removeWhere(
       (key, _) => !selectedMetrics.any((m) => m.label == key),
     );
