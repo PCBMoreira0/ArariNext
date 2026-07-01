@@ -1,7 +1,7 @@
 import 'package:arari_next/config/settings_manager.dart';
 import 'package:arari_next/data/services/connection_event.dart';
 import 'package:arari_next/data/services/logging_service_influx.dart';
-import 'package:arari_next/data/services/serial/serial_config.dart';
+import 'package:arari_next/domain/settings/serial_settings.dart';
 import 'package:arari_next/data/services/serial/serial_datasource.dart';
 import 'package:flutter/material.dart';
 
@@ -58,14 +58,14 @@ class SettingsViewmodel extends ChangeNotifier {
 
   Future<void> setSerialPort(String port) async {
     await _settings.setSerialPort(port);
-    _serial.setConfig(SerialConfig(port: port, baudrate: _selectedBaudrate));
+    _serial.setConfig(SerialSettings(port: port, baudrate: _selectedBaudrate));
     _selectedSerialPort = port;
     notifyListeners();
   }
 
   Future<void> setBaudrate(int baudrate) async{
     await _settings.setBaudrate(baudrate);
-    _serial.setConfig(SerialConfig(port: _selectedSerialPort ?? "", baudrate: baudrate));
+    _serial.setConfig(SerialSettings(port: _selectedSerialPort ?? "", baudrate: baudrate));
     _selectedBaudrate = baudrate;
     notifyListeners();
   }

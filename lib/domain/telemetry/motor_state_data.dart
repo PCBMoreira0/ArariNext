@@ -1,5 +1,5 @@
-import 'package:arari_next/domain/models/iboat_data.dart';
-import 'package:arari_next/domain/models/motor_eletrical_data.dart';
+import 'package:arari_next/domain/telemetry/iboat_data.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
 
 enum MotorStatus { gear, breaking, operationMode, dcContactor }
 

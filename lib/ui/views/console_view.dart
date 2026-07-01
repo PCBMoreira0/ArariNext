@@ -1,7 +1,7 @@
 import 'package:arari_next/ui/core/ui/side_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/ui/viewmodels/console_viewmodel.dart';
-import 'package:arari_next/domain/models/console_log.dart';
+import 'package:arari_next/domain/telemetry/console_log.dart';
 
 class ConsoleView extends StatefulWidget {
   const ConsoleView({super.key});

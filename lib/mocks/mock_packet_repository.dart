@@ -2,16 +2,16 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:arari_next/data/repositories/packet_repository.dart';
-import 'package:arari_next/domain/models/bms_data.dart';
-import 'package:arari_next/domain/models/gps_data.dart';
-import 'package:arari_next/domain/models/instrumentation_data.dart';
-import 'package:arari_next/domain/models/motor_eletrical_data.dart';
-import 'package:arari_next/domain/models/motor_state_data.dart';
-import 'package:arari_next/domain/models/mppt_data.dart';
-import 'package:arari_next/domain/models/pump_data.dart';
-import 'package:arari_next/domain/models/radio_status_data.dart';
-import 'package:arari_next/domain/models/temperature_data.dart';
-import 'package:arari_next/domain/models/full_boat_data.dart';
+import 'package:arari_next/domain/telemetry/bms_data.dart';
+import 'package:arari_next/domain/telemetry/gps_data.dart';
+import 'package:arari_next/domain/telemetry/instrumentation_data.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
+import 'package:arari_next/domain/telemetry/motor_state_data.dart';
+import 'package:arari_next/domain/telemetry/mppt_data.dart';
+import 'package:arari_next/domain/telemetry/pump_data.dart';
+import 'package:arari_next/domain/telemetry/radio_status_data.dart';
+import 'package:arari_next/domain/telemetry/temperature_data.dart';
+import 'package:arari_next/domain/telemetry/full_boat_data.dart';
 
 class MockPacketRepository implements PacketRepository {
   final StreamController<FullBoatData?> _streamController = StreamController.broadcast();

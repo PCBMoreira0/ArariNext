@@ -1,4 +1,4 @@
-import 'package:arari_next/domain/models/iboat_data.dart';
+import 'package:arari_next/domain/telemetry/iboat_data.dart';
 
 final class GPSData extends IBoatData {
   final double latitude;
