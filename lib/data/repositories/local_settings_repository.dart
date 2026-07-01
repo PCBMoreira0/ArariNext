@@ -11,6 +11,7 @@ class LocalSettingsRepository implements SettingsRepository {
 
   final FileStorageService _fileStorageService;
 
+  @override
   AppSettings get settings => _settings;
 
   LocalSettingsRepository({required FileStorageService fileStorageService})

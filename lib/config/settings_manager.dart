@@ -1,51 +1,35 @@
 import 'dart:async';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
-class SettingsKeys {
-  static const String selectedSerialPort = "serialPort";
-  static const String selectedBaudrate = "baudrate";
-  static const String logDirectory = "logDirectory";
-}
+import 'package:arari_next/data/repositories/settings_repository.dart';
+import 'package:arari_next/domain/settings/app_settings.dart';
+import 'package:arari_next/domain/settings/log_settings.dart';
+import 'package:arari_next/domain/settings/serial_settings.dart';
 
 class SettingsManager {
-  final SharedPreferences _prefs;
+  final SettingsRepository _settingsRepository;
 
-  SettingsManager._({required prefs}) : _prefs = prefs;
-  
-  final StreamController<String> _serialPortStreamController = StreamController.broadcast(); 
-  Stream<String> get onSerialPortChanged => _serialPortStreamController.stream;
+  SettingsManager({required SettingsRepository settingsRepository})
+    : _settingsRepository = settingsRepository;
 
-  final StreamController<int> _baudrateStreamController = StreamController.broadcast(); 
-  Stream<int> get onBaudrateChanged => _baudrateStreamController.stream;
-
-  static Future<SettingsManager> create() async {
-    return SettingsManager._(prefs: await SharedPreferences.getInstance());
+  SerialSettings get serial {
+    return _settingsRepository.settings.connectionSetting.serialSetting;
   }
 
-  String get selectedSerialPort {
-    return _prefs.getString(SettingsKeys.selectedSerialPort) ?? "";
+  Future<void> setSerial(SerialSettings serial) async {
+    final AppSettings oldSettings = _settingsRepository.settings;
+    final AppSettings newSettings = oldSettings.copyWith(
+      connectionSetting: oldSettings.connectionSetting.copyWith(
+        serialSetting: serial,
+      ),
+    );
+    _settingsRepository.save(newSettings);
   }
 
-  Future<void> setSerialPort(String port) async {
-    await _prefs.setString(SettingsKeys.selectedSerialPort, port);
-    _serialPortStreamController.add(port);
-  }
+  LogSettings get log => _settingsRepository.settings.logSettings;
 
-  int get selectedBaudrate {
-    return _prefs.getInt(SettingsKeys.selectedBaudrate) ?? 9600;
-  }
-
-  Future<void> setBaudrate(int baudrate) async {
-    await _prefs.setInt(SettingsKeys.selectedBaudrate, baudrate);
-    _baudrateStreamController.add(baudrate);
-  }
-
-  Future<void> setLoggingDirectory(String dir) async {
-    await _prefs.setString(SettingsKeys.logDirectory, dir);
-  }
-
-  String? getLogDirectory(){
-    return _prefs.getString(SettingsKeys.logDirectory);
+  Future<void> setLog(LogSettings log) async {
+    final AppSettings oldSettings = _settingsRepository.settings;
+    final AppSettings newSettings = oldSettings.copyWith(logSettings: log);
+    _settingsRepository.save(newSettings);
   }
 }

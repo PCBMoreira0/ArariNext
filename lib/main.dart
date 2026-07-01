@@ -1,7 +1,11 @@
 import 'package:arari_next/config/settings_manager.dart';
+import 'package:arari_next/data/repositories/local_settings_repository.dart';
 import 'package:arari_next/data/repositories/mavlink_repository.dart';
 import 'package:arari_next/data/repositories/packet_repository.dart';
+import 'package:arari_next/data/repositories/settings_repository.dart';
 import 'package:arari_next/data/services/data_source_interface.dart';
+import 'package:arari_next/data/services/file_storage_service.dart';
+import 'package:arari_next/data/services/local_file_storage_service.dart';
 import 'package:arari_next/data/services/logging_service_influx.dart';
 import 'package:arari_next/data/services/serial/serial_datasource.dart';
 import 'package:arari_next/routing/routes.dart';
@@ -12,16 +16,38 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  SettingsManager settingsManager = await SettingsManager.create();
+  FileStorageService fileStorageService = LocalFileStorageService();
 
-  runApp(MultiProvider(providers: [
-    Provider.value(value: settingsManager),
-    Provider.value(value: LoggingServiceInflux()),
-    
-    Provider(create: (context) => SerialDatasource()),
-    Provider<IDataSource>(create: (context) => context.read<SerialDatasource>()),
-    Provider(create: (context) => MavlinkRepository(dataSource: context.read(), log: context.read()) as PacketRepository, )
-  ], child: const ArariNextApp()));
+  SettingsRepository settingsRepository = LocalSettingsRepository(
+    fileStorageService: fileStorageService,
+  );
+
+  settingsRepository.initialize();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider.value(value: fileStorageService),
+        Provider.value(value: settingsRepository),
+        Provider(
+          create: (context) =>
+              SettingsManager(settingsRepository: context.read()),
+        ),
+        Provider.value(value: LoggingServiceInflux()),
+
+        Provider(create: (context) => SerialDatasource()),
+        Provider<IDataSource>(
+          create: (context) => context.read<SerialDatasource>(),
+        ),
+        Provider(
+          create: (context) =>
+              MavlinkRepository(dataSource: context.read(), log: context.read())
+                  as PacketRepository,
+        ),
+      ],
+      child: const ArariNextApp(),
+    ),
+  );
 }
 
 class ArariNextApp extends StatefulWidget {
