@@ -5,9 +5,9 @@ class ConnectionSettings {
   final SerialSettings serialSetting;
   final MqttSettings mqttSetting;
 
-  ConnectionSettings({
-    required this.serialSetting,
-    required this.mqttSetting,
+  const ConnectionSettings({
+    this.serialSetting = const SerialSettings(),
+    this.mqttSetting = const MqttSettings(),
   });
 
   factory ConnectionSettings.fromJson(Map<String, dynamic> json) {
@@ -22,5 +22,15 @@ class ConnectionSettings {
       'serialSetting': serialSetting.toJson(),
       'mqttSetting': mqttSetting.toJson(),
     };
+  }
+
+  ConnectionSettings copyWith({
+    SerialSettings? serialSetting,
+    MqttSettings? mqttSetting,
+  }) {
+    return ConnectionSettings(
+      serialSetting: serialSetting ?? this.serialSetting,
+      mqttSetting: mqttSetting ?? this.mqttSetting,
+    );
   }
 }
