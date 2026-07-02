@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:arari_next/data/repositories/packet_repository.dart';
-import 'package:arari_next/data/services/data_source_interface.dart';
-import 'package:arari_next/data/services/logging_service_influx.dart';
+import 'package:arari_next/data/repositories/packet/packet_repository.dart';
+import 'package:arari_next/data/services/datasource/data_source_interface.dart';
+import 'package:arari_next/data/services/logging/logging_service_influx.dart';
 import 'package:arari_next/domain/telemetry/full_boat_data.dart';
 import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
 import 'package:arari_next/domain/telemetry/motor_state_data.dart';

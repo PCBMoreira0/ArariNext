@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:arari_next/data/repositories/settings_repository.dart';
+import 'package:arari_next/data/repositories/settings/settings_repository.dart';
 import 'package:arari_next/domain/settings/app_settings.dart';
 import 'package:arari_next/domain/settings/log_settings.dart';
 import 'package:arari_next/domain/settings/serial_settings.dart';

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:arari_next/data/services/file_storage_service.dart';
+import 'package:arari_next/data/services/file/file_storage_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 class LocalFileStorageService implements FileStorageService {

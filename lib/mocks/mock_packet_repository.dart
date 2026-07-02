@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:arari_next/data/repositories/packet_repository.dart';
+import 'package:arari_next/data/repositories/packet/packet_repository.dart';
 import 'package:arari_next/domain/telemetry/bms_data.dart';
 import 'package:arari_next/domain/telemetry/gps_data.dart';
 import 'package:arari_next/domain/telemetry/instrumentation_data.dart';

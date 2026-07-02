@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:arari_next/data/services/connection_event.dart';
+import 'package:arari_next/data/services/datasource/connection_event.dart';
 
 abstract interface class IDataSource {
   void connect();

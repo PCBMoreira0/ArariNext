@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:arari_next/data/services/connection_event.dart';
-import 'package:arari_next/data/services/data_source_interface.dart';
+import 'package:arari_next/data/services/datasource/connection_event.dart';
+import 'package:arari_next/data/services/datasource/data_source_interface.dart';
 import 'package:arari_next/domain/settings/serial_settings.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 

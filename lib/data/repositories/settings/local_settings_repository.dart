@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:arari_next/data/repositories/settings_repository.dart';
-import 'package:arari_next/data/services/file_storage_service.dart';
+import 'package:arari_next/data/repositories/settings/settings_repository.dart';
+import 'package:arari_next/data/services/file/file_storage_service.dart';
 import 'package:arari_next/domain/settings/app_settings.dart';
 
 class LocalSettingsRepository implements SettingsRepository {

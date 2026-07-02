@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:arari_next/data/services/connection_event.dart';
+import 'package:arari_next/data/services/datasource/connection_event.dart';
 import 'package:arari_next/domain/settings/mqtt_settings.dart';
-import 'package:arari_next/data/services/mqtt/mqtt_datasource.dart';
+import 'package:arari_next/data/services/datasource/mqtt_datasource.dart';
 import 'package:arari_next/domain/settings/serial_settings.dart';
-import 'package:arari_next/data/services/serial/serial_datasource.dart';
+import 'package:arari_next/data/services/datasource/serial_datasource.dart';
 import 'package:async/async.dart';
 
 class ConnectionManager {

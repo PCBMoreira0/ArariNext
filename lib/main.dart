@@ -1,13 +1,15 @@
-import 'package:arari_next/config/settings_manager.dart';
-import 'package:arari_next/data/repositories/local_settings_repository.dart';
-import 'package:arari_next/data/repositories/mavlink_repository.dart';
-import 'package:arari_next/data/repositories/packet_repository.dart';
-import 'package:arari_next/data/repositories/settings_repository.dart';
-import 'package:arari_next/data/services/data_source_interface.dart';
-import 'package:arari_next/data/services/file_storage_service.dart';
-import 'package:arari_next/data/services/local_file_storage_service.dart';
-import 'package:arari_next/data/services/logging_service_influx.dart';
-import 'package:arari_next/data/services/serial/serial_datasource.dart';
+import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart';
+import 'package:arari_next/data/repositories/dashboard/dashboard_repository_impl.dart';
+import 'package:arari_next/managers/settings_manager.dart';
+import 'package:arari_next/data/repositories/settings/local_settings_repository.dart';
+import 'package:arari_next/data/repositories/packet/mavlink_repository.dart';
+import 'package:arari_next/data/repositories/packet/packet_repository.dart';
+import 'package:arari_next/data/repositories/settings/settings_repository.dart';
+import 'package:arari_next/data/services/datasource/data_source_interface.dart';
+import 'package:arari_next/data/services/file/file_storage_service.dart';
+import 'package:arari_next/data/services/file/local_file_storage_service.dart';
+import 'package:arari_next/data/services/logging/logging_service_influx.dart';
+import 'package:arari_next/data/services/datasource/serial_datasource.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/routing/router.dart';
@@ -33,6 +35,12 @@ void main() async {
           create: (context) =>
               SettingsManager(settingsRepository: context.read()),
         ),
+        Provider(
+          create: (context) =>
+              DashboardRepositoryImpl(fileStorageService: context.read())
+                  as DashboardRepository,
+        ),
+
         Provider.value(value: LoggingServiceInflux()),
 
         Provider(create: (context) => SerialDatasource()),

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:arari_next/data/repositories/packet_repository.dart';
+import 'package:arari_next/data/repositories/packet/packet_repository.dart';
 import 'package:arari_next/domain/telemetry/full_boat_data.dart';
 import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
 import 'package:flutter/material.dart';

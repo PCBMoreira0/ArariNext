@@ -1,8 +1,8 @@
-import 'package:arari_next/config/settings_manager.dart';
-import 'package:arari_next/data/services/connection_event.dart';
-import 'package:arari_next/data/services/logging_service_influx.dart';
+import 'package:arari_next/managers/settings_manager.dart';
+import 'package:arari_next/data/services/datasource/connection_event.dart';
+import 'package:arari_next/data/services/logging/logging_service_influx.dart';
 import 'package:arari_next/domain/settings/serial_settings.dart';
-import 'package:arari_next/data/services/serial/serial_datasource.dart';
+import 'package:arari_next/data/services/datasource/serial_datasource.dart';
 import 'package:flutter/material.dart';
 
 class SettingsViewmodel extends ChangeNotifier {

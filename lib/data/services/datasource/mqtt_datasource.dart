@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:arari_next/data/services/connection_event.dart';
-import 'package:arari_next/data/services/data_source_interface.dart';
+import 'package:arari_next/data/services/datasource/connection_event.dart';
+import 'package:arari_next/data/services/datasource/data_source_interface.dart';
 import 'package:arari_next/domain/settings/mqtt_settings.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
