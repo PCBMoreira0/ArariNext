@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:arari_next/data/services/logging_service_interface.dart';
-import 'package:arari_next/domain/models/bms_data.dart';
-import 'package:arari_next/domain/models/gps_data.dart';
-import 'package:arari_next/domain/models/iboat_data.dart';
-import 'package:arari_next/domain/models/instrumentation_data.dart';
-import 'package:arari_next/domain/models/motor_eletrical_data.dart';
-import 'package:arari_next/domain/models/motor_state_data.dart';
-import 'package:arari_next/domain/models/mppt_data.dart';
+import 'package:arari_next/domain/telemetry/bms_data.dart';
+import 'package:arari_next/domain/telemetry/gps_data.dart';
+import 'package:arari_next/domain/telemetry/iboat_data.dart';
+import 'package:arari_next/domain/telemetry/instrumentation_data.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
+import 'package:arari_next/domain/telemetry/motor_state_data.dart';
+import 'package:arari_next/domain/telemetry/mppt_data.dart';
 
 class LoggingServiceInflux implements ILoggingService {
   File? currentFile;

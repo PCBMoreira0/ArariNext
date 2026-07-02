@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:arari_next/data/services/connection_event.dart';
-import 'package:arari_next/data/services/mqtt/mqtt_config.dart';
+import 'package:arari_next/domain/settings/mqtt_settings.dart';
 import 'package:arari_next/data/services/mqtt/mqtt_datasource.dart';
-import 'package:arari_next/data/services/serial/serial_config.dart';
+import 'package:arari_next/domain/settings/serial_settings.dart';
 import 'package:arari_next/data/services/serial/serial_datasource.dart';
 import 'package:async/async.dart';
 
@@ -22,11 +22,11 @@ class ConnectionManager {
   late final Stream<ConnectionEvent> _connectionStreamGroup;
   Stream<ConnectionEvent> get connectionStream => _connectionStreamGroup;
 
-  void setSerialConfig(SerialConfig config) {
+  void setSerialConfig(SerialSettings config) {
     _serial.setConfig(config);
   }
 
-  Future<void> setMqttConfig(MQTTConfig config) async {
+  Future<void> setMqttConfig(MqttSettings config) async {
     await _mqtt.setConfig(config);
   }
 

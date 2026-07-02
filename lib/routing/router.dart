@@ -1,4 +1,3 @@
-import 'package:arari_next/data/services/logging_service_influx.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:arari_next/ui/viewmodels/dashboard_viewmodel.dart';
 import 'package:arari_next/ui/viewmodels/settings_viewmodel.dart';

@@ -22,6 +22,7 @@ dependencies:
   geekyants_flutter_gauges: ^1.0.4
   sliver_dashboard: ^0.9.1
   cristalyse: ^1.17.6
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:arari_next/utils/Console_log/console_buffer.dart';
-import 'package:arari_next/domain/models/console_log.dart';
+import 'package:arari_next/domain/telemetry/console_log.dart';
 
 class ConsoleViewModel with ChangeNotifier {
   // Esse é o jeito de criar um singleton em dart, tenho que estudar construtores para entender melhor isso aqui, mas por enquanto vai servir

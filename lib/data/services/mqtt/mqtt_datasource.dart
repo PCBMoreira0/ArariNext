@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:arari_next/data/services/connection_event.dart';
 import 'package:arari_next/data/services/data_source_interface.dart';
-import 'package:arari_next/data/services/mqtt/mqtt_config.dart';
+import 'package:arari_next/domain/settings/mqtt_settings.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -61,7 +61,7 @@ class MqttDatasource implements IDataSource {
     }
   }
 
-  Future<void> setConfig(MQTTConfig config) async {
+  Future<void> setConfig(MqttSettings config) async {
     disconnect();
     _client.port = config.port;
     _client.server = config.address;

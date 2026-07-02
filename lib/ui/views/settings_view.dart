@@ -101,7 +101,7 @@ handleError(Object e, BuildContext context) {
 class _SerialSettings extends StatelessWidget {
   final SettingsViewmodel _viewModel;
 
-  const _SerialSettings({super.key, required SettingsViewmodel viewmodel})
+  const _SerialSettings({required SettingsViewmodel viewmodel})
     : _viewModel = viewmodel;
 
   @override

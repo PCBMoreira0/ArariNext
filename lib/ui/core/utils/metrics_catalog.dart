@@ -1,4 +1,4 @@
-import 'package:arari_next/domain/models/full_boat_data.dart';
+import 'package:arari_next/domain/telemetry/full_boat_data.dart';
 
 class MetricDefinition {
   final String label;

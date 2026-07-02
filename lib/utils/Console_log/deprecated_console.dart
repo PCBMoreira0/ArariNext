@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:arari_next/utils/Console_log/console_buffer.dart';
-import 'package:arari_next/domain/models/console_log.dart';
+import 'package:arari_next/domain/telemetry/console_log.dart';
 
 class Console {
 

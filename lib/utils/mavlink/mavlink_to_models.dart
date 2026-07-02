@@ -1,14 +1,14 @@
-import 'package:arari_next/domain/models/bms_data.dart';
-import 'package:arari_next/domain/models/bms_status_data.dart';
-import 'package:arari_next/domain/models/gps_data.dart';
-import 'package:arari_next/domain/models/instrumentation_data.dart';
-import 'package:arari_next/domain/models/motor_eletrical_data.dart';
-import 'package:arari_next/domain/models/motor_state_data.dart';
-import 'package:arari_next/domain/models/mppt_data.dart';
-import 'package:arari_next/domain/models/mppt_state_data.dart';
-import 'package:arari_next/domain/models/pump_data.dart';
-import 'package:arari_next/domain/models/radio_status_data.dart';
-import 'package:arari_next/domain/models/temperature_data.dart';
+import 'package:arari_next/domain/telemetry/bms_data.dart';
+import 'package:arari_next/domain/telemetry/bms_status_data.dart';
+import 'package:arari_next/domain/telemetry/gps_data.dart';
+import 'package:arari_next/domain/telemetry/instrumentation_data.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
+import 'package:arari_next/domain/telemetry/motor_state_data.dart';
+import 'package:arari_next/domain/telemetry/mppt_data.dart';
+import 'package:arari_next/domain/telemetry/mppt_state_data.dart';
+import 'package:arari_next/domain/telemetry/pump_data.dart';
+import 'package:arari_next/domain/telemetry/radio_status_data.dart';
+import 'package:arari_next/domain/telemetry/temperature_data.dart';
 import 'package:arari_next/utils/mavlink/mavlink_dialect/arariboat.dart';
 
 

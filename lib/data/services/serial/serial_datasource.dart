@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:arari_next/data/services/connection_event.dart';
 import 'package:arari_next/data/services/data_source_interface.dart';
-import 'package:arari_next/data/services/serial/serial_config.dart';
+import 'package:arari_next/domain/settings/serial_settings.dart';
 import 'package:flutter_libserialport/flutter_libserialport.dart';
 
 class SerialDatasource implements IDataSource {
-  SerialConfig _config = SerialConfig(port: "", baudrate: 115200);
+  SerialSettings _config = SerialSettings(port: "", baudrate: 115200);
   SerialPort? _serialPort;
   SerialPortReader? _reader;
   StreamSubscription<Uint8List>? _subscription;
@@ -39,7 +39,7 @@ class SerialDatasource implements IDataSource {
     }
   }
 
-  void setConfig(SerialConfig config) {
+  void setConfig(SerialSettings config) {
     if (status == ConnectionStatus.connected) {
       disconnect();
       _config = config;
