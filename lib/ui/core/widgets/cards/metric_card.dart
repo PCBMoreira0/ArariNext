@@ -58,10 +58,7 @@ class MetricCard extends StatelessWidget {
     return CustomCard(
       title: 'Metrico',
       action: IconButton(
-        icon: const Icon(
-          Icons.tune,
-          size: 20,
-        ), // ou Icons.settings
+        icon: const Icon(Icons.tune, size: 20), // ou Icons.settings
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(),
         onPressed: () => _showMetricSelector(context),

@@ -14,8 +14,12 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
   @override
   Future<List<DashboardModel>> loadDashboards() async {
-    final json = jsonDecode(await _fileStorageService.read(_fileName) ?? "[]");
-
+    String? content = await _fileStorageService.read(_fileName);
+    if(content == ""){
+      return [];
+    }
+  
+    final json = jsonDecode(content!);
     return (json as List).map((e) => DashboardModel.fromJson(e)).toList();
   }
 

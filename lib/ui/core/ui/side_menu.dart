@@ -28,6 +28,13 @@ class SideMenu extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.graphic_eq),
+            title: const Text('Gráficos'),
+            onTap: () {
+              Navigator.of(context).pushNamed('/chart');
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Configurações'),
             onTap: () {
