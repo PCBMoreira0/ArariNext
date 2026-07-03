@@ -9,46 +9,75 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
   final FileStorageService _fileStorageService;
 
+  List<DashboardModel> _dashboardsCache = [];
+  bool _isInitialized = false;
+
   DashboardRepositoryImpl({required FileStorageService fileStorageService})
     : _fileStorageService = fileStorageService;
 
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    try {
+      String? content = await _fileStorageService.read(_fileName);
+      if (content != null && content.isNotEmpty) {
+        final json = jsonDecode(content);
+        _dashboardsCache = (json as List)
+            .map((e) => DashboardModel.fromJson(e))
+            .toList();
+      }
+    } catch (e) {
+      _dashboardsCache = [];
+    } finally {
+      _isInitialized = true;
+    }
+  }
+
   @override
   Future<List<DashboardModel>> loadDashboards() async {
-    String? content = await _fileStorageService.read(_fileName);
-    if(content == ""){
-      return [];
+    if (!_isInitialized) {
+      await initialize();
     }
-  
-    final json = jsonDecode(content!);
-    return (json as List).map((e) => DashboardModel.fromJson(e)).toList();
+
+    return List.unmodifiable(_dashboardsCache);
+  }
+
+  @override
+  Future<DashboardModel?> getDashboardById(String id) async {
+    if (!_isInitialized) {
+      await initialize();
+    }
+
+    try {
+      return _dashboardsCache.firstWhere((d) => d.id == id);
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
   Future<void> saveDashboard(DashboardModel dashboard) async {
-    final dashboards = await loadDashboards();
-
-    final index = dashboards.indexWhere((d) => d.id == dashboard.id);
+    final index = _dashboardsCache.indexWhere((d) => d.id == dashboard.id);
 
     if (index == -1) {
-      dashboards.add(dashboard);
+      _dashboardsCache.add(dashboard);
     } else {
-      dashboards[index] = dashboard;
+      _dashboardsCache[index] = dashboard;
     }
 
-    await _fileStorageService.write(
-      _fileName,
-      jsonEncode(dashboards.map((e) => e.toJson()).toList()),
-    );
+    await _saveCacheToDisk();
   }
 
   @override
   Future<void> deleteDashboard(String id) async {
-    final dashboards = await loadDashboards();
-    dashboards.removeWhere((d) => d.id == id);
+    _dashboardsCache.removeWhere((d) => d.id == id);
+    await _saveCacheToDisk();
+  }
 
-    await _fileStorageService.write(
-      _fileName,
-      jsonEncode(dashboards.map((e) => e.toJson()).toList()),
+  Future<void> _saveCacheToDisk() async {
+    final jsonString = jsonEncode(
+      _dashboardsCache.map((e) => e.toJson()).toList(),
     );
+    await _fileStorageService.write(_fileName, jsonString);
   }
 }

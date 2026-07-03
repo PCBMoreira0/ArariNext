@@ -25,9 +25,15 @@ class DashboardModel {
     return DashboardModel(
       id: json['id'],
       name: json['name'],
-      layout: (json['layout'] as List).map((e) => LayoutItem.fromMap(e)).toList(),
+      layout: (json['layout'] as List)
+          .map((e) => LayoutItem.fromMap(e))
+          .toList(),
       cards: (json['cards'] as List).map((e) => CardModel.fromJson(e)).toList(),
     );
+  }
+
+  factory DashboardModel.empty(String id) {
+    return DashboardModel(id: id, name: 'My Dashboard', layout: [], cards: []);
   }
 
   DashboardModel copyWith({

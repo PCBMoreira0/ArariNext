@@ -34,28 +34,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.viewmodel.isLoading) {
+      return Scaffold(
+        drawer: const SideMenu(),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final dashboardViewmodel = widget.viewmodel.dashboardViewmodel!;
+
     return Scaffold(
       drawer: const SideMenu(),
       appBar: AppBar(
         title: const Text("Dashboard Screen"),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.home, color: Colors.red),
-            onPressed: () {
-              widget.viewmodel.dashboardViewmodel?.toggleEditing();
+          ListenableBuilder(
+            listenable: dashboardViewmodel,
+            builder: (context, child) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.home,
+                      color: dashboardViewmodel.isEditing
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                    onPressed: () => dashboardViewmodel.toggleEditing(),
+                  ),
+
+                  if (dashboardViewmodel.isEditing)
+                    IconButton(
+                      onPressed: () =>
+                          dashboardViewmodel.addCard(CardType.metric),
+                      icon: const Icon(Icons.add, color: Colors.purple),
+                    ),
+                ],
+              );
             },
-          ),
-          IconButton(
-            onPressed: () {
-              widget.viewmodel.dashboardViewmodel?.addCard(CardType.metric);
-            },
-            icon: const Icon(Icons.add, color: Colors.purple),
           ),
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : DashboardWidget(viewmodel: widget.viewmodel.dashboardViewmodel!),
+      body: DashboardWidget(viewmodel: dashboardViewmodel),
     );
   }
 }

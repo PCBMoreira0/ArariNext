@@ -2,6 +2,7 @@ import 'package:arari_next/domain/dashboard/dashboard_model.dart';
 
 abstract class DashboardRepository {
   Future<List<DashboardModel>> loadDashboards();
+  Future<DashboardModel?> getDashboardById(String id);
 
   Future<void> saveDashboard(DashboardModel dashboard);
 

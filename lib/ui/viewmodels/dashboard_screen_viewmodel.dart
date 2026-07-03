@@ -9,6 +9,8 @@ class DashboardScreenViewmodel extends ChangeNotifier {
   DashboardModel? dashboard;
   DashboardViewModel? dashboardViewmodel;
 
+  bool isLoading = true;
+
   final String id = "dash";
 
   final DashboardRepository _dashboardRepository;
@@ -21,24 +23,9 @@ class DashboardScreenViewmodel extends ChangeNotifier {
        _packetRepository = packetRepository;
 
   Future<void> init() async {
-    final dashboards = await _dashboardRepository.loadDashboards();
-    bool found = false;
+    dashboard = await _dashboardRepository.getDashboardById(id);
 
-    for (var dash in dashboards) {
-      if (dash.id == id) {
-        found = true;
-        dashboard = dash;
-      }
-    }
-
-    if (!found) {
-      dashboard = DashboardModel(
-        id: id,
-        name: "My Dashboard",
-        layout: [],
-        cards: [],
-      );
-    }
+    dashboard ??= DashboardModel.empty(id);
 
     dashboardViewmodel = DashboardViewModel(
       dashboardModel: dashboard!,
@@ -47,6 +34,7 @@ class DashboardScreenViewmodel extends ChangeNotifier {
       packetRepository: _packetRepository,
     );
 
+    isLoading = false;
     notifyListeners();
   }
 }

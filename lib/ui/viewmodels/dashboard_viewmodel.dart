@@ -84,7 +84,6 @@ class DashboardViewModel extends ChangeNotifier {
     dashboardController.addItem(
       LayoutItem(id: newCard.id, x: -1, y: -1, w: 1, h: 1),
     );
-    _createViewModelByModel(newCard);
     notifyListeners();
   }
 
@@ -93,18 +92,16 @@ class DashboardViewModel extends ChangeNotifier {
     if (isEditing) {
       isEditing = false;
 
-      for (var l in dashboardController.layout.value) {
-        dashboardModel.layout.add(l);
-      }
-
-      await _saveDashboard();
+      dashboardModel.layout.clear();
+      dashboardModel.layout.addAll(dashboardController.layout.value);
 
       dashboardController.toggleEditing();
-      notifyListeners();
+      await _saveDashboard();
     } else {
       isEditing = true;
       dashboardController.toggleEditing();
     }
+    notifyListeners();
   }
 
   void updateCard(CardModel updatedCard) async {
@@ -123,8 +120,13 @@ class DashboardViewModel extends ChangeNotifier {
     final index = dashboardModel.cards.indexWhere(
       (card) => card.id == deleteCard.id,
     );
+
     if (index != -1) {
-      viewModelsCache.remove(deleteCard.id);
+      final vm = viewModelsCache.remove(deleteCard.id);
+      if (vm != null) {
+        vm.dispose();
+      }
+
       dashboardController.removeItem(deleteCard.id);
       dashboardModel.cards.removeAt(index);
       notifyListeners();
@@ -134,5 +136,17 @@ class DashboardViewModel extends ChangeNotifier {
 
   Future<void> _saveDashboard() async {
     await _dashboardRepository.saveDashboard(dashboardModel);
+  }
+
+  @override
+  void dispose() {
+    for (var viewModel in viewModelsCache.values) {
+      if (viewModel is ChangeNotifier) {
+        viewModel.dispose();
+      }
+    }
+    viewModelsCache.clear();
+    dashboardController.dispose();
+    super.dispose();
   }
 }
