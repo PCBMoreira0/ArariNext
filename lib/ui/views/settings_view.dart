@@ -20,11 +20,6 @@ class _SettingsViewState extends State<SettingsView> {
   @override
   void initState() {
     super.initState();
-
-    if (!Platform.isAndroid && !Platform.isIOS) {
-      widget.viewmodel.downloadSettings();
-    }
-
     logTextController.text = widget.viewmodel.loggingPath;
   }
 

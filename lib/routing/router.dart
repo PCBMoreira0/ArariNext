@@ -30,22 +30,33 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (context) => ChartsScreen());
       case Routes.dashboard:
         return MaterialPageRoute(
-          builder: (context) => DashboardScreen(
-            viewmodel: DashboardScreenViewmodel(
-              dashboardRepository: context.read(),
-              packetRepository: context.read(),
-            ),
-          ),
+          builder: (context) {
+            return ChangeNotifierProvider(
+              create: (context) => DashboardScreenViewmodel(
+                dashboardRepository: context.read(),
+                packetRepository: context.read(),
+              ),
+              builder: (context, child) {
+                return DashboardScreen(
+                  viewmodel: context.read<DashboardScreenViewmodel>(),
+                );
+              },
+            );
+          },
         );
       case Routes.settings:
         return MaterialPageRoute(
-          builder: (context) => SettingsView(
-            viewmodel: SettingsViewmodel(
-              serial: context.read(),
-              settings: context.read(),
-              log: context.read(),
-            ),
-          ),
+          builder: (context) {
+            return ChangeNotifierProvider(
+              create: (context) => SettingsViewmodel(
+                serial: context.read(),
+                settings: context.read(),
+                log: context.read(),
+              ),
+              builder: (context, child) =>
+                  SettingsView(viewmodel: context.read<SettingsViewmodel>()),
+            );
+          },
         );
       default:
         // If there is no such named route in the switch statement, e.g. /third

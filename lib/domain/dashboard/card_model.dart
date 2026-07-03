@@ -5,6 +5,13 @@ abstract class CardModel {
   final String id;
   final CardType type;
 
+  int get defaultW => 1;
+  int get defaultH => 1;
+  int get minW => 1;
+  int get minH => 1;
+  double get maxW => double.infinity;
+  double get maxH => double.infinity;
+
   const CardModel({required this.id, required this.type});
 
   Map<String, dynamic> configToJson();

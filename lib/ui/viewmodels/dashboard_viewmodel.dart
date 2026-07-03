@@ -82,7 +82,17 @@ class DashboardViewModel extends ChangeNotifier {
     final newCard = _createCardByType(id, type);
     dashboardModel.cards.add(newCard);
     dashboardController.addItem(
-      LayoutItem(id: newCard.id, x: -1, y: -1, w: 1, h: 1),
+      LayoutItem(
+        id: newCard.id,
+        x: -1,
+        y: -1,
+        w: newCard.defaultW,
+        h: newCard.defaultH,
+        minH: newCard.minH,
+        minW: newCard.minW,
+        maxH: newCard.maxH,
+        maxW: newCard.maxW,
+      ),
     );
     notifyListeners();
   }

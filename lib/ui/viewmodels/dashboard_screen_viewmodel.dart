@@ -20,9 +20,14 @@ class DashboardScreenViewmodel extends ChangeNotifier {
     required DashboardRepository dashboardRepository,
     required PacketRepository packetRepository,
   }) : _dashboardRepository = dashboardRepository,
-       _packetRepository = packetRepository;
+       _packetRepository = packetRepository {
+    init();
+  }
 
   Future<void> init() async {
+    isLoading = true;
+    notifyListeners();
+
     dashboard = await _dashboardRepository.getDashboardById(id);
 
     dashboard ??= DashboardModel.empty(id);
@@ -36,5 +41,11 @@ class DashboardScreenViewmodel extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    dashboardViewmodel?.dispose();
+    super.dispose();
   }
 }

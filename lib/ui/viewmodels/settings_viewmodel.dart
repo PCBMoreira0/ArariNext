@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:arari_next/managers/settings_manager.dart';
 import 'package:arari_next/data/services/datasource/connection_event.dart';
 import 'package:arari_next/data/services/logging/logging_service_influx.dart';
@@ -30,9 +32,13 @@ class SettingsViewmodel extends ChangeNotifier {
     required LoggingServiceInflux log,
   }) : _serial = serial,
        _settings = settings,
-       _log = log;
+       _log = log {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      downloadSettings();
+    }
+  }
 
-  void downloadSettings() async {
+  void downloadSettings() {
     _serialPorts = SerialDatasource.availablePorts();
 
     String selectedSerial = _settings.serial.port;
@@ -91,7 +97,7 @@ class SettingsViewmodel extends ChangeNotifier {
         await _log.openFile(_loggingPath, "ararilog");
       }
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
 
     notifyListeners();
