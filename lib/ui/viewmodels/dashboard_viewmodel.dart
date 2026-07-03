@@ -71,7 +71,11 @@ class DashboardViewModel extends ChangeNotifier {
 
   dynamic getViewModel(CardModel card) {
     if (!viewModelsCache.containsKey(card.id)) {
-      _createViewModelByModel(card);
+      viewModelsCache[card.id] = card.type.createViewModel(
+        model: card,
+        packetRepository: _packetRepository,
+        onConfigChanged: updateCard,
+      );
     }
     return viewModelsCache[card.id];
   }
@@ -79,7 +83,7 @@ class DashboardViewModel extends ChangeNotifier {
   void addCard(CardType type) {
     if (isReadOnly) return;
     final id = DateTime.now().microsecondsSinceEpoch.toString();
-    final newCard = _createCardByType(id, type);
+    final newCard = type.createModel(id);
     dashboardModel.cards.add(newCard);
     dashboardController.addItem(
       LayoutItem(

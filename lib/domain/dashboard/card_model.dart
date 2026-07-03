@@ -17,14 +17,14 @@ abstract class CardModel {
   Map<String, dynamic> configToJson();
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'type': type.jsonValue, 'config': configToJson()};
+    return {'id': id, 'type': type.name, 'config': configToJson()};
   }
 
   factory CardModel.fromJson(Map<String, dynamic> json) {
     final id = json['id'];
     final config = json['config'] as Map<String, dynamic>;
 
-    switch (CardType.fromJson(json['type'])) {
+    switch (CardType.values.byName(json['type'])) {
       case CardType.metric:
         return MetricCardModel(
           id: id,

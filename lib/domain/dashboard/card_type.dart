@@ -1,13 +1,48 @@
+import 'package:arari_next/domain/dashboard/card_model.dart';
+import 'package:arari_next/domain/dashboard/metric_card_model.dart';
+import 'package:arari_next/ui/viewmodels/metric_card_viewmodel.dart';
+
 enum CardType {
-  propulsion('propulsion'),
-  battery('battery'),
-  metric('metric');
+  metric(defaultW: 2, defaultH: 2),
+  propulsion(defaultW: 3, defaultH: 2),
+  battery(defaultW: 1, defaultH: 1);
 
-  const CardType(this.jsonValue);
+  final int defaultW;
+  final int defaultH;
 
-  final String jsonValue;
+  const CardType({required this.defaultW, required this.defaultH});
 
-  static CardType fromJson(String value) {
-    return CardType.values.firstWhere((e) => e.jsonValue == value);
+  CardModel createModel(String id) {
+    switch (this) {
+      case CardType.metric:
+        return MetricCardModel(
+          id: id,
+          type: this,
+          selectedMetric: 'Nível de bateria',
+        );
+      case CardType.propulsion:
+        throw UnimplementedError();
+      case CardType.battery:
+        throw UnimplementedError();
+    }
+  }
+
+  dynamic createViewModel({
+    required CardModel model,
+    required dynamic packetRepository,
+    required Function(CardModel) onConfigChanged,
+  }) {
+    switch (this) {
+      case CardType.metric:
+        return MetricCardViewmodel(
+          packetRepository: packetRepository,
+          model: model as MetricCardModel,
+          onConfigChanged: onConfigChanged,
+        );
+      case CardType.propulsion:
+        throw UnimplementedError();
+      case CardType.battery:
+        throw UnimplementedError();
+    }
   }
 }
