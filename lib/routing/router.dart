@@ -1,8 +1,9 @@
 import 'package:arari_next/routing/routes.dart';
 import 'package:arari_next/ui/viewmodels/chart_viewmodel.dart';
-import 'package:arari_next/ui/viewmodels/dashboard_viewmodel.dart';
+import 'package:arari_next/ui/viewmodels/dashboard_screen_viewmodel.dart';
+import 'package:arari_next/ui/viewmodels/old_dashboard_viewmodel.dart';
 import 'package:arari_next/ui/viewmodels/settings_viewmodel.dart';
-import 'package:arari_next/ui/views/chart_view.dart';
+import 'package:arari_next/ui/views/chart_screen.dart';
 import 'package:arari_next/ui/views/dashboard_screen.dart';
 import 'package:arari_next/ui/views/dashboard_view.dart';
 import 'package:arari_next/ui/views/settings_view.dart';
@@ -12,22 +13,40 @@ import 'package:arari_next/ui/views/console_view.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    
     // Getting arguments passed in while calling Navigator.pushNamed
     final args = settings.arguments;
 
     switch (settings.name) {
       case Routes.console:
         return MaterialPageRoute(builder: (_) => ConsoleView());
-      
+
       case Routes.oldDashboard:
-        return MaterialPageRoute(builder: (context) => DashboardView(viewmodel: DashboardViewmodel(repository: context.read())));
+        return MaterialPageRoute(
+          builder: (context) => DashboardView(
+            viewmodel: OldDashboardViewmodel(repository: context.read()),
+          ),
+        );
       case Routes.chart:
-        return MaterialPageRoute(builder: (context) => ChartView(viewModel: ChartViewmodel()));
+        return MaterialPageRoute(builder: (context) => ChartsScreen());
       case Routes.dashboard:
-        return MaterialPageRoute(builder: (context) => DashboardScreen());
+        return MaterialPageRoute(
+          builder: (context) => DashboardScreen(
+            viewmodel: DashboardScreenViewmodel(
+              dashboardRepository: context.read(),
+              packetRepository: context.read(),
+            ),
+          ),
+        );
       case Routes.settings:
-        return MaterialPageRoute(builder: (context) => SettingsView(viewmodel: SettingsViewmodel(serial: context.read(), settings: context.read(), log: context.read())));
+        return MaterialPageRoute(
+          builder: (context) => SettingsView(
+            viewmodel: SettingsViewmodel(
+              serial: context.read(),
+              settings: context.read(),
+              log: context.read(),
+            ),
+          ),
+        );
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();

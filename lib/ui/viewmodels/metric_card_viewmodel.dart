@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:arari_next/data/repositories/packet/packet_repository.dart';
 import 'package:arari_next/domain/dashboard/metric_card_model.dart';
 import 'package:arari_next/domain/telemetry/full_boat_data.dart';
@@ -15,6 +17,7 @@ class MetricCardViewmodel {
   MetricCardModel get model => _model;
 
   final PacketRepository packetRepository;
+  late StreamSubscription _subscription;
 
   final Function(MetricCardModel) onConfigChanged;
 
@@ -39,7 +42,9 @@ class MetricCardViewmodel {
       ),
     );
 
-    packetRepository.data.listen((data) => onNewDataReceived(data));
+    _subscription = packetRepository.data.listen(
+      (data) => onNewDataReceived(data),
+    );
   }
 
   void changeSelection(MetricDefinition newDefinition) {
@@ -65,5 +70,10 @@ class MetricCardViewmodel {
       value: extractedValue,
       unit: _selectedMetricDefinition.unit,
     );
+  }
+
+  void dispose() {
+    _subscription.cancel();
+    selectedMetricValueNotifier.dispose();
   }
 }

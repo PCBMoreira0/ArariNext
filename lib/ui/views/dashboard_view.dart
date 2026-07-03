@@ -1,12 +1,12 @@
 import 'package:arari_next/ui/core/ui/group_box.dart';
 import 'package:arari_next/ui/core/ui/side_menu.dart';
-import 'package:arari_next/ui/viewmodels/dashboard_viewmodel.dart';
+import 'package:arari_next/ui/viewmodels/old_dashboard_viewmodel.dart';
 import 'package:flutter/material.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({required this.viewmodel, super.key});
 
-  final DashboardViewmodel viewmodel;
+  final OldDashboardViewmodel viewmodel;
 
   @override
   State<StatefulWidget> createState() => _DashboardViewState();
@@ -56,7 +56,7 @@ class _DashboardViewState extends State<DashboardView> {
 class _BMSGroupBox extends StatelessWidget {
   const _BMSGroupBox({required this.viewmodel});
 
-  final DashboardViewmodel viewmodel;
+  final OldDashboardViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +112,7 @@ class _BMSGroupBox extends StatelessWidget {
 class _MPPTGroupBox extends StatelessWidget {
   const _MPPTGroupBox({required this.viewmodel});
 
-  final DashboardViewmodel viewmodel;
+  final OldDashboardViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +221,7 @@ class _MPPTGroupBox extends StatelessWidget {
 class _InstrumentationGroupBox extends StatelessWidget {
   const _InstrumentationGroupBox({required this.viewmodel});
 
-  final DashboardViewmodel viewmodel;
+  final OldDashboardViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
@@ -307,7 +307,7 @@ class _InstrumentationGroupBox extends StatelessWidget {
 class _GPSGroupBox extends StatelessWidget {
   const _GPSGroupBox({required this.viewmodel});
 
-  final DashboardViewmodel viewmodel;
+  final OldDashboardViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
@@ -341,7 +341,7 @@ class _GPSGroupBox extends StatelessWidget {
 class _MotorGroupBox extends StatelessWidget {
   const _MotorGroupBox({required this.viewmodel});
 
-  final DashboardViewmodel viewmodel;
+  final OldDashboardViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
@@ -502,7 +502,7 @@ class _MotorGroupBox extends StatelessWidget {
 class _TemperatureGroupBox extends StatelessWidget {
   const _TemperatureGroupBox({required this.viewmodel});
 
-  final DashboardViewmodel viewmodel;
+  final OldDashboardViewmodel viewmodel;
 
   @override
   Widget build(BuildContext context) {
