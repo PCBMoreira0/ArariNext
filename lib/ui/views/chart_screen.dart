@@ -1,4 +1,3 @@
-import 'package:arari_next/domain/dashboard/card_type.dart';
 import 'package:arari_next/domain/dashboard/dashboard_model.dart';
 import 'package:arari_next/domain/dashboard/metric_card_model.dart';
 import 'package:arari_next/ui/core/widgets/dashboard_widget.dart';
@@ -14,10 +13,12 @@ class ChartsScreen extends StatelessWidget {
     return DashboardModel(
       id: 'default_charts',
       name: 'Gráficos do Sistema',
-      layout: [
-        LayoutItem(id: '1', x: -1, y: -1, w: 2, h: 1),
-        LayoutItem(id: '2', x: -1, y: -1, w: 2, h: 1),
-      ],
+      layouts: {
+        12: [
+          LayoutItem(id: '1', x: -1, y: -1, w: 2, h: 1),
+          LayoutItem(id: '2', x: -1, y: -1, w: 2, h: 1),
+        ],
+      },
       cards: [
         MetricCardModel(id: '1', selectedMetric: 'Nível de bateria'),
         MetricCardModel(id: '2', selectedMetric: 'Tensão da bateria'),
@@ -29,7 +30,6 @@ class ChartsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final factoryViewModel = DashboardViewModel(
       dashboardModel: _generateDefaultChartsModel(),
-      dashboardController: DashboardController(),
       isReadOnly: true,
       dashboardRepository: context.read(),
       packetRepository: context.read(),

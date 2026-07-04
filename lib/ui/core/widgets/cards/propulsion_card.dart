@@ -52,7 +52,7 @@ class _PropulsionCardState extends State<PropulsionCard> {
           );
           widget.onConfigChanged(updatedModel);
         },
-        icon: Icon(Icons.arrow_drop_down),
+        icon: const Icon(Icons.tune),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -61,8 +61,6 @@ class _PropulsionCardState extends State<PropulsionCard> {
               _FullLayout(
                 boatDataListenable: widget.boatDataListenable,
                 selectedInstance: selectedInstance,
-                minHeight: 166,
-                minWidth: 318,
               ),
               _CompactLayout(
                 boatDataListenable: widget.boatDataListenable,
@@ -190,11 +188,14 @@ class _FullLayout extends LayoutConstraint {
   final ValueListenable<FullBoatData> boatDataListenable;
   final MotorInstance selectedInstance;
 
+  @override
+  double get minHeight => 166;
+  @override
+  double get minWidth => 318;
+
   _FullLayout({
     required this.boatDataListenable,
     required this.selectedInstance,
-    super.minHeight,
-    super.minWidth,
   });
 
   @override

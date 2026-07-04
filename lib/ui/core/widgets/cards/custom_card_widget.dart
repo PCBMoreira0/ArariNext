@@ -1,3 +1,4 @@
+// custom_card_widget.dart
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
@@ -30,6 +31,7 @@ class CustomCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
+            constraints: const BoxConstraints(maxHeight: 32),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(borderRadius),
@@ -37,38 +39,50 @@ class CustomCard extends StatelessWidget {
               ),
               color: color ?? Colors.grey,
             ),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Roboto',
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Tooltip(
+                      message: title,
+                      waitDuration: const Duration(milliseconds: 400),
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Roboto',
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    if (action != null)
-                      Align(alignment: Alignment.centerRight, child: action),
-                  ],
-                ),
+                  ),
+                  if (action != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          iconButtonTheme: IconButtonThemeData(
+                            style: IconButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              iconSize: 20,
+                            ),
+                          ),
+                        ),
+                        child: action!,
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
           Expanded(
             child: Padding(
-              padding: padding ?? EdgeInsets.all(8.0),
+              padding: padding ?? const EdgeInsets.all(8.0),
               child: child,
             ),
           ),

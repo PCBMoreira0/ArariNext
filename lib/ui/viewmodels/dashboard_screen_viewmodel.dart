@@ -33,7 +33,6 @@ class DashboardScreenViewmodel extends ChangeNotifier {
 
     dashboardViewmodel = DashboardViewModel(
       dashboardModel: dashboard!,
-      dashboardController: DashboardController(),
       dashboardRepository: _dashboardRepository,
       packetRepository: _packetRepository,
     );

@@ -8,13 +8,13 @@ final class MetricCardModel extends CardModel {
   CardType get type => CardType.metric;
 
   @override
-  int get defaultW => 2;
+  int get defaultW => 1;
   @override
-  int get defaultH => 2;
+  int get defaultH => 1;
   @override
-  int get minH => 2;
+  int get minH => 1;
   @override
-  int get minW => 2;
+  int get minW => 1;
 
   const MetricCardModel({
     required this.selectedMetric,

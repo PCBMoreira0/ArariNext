@@ -33,10 +33,10 @@ class _MetricCardState extends State<MetricCard> {
     _selectedMetric = _findMetricDefinition(widget.model.selectedMetric);
   }
 
-  MetricDefinition _findMetricDefinition(String label) {
+  MetricDefinition _findMetricDefinition(String id) {
     for (var group in MetricsCatalog.grouped.values) {
       for (var metric in group) {
-        if (metric.label == label) return metric;
+        if (metric.id == id) return metric;
       }
     }
     return MetricsCatalog.bms.first;
@@ -47,7 +47,7 @@ class _MetricCardState extends State<MetricCard> {
       _selectedMetric = newMetric;
     });
 
-    final updatedModel = widget.model.copyWith(selectedMetric: newMetric.label);
+    final updatedModel = widget.model.copyWith(selectedMetric: newMetric.id);
 
     widget.onConfigChanged(updatedModel);
   }
@@ -99,9 +99,9 @@ class _MetricCardState extends State<MetricCard> {
   @override
   Widget build(BuildContext context) {
     return CustomCard(
-      title: 'Métrica',
+      title: _selectedMetric.label,
       action: IconButton(
-        icon: const Icon(Icons.tune, size: 20),
+        icon: const Icon(Icons.tune),
         onPressed: () => _showMetricSelector(context),
       ),
 
@@ -110,10 +110,13 @@ class _MetricCardState extends State<MetricCard> {
         builder: (context, data, child) {
           final double extractedValue = _selectedMetric.valueExtractor(data);
 
-          return ValueGauge(
-            value: extractedValue.toStringAsFixed(1),
-            label: _selectedMetric.label,
-            unit: _selectedMetric.unit,
+          return FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: ValueGauge(
+              value: extractedValue.toStringAsFixed(1),
+              unit: _selectedMetric.unit,
+            ),
           );
         },
       ),

@@ -75,24 +75,24 @@ class ValueGauge extends StatelessWidget {
             ],
             Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
               children: [
                 if (icon != null)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.only(right: 4.0),
                     child: Icon(icon, size: detailsTextSize),
                   ),
+
                 Text(value, style: mergedValueStyle),
 
                 if (unit != null) ...[
-                  SizedBox(width: 3),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5),
-                    child: Text(
-                      unit!,
-                      style: TextStyle(
-                        fontSize: detailsTextSize,
-                        color: Colors.black54,
-                      ),
+                  const SizedBox(width: 3),
+                  Text(
+                    unit!,
+                    style: TextStyle(
+                      fontSize: detailsTextSize,
+                      color: Colors.black54,
                     ),
                   ),
                 ],

@@ -18,7 +18,7 @@ class DashboardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dashboard<CustomCard>(
       controller: viewmodel.dashboardController,
-
+    
       itemBuilder: (context, item) {
         CardModel card = viewmodel.dashboardModel.cards.firstWhere(
           (c) => c.id == item.id,
@@ -40,7 +40,7 @@ class DashboardWidget extends StatelessWidget {
             return CustomCard(title: "title", child: Text("data"));
         }
       },
-
+      
       gridStyle: const GridStyle(
         lineColor: Colors.black12, // Color of resize handles
         lineWidth: 1,

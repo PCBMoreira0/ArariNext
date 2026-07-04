@@ -1,12 +1,14 @@
 import 'package:arari_next/domain/telemetry/full_boat_data.dart';
 
 class MetricDefinition {
+  final String id;
   final String label;
   final String unit;
   final double Function(FullBoatData data) valueExtractor;
   final int Function(FullBoatData data) timeExtractor;
 
   MetricDefinition({
+    required this.id,
     required this.label,
     required this.unit,
     required this.valueExtractor,
@@ -17,13 +19,15 @@ class MetricDefinition {
 class MetricsCatalog {
   static final List<MetricDefinition> bms = [
     MetricDefinition(
-      label: "Nível de bateria",
+      id: "battery_level",
+      label: "Nível Bat.",
       unit: '%',
       valueExtractor: (data) => data.bmsData.stateOfCharge,
       timeExtractor: (data) => data.bmsData.timestamp,
     ),
     MetricDefinition(
-      label: "Tensão da bateria",
+      id: "battery_voltage",
+      label: "Tensão Bat.",
       unit: 'V',
       valueExtractor: (data) => data.bmsData.totalVoltage,
       timeExtractor: (data) => data.bmsData.timestamp,
@@ -32,19 +36,22 @@ class MetricsCatalog {
 
   static final List<MetricDefinition> motor = [
     MetricDefinition(
-      label: "Tensão do motor (bombordo)",
+      id: "motor_bb_voltage",
+      label: "Tensão Mot.BB",
       unit: 'V',
       valueExtractor: (data) => data.motorEletricalDataLeft.busVoltage,
       timeExtractor: (data) => data.motorEletricalDataLeft.timestamp,
     ),
     MetricDefinition(
-      label: "Tensão do motor (boreste)",
+      id: "motor_be_voltage",
+      label: "Tensão Mot.BE",
       unit: 'V',
       valueExtractor: (data) => data.motorEletricalDataRight.busVoltage,
       timeExtractor: (data) => data.motorEletricalDataRight.timestamp,
     ),
     MetricDefinition(
-      label: "Corrente do motor (boreste)",
+      id: "motor_be_current",
+      label: "Corrente Mot.BE",
       unit: 'V',
       valueExtractor: (data) => data.motorEletricalDataRight.busCurrent,
       timeExtractor: (data) => data.motorEletricalDataRight.timestamp,

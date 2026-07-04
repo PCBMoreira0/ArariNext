@@ -19,21 +19,21 @@ class DashboardViewModel {
   );
 
   late StreamSubscription _packetSubscription;
+  late final void Function() _slotCountUnsubscribe;
 
   final DashboardModel dashboardModel;
-  final DashboardController dashboardController;
+  final DashboardController dashboardController = DashboardController();
   final DashboardRepository _dashboardRepository;
   final PacketRepository _packetRepository;
 
   DashboardViewModel({
     required this.dashboardModel,
-    required this.dashboardController,
     required DashboardRepository dashboardRepository,
     required PacketRepository packetRepository,
     this.isReadOnly = false,
   }) : _dashboardRepository = dashboardRepository,
        _packetRepository = packetRepository {
-    dashboardController.importLayout(dashboardModel.toJson()['layout']);
+    dashboardController.slotCount.subscribe(importDashboardBySlotCount);
 
     _packetSubscription = _packetRepository.data.listen(onNewDataReceived);
   }
@@ -68,8 +68,12 @@ class DashboardViewModel {
     if (isEditingValueNotifier.value) {
       isEditingValueNotifier.value = false;
 
-      dashboardModel.layout.clear();
-      dashboardModel.layout.addAll(dashboardController.layout.value);
+      final int currentSlotCount = dashboardController.slotCount.value;
+      dashboardModel.layouts[currentSlotCount] ??= [];
+      dashboardModel.layouts[currentSlotCount]!.clear();
+      dashboardModel.layouts[currentSlotCount]!.addAll(
+        dashboardController.layout.value,
+      );
 
       dashboardController.toggleEditing();
       await _saveDashboard();
@@ -118,8 +122,16 @@ class DashboardViewModel {
     await _dashboardRepository.saveDashboard(dashboardModel);
   }
 
+  void importDashboardBySlotCount(int slotCount) {
+    final List<LayoutItem> itensDoLayout =
+        dashboardModel.layouts[slotCount] ?? [];
+    final jsonLayout = itensDoLayout.map((item) => item.toMap()).toList();
+    dashboardController.importLayout(jsonLayout);
+  }
+
   void dispose() {
     _packetSubscription.cancel();
+    _slotCountUnsubscribe();
     dashboardController.dispose();
     dataValueNotifier.dispose();
     isEditingValueNotifier.dispose();
