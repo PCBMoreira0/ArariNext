@@ -45,6 +45,15 @@ class DashboardScreen extends StatelessWidget {
                             color: Colors.purple,
                           ),
                         ),
+                      if (value)
+                        IconButton(
+                          onPressed: () =>
+                              dashboardVM.addCard(CardType.battery),
+                          icon: const Icon(
+                            Icons.battery_0_bar,
+                            color: Colors.yellow,
+                          ),
+                        ),
                       IconButton(
                         icon: Icon(
                           Icons.home,

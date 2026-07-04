@@ -46,7 +46,7 @@ class DashboardViewModel {
   void addCard(CardType type) {
     if (isReadOnly) return;
     final id = DateTime.now().microsecondsSinceEpoch.toString();
-    final newCard = type.createModel(id);
+    final newCard = type.createModel(id: id);
     dashboardModel.cards.add(newCard);
     dashboardController.addItem(
       LayoutItem(
