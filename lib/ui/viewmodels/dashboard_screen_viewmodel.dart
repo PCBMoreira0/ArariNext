@@ -26,7 +26,6 @@ class DashboardScreenViewmodel extends ChangeNotifier {
 
   Future<void> init() async {
     isLoading = true;
-    notifyListeners();
 
     dashboard = await _dashboardRepository.getDashboardById(id);
 

@@ -1,13 +1,56 @@
+import 'package:arari_next/domain/dashboard/metric_card_model.dart';
+import 'package:arari_next/domain/telemetry/full_boat_data.dart';
 import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
 import 'package:arari_next/ui/core/widgets/gauge/value_gauge.dart';
-import 'package:arari_next/ui/viewmodels/metric_card_viewmodel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class MetricCard extends StatelessWidget {
-  final MetricCardViewmodel viewModel;
+class MetricCard extends StatefulWidget {
+  final MetricCardModel model;
 
-  const MetricCard({super.key, required this.viewModel});
+  final ValueListenable<FullBoatData> boatDataListenable;
+
+  final ValueChanged<MetricCardModel> onConfigChanged;
+
+  const MetricCard({
+    super.key,
+    required MetricCardModel initialModel,
+    required this.boatDataListenable,
+    required this.onConfigChanged,
+  }) : model = initialModel;
+
+  @override
+  State<MetricCard> createState() => _MetricCardState();
+}
+
+class _MetricCardState extends State<MetricCard> {
+  late MetricDefinition _selectedMetric;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMetric = _findMetricDefinition(widget.model.selectedMetric);
+  }
+
+  MetricDefinition _findMetricDefinition(String label) {
+    for (var group in MetricsCatalog.grouped.values) {
+      for (var metric in group) {
+        if (metric.label == label) return metric;
+      }
+    }
+    return MetricsCatalog.bms.first;
+  }
+
+  void _changeSelection(MetricDefinition newMetric) {
+    setState(() {
+      _selectedMetric = newMetric;
+    });
+
+    final updatedModel = widget.model.copyWith(selectedMetric: newMetric.label);
+
+    widget.onConfigChanged(updatedModel);
+  }
 
   void _showMetricSelector(BuildContext context) {
     showModalBottomSheet(
@@ -40,7 +83,7 @@ class MetricCard extends StatelessWidget {
                       style: const TextStyle(color: Colors.grey),
                     ),
                     onTap: () {
-                      viewModel.changeSelection(metrica);
+                      _changeSelection(metrica);
                       Navigator.pop(context);
                     },
                   );
@@ -56,21 +99,21 @@ class MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomCard(
-      title: 'Metrico',
+      title: 'Métrica',
       action: IconButton(
-        icon: const Icon(Icons.tune, size: 20), // ou Icons.settings
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(),
+        icon: const Icon(Icons.tune, size: 20),
         onPressed: () => _showMetricSelector(context),
       ),
 
-      child: ValueListenableBuilder(
-        valueListenable: viewModel.selectedMetricValueNotifier,
-        builder: (context, value, child) {
+      child: ValueListenableBuilder<FullBoatData>(
+        valueListenable: widget.boatDataListenable,
+        builder: (context, data, child) {
+          final double extractedValue = _selectedMetric.valueExtractor(data);
+
           return ValueGauge(
-            value: value.value.toString(),
-            label: value.label,
-            unit: value.unit,
+            value: extractedValue.toStringAsFixed(1),
+            label: _selectedMetric.label,
+            unit: _selectedMetric.unit,
           );
         },
       ),

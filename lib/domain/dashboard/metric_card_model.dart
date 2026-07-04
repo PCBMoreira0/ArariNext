@@ -1,7 +1,11 @@
 import 'package:arari_next/domain/dashboard/card_model.dart';
+import 'package:arari_next/domain/dashboard/card_type.dart';
 
 final class MetricCardModel extends CardModel {
   final String selectedMetric;
+  
+  @override
+  CardType get type => CardType.metric;
 
   @override
   int get defaultW => 2;
@@ -15,7 +19,6 @@ final class MetricCardModel extends CardModel {
   const MetricCardModel({
     required this.selectedMetric,
     required super.id,
-    required super.type,
   });
 
   @override
@@ -26,7 +29,6 @@ final class MetricCardModel extends CardModel {
   MetricCardModel copyWith({String? id, String? selectedMetric}) {
     return MetricCardModel(
       id: id ?? this.id,
-      type: type,
       selectedMetric: selectedMetric ?? this.selectedMetric,
     );
   }

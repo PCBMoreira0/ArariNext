@@ -1,80 +1,75 @@
+import 'package:arari_next/domain/dashboard/propulsion_card_model.dart';
+import 'package:arari_next/domain/telemetry/full_boat_data.dart';
 import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
 import 'package:arari_next/ui/core/utils/layout_constraint.dart';
 import 'package:arari_next/ui/core/utils/layout_mode.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
 import 'package:arari_next/ui/core/widgets/gauge/speedometer_gauge.dart';
 import 'package:arari_next/ui/core/widgets/gauge/value_gauge.dart';
-import 'package:arari_next/ui/viewmodels/propulsion_card_viewmodel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-enum LayoutType { ultraCompact, compact, vertical, horizontal, minimum, full }
+class PropulsionCard extends StatefulWidget {
+  final ValueListenable<FullBoatData> boatDataListenable;
+  final PropulsionCardModel model;
+  final ValueChanged<PropulsionCardModel> onConfigChanged;
 
-abstract class LayoutConstraints {
-  double get minHeight;
-  double get minWidth;
-  Widget build();
+  const PropulsionCard({
+    super.key,
+    required PropulsionCardModel initialModel,
+    required this.boatDataListenable,
+    required this.onConfigChanged,
+  }) : model = initialModel;
+
+  @override
+  State<StatefulWidget> createState() => _PropulsionCardState();
 }
 
-class PropulsionCard extends StatelessWidget {
-  final double valueTextSize = 16;
+class _PropulsionCardState extends State<PropulsionCard> {
+  late MotorInstance selectedInstance;
 
-  final PropulsionCardViewmodel viewModel;
-
-  const PropulsionCard({super.key, required this.viewModel});
+  @override
+  void initState() {
+    selectedInstance = widget.model.selectedInstance;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return CustomCard(
-      title: "Propulsão",
-      action: MenuAnchor(
-        menuChildren: [
-          MenuItemButton(
-            child: Text('Inverter posição'),
-            onPressed: () {
-              viewModel.toggleInstance();
-            },
-          ),
-        ],
-        builder: (context, controller, child) {
-          return IconButton(
-            icon: Icon(Icons.settings),
-            iconSize: 15,
-            padding: EdgeInsets.all(2),
-            constraints: const BoxConstraints(),
-            onPressed: () {
-              if (controller.isOpen) {
-                controller.close();
-              } else {
-                controller.open();
-              }
-            },
+      title: "Propulsion",
+      action: IconButton(
+        onPressed: () {
+          setState(() {
+            if (selectedInstance == MotorInstance.left) {
+              selectedInstance = MotorInstance.right;
+            } else {
+              selectedInstance = MotorInstance.left;
+            }
+          });
+          final updatedModel = widget.model.copyWith(
+            selectedInstance: selectedInstance,
           );
+          widget.onConfigChanged(updatedModel);
         },
+        icon: Icon(Icons.arrow_drop_down),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           LayoutMode layoutMode = LayoutMode(
             layouts: [
-              _FullLayout(viewModel: viewModel, minHeight: 166, minWidth: 318),
-              _MinimumLayout(
-                viewModel: viewModel,
-                minHeight: 160,
-                minWidth: 124,
+              _FullLayout(
+                boatDataListenable: widget.boatDataListenable,
+                selectedInstance: selectedInstance,
+                minHeight: 166,
+                minWidth: 318,
               ),
-              _VerticalLayout(
-                viewModel: viewModel,
-                minHeight: 122,
-                minWidth: 100,
+              _CompactLayout(
+                boatDataListenable: widget.boatDataListenable,
+                selectedInstance: selectedInstance,
               ),
-              _HorizontalLayout(
-                viewModel: viewModel,
-                minHeight: 56,
-                minWidth: 184,
-              ),
-              _UltraCompactLayout(viewModel: viewModel),
             ],
           );
-          // return _FullLayout(rpm: widget.rpm).build();
           return layoutMode.buildLayout(constraints);
         },
       ),
@@ -82,37 +77,15 @@ class PropulsionCard extends StatelessWidget {
   }
 }
 
-class _UltraCompactLayout extends LayoutConstraint {
-  final PropulsionCardViewmodel viewModel;
-
-  _UltraCompactLayout({required this.viewModel});
-
-  @override
-  Widget build() {
-    return Center(
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: ValueListenableBuilder(
-          valueListenable: viewModel.motorEletricalDataValueNotifier,
-          builder: (context, value, child) {
-            return ValueGauge(
-              value: value.rpm.toString(),
-              unit: 'rpm',
-              label: 'Velocidade',
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
 class _CompactLayout extends LayoutConstraint {
-  final double _valueTextSize;
-  final PropulsionCardViewmodel viewModel;
+  final double _valueTextSize = 16;
+  final ValueListenable<FullBoatData> boatDataListenable;
+  final MotorInstance selectedInstance;
 
-  _CompactLayout({required this.viewModel, double valueTextSize = 16})
-    : _valueTextSize = valueTextSize;
+  _CompactLayout({
+    required this.boatDataListenable,
+    required this.selectedInstance,
+  });
 
   @override
   Widget build() {
@@ -125,10 +98,13 @@ class _CompactLayout extends LayoutConstraint {
               Expanded(
                 child: Center(
                   child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorEletricalDataValueNotifier,
+                    valueListenable: boatDataListenable,
                     builder: (context, value, child) {
+                      final busVoltage = selectedInstance == MotorInstance.left
+                          ? value.motorEletricalDataLeft.busVoltage
+                          : value.motorEletricalDataRight.busVoltage;
                       return ValueGauge(
-                        value: value.busVoltage.toString(),
+                        value: busVoltage.toStringAsFixed(2),
                         label: 'Tensão',
                         unit: 'V',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
@@ -140,10 +116,13 @@ class _CompactLayout extends LayoutConstraint {
               Expanded(
                 child: Center(
                   child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorEletricalDataValueNotifier,
+                    valueListenable: boatDataListenable,
                     builder: (context, value, child) {
+                      final busCurrent = selectedInstance == MotorInstance.left
+                          ? value.motorEletricalDataLeft.busCurrent
+                          : value.motorEletricalDataRight.busCurrent;
                       return ValueGauge(
-                        value: value.busCurrent.toString(),
+                        value: busCurrent.toStringAsFixed(2),
                         label: 'Corrente',
                         unit: 'A',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
@@ -162,11 +141,15 @@ class _CompactLayout extends LayoutConstraint {
               Expanded(
                 child: Center(
                   child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorStateDataValueNotifier,
+                    valueListenable: boatDataListenable,
                     builder: (context, value, child) {
+                      final motorTemperature =
+                          selectedInstance == MotorInstance.left
+                          ? value.motorStateDataLeft.motorTemperature
+                          : value.motorStateDataRight.motorTemperature;
                       return ValueGauge(
                         unit: 'ºC',
-                        value: value.motorTemperature.toString(),
+                        value: motorTemperature.toStringAsFixed(2),
                         label: 'Temperatura Motor',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
                       );
@@ -177,11 +160,15 @@ class _CompactLayout extends LayoutConstraint {
               Expanded(
                 child: Center(
                   child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorStateDataValueNotifier,
+                    valueListenable: boatDataListenable,
                     builder: (context, value, child) {
+                      final controllerTemperature =
+                          selectedInstance == MotorInstance.left
+                          ? value.motorStateDataLeft.controllerTemperature
+                          : value.motorStateDataRight.controllerTemperature;
                       return ValueGauge(
                         unit: 'ºC',
-                        value: value.controllerTemperature.toString(),
+                        value: controllerTemperature.toStringAsFixed(2),
                         label: 'Temperatura ESC',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
                       );
@@ -194,251 +181,33 @@ class _CompactLayout extends LayoutConstraint {
         ),
       ],
     );
-  }
-}
-
-class _MinimumLayout extends LayoutConstraint {
-  final PropulsionCardViewmodel viewModel;
-  final double _valueTextSize;
-
-  _MinimumLayout({
-    required this.viewModel,
-    super.minHeight,
-    super.minWidth,
-    double valueTextSize = 16,
-  }) : _valueTextSize = valueTextSize;
-
-  @override
-  Widget build() {
-    return Column(
-      children: [
-        // Linha 1
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorEletricalDataValueNotifier,
-                    builder: (context, value, child) {
-                      return ValueGauge(
-                        value: value.busVoltage.toString(),
-                        label: 'Tensão',
-                        unit: 'V',
-                        valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorEletricalDataValueNotifier,
-                    builder: (context, value, child) {
-                      return ValueGauge(
-                        value: value.busCurrent.toString(),
-                        label: 'Corrente',
-                        unit: 'A',
-                        valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Linha
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorStateDataValueNotifier,
-                    builder: (context, value, child) {
-                      return ValueGauge(
-                        unit: 'ºC',
-                        value: value.motorTemperature.toString(),
-                        label: 'Temperatura Motor',
-                        valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorStateDataValueNotifier,
-                    builder: (context, value, child) {
-                      return ValueGauge(
-                        value: value.controllerTemperature.toString(),
-                        label: 'Temperatura ESC',
-                        unit: 'ºC',
-                        valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorEletricalDataValueNotifier,
-                    builder: (context, value, child) {
-                      return ValueGauge(
-                        unit: 'rpm',
-                        value: value.rpm.toString(),
-                        label: 'Velocidade',
-                        valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: viewModel.motorEletricalDataValueNotifier,
-                    builder: (context, value, child) {
-                      return ValueGauge(
-                        value: value.acceleratorOpening.toString(),
-                        label: 'Abertura Acel.',
-                        unit: '%',
-                        valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _AxisWidgets {
-  static List<Widget> getWidgets(
-    PropulsionCardViewmodel viewModel,
-    double valueTextSize,
-  ) {
-    return [
-      Expanded(
-        child: Center(
-          child: ValueListenableBuilder(
-            valueListenable: viewModel.motorEletricalDataValueNotifier,
-            builder: (context, value, child) {
-              return ValueGauge(
-                value: value.rpm.toString(),
-                label: 'Velocidade',
-                unit: 'rpm',
-                valueStyle: TextStyle(fontSize: valueTextSize),
-              );
-            },
-          ),
-        ),
-      ),
-      Expanded(
-        child: Center(
-          child: ValueListenableBuilder(
-            valueListenable: viewModel.motorEletricalDataValueNotifier,
-            builder: (context, value, child) {
-              return ValueGauge(
-                value: value.busCurrent.toString(),
-                label: 'Corrente',
-                unit: 'A',
-                valueStyle: TextStyle(fontSize: valueTextSize),
-              );
-            },
-          ),
-        ),
-      ),
-      Expanded(
-        child: Center(
-          child: ValueListenableBuilder(
-            valueListenable: viewModel.motorStateDataValueNotifier,
-            builder: (context, value, child) {
-              return ValueGauge(
-                value: value.controllerTemperature.toString(),
-                label: 'Temperatura ESC',
-                unit: 'ºC',
-                valueStyle: TextStyle(fontSize: valueTextSize),
-              );
-            },
-          ),
-        ),
-      ),
-    ];
-  }
-}
-
-class _VerticalLayout extends LayoutConstraint {
-  final PropulsionCardViewmodel viewModel;
-  final double _valueTextSize;
-
-  _VerticalLayout({
-    required this.viewModel,
-    super.minHeight,
-    super.minWidth,
-    double valueTextSize = 16,
-  }) : _valueTextSize = valueTextSize;
-
-  @override
-  Widget build() {
-    return Column(children: _AxisWidgets.getWidgets(viewModel, _valueTextSize));
-  }
-}
-
-class _HorizontalLayout extends LayoutConstraint {
-  final PropulsionCardViewmodel viewModel;
-  final double _valueTextSize;
-
-  _HorizontalLayout({
-    required this.viewModel,
-    super.minHeight,
-    super.minWidth,
-    double valueTextSize = 16,
-  }) : _valueTextSize = valueTextSize;
-
-  @override
-  Widget build() {
-    return Row(children: _AxisWidgets.getWidgets(viewModel, _valueTextSize));
   }
 }
 
 class _FullLayout extends LayoutConstraint {
-  final PropulsionCardViewmodel viewModel;
-  final double valueTextSize;
+  final double valueTextSize = 16;
+
+  final ValueListenable<FullBoatData> boatDataListenable;
+  final MotorInstance selectedInstance;
 
   _FullLayout({
-    required this.viewModel,
+    required this.boatDataListenable,
+    required this.selectedInstance,
     super.minHeight,
     super.minWidth,
-    this.valueTextSize = 16,
   });
 
   @override
   Widget build() {
     final Widget compactLayout = _CompactLayout(
-      valueTextSize: valueTextSize,
-      viewModel: viewModel,
+      boatDataListenable: boatDataListenable,
+      selectedInstance: selectedInstance,
     ).build();
 
     return ValueListenableBuilder(
-      valueListenable: viewModel.currentInstanceNotifier,
+      valueListenable: boatDataListenable,
       builder: (context, value, child) {
-        if (value == MotorInstance.right) {
+        if (selectedInstance == MotorInstance.right) {
           return Row(
             children: [
               _buildSpeedometer(),
@@ -465,9 +234,12 @@ class _FullLayout extends LayoutConstraint {
         alignment: AlignmentGeometry.bottomCenter,
         children: [
           ValueListenableBuilder(
-            valueListenable: viewModel.motorEletricalDataValueNotifier,
+            valueListenable: boatDataListenable,
             builder: (context, value, child) {
-              return SpeedometerGauge(rpm: value.rpm.toDouble());
+              final rpm = selectedInstance == MotorInstance.left
+                  ? value.motorEletricalDataLeft.rpm
+                  : value.motorEletricalDataRight.rpm;
+              return SpeedometerGauge(rpm: rpm.toDouble());
             },
           ),
           Row(
@@ -476,10 +248,13 @@ class _FullLayout extends LayoutConstraint {
             mainAxisSize: MainAxisSize.min,
             children: [
               ValueListenableBuilder(
-                valueListenable: viewModel.motorEletricalDataValueNotifier,
+                valueListenable: boatDataListenable,
                 builder: (context, value, child) {
+                  final rpm = selectedInstance == MotorInstance.left
+                      ? value.motorEletricalDataLeft.rpm
+                      : value.motorEletricalDataRight.rpm;
                   return ValueGauge(
-                    value: '${value.rpm}',
+                    value: '$rpm',
                     unit: 'rpm',
                     label: 'Velocidade',
                     valueStyle: TextStyle(fontSize: 18),
@@ -487,10 +262,14 @@ class _FullLayout extends LayoutConstraint {
                 },
               ),
               ValueListenableBuilder(
-                valueListenable: viewModel.motorEletricalDataValueNotifier,
+                valueListenable: boatDataListenable,
                 builder: (context, value, child) {
+                  final acceleratorOpening =
+                      selectedInstance == MotorInstance.left
+                      ? value.motorEletricalDataLeft.acceleratorOpening
+                      : value.motorEletricalDataRight.acceleratorOpening;
                   return ValueGauge(
-                    value: value.acceleratorOpening.toString(),
+                    value: acceleratorOpening.toString(),
                     unit: '%',
                     label: 'Abertura Acel.',
                     maxWidth: 100,

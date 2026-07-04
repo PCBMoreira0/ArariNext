@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart';
 import 'package:arari_next/data/services/file/file_storage_service.dart';
 import 'package:arari_next/domain/dashboard/dashboard_model.dart';
+import 'package:flutter/foundation.dart';
 
 class DashboardRepositoryImpl implements DashboardRepository {
   static const _fileName = 'dashboards.json';
@@ -27,6 +28,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
             .toList();
       }
     } catch (e) {
+      debugPrint(
+        'Erro na inicialização do DashboardRepository: ${e.toString()}',
+      );
       _dashboardsCache = [];
     } finally {
       _isInitialized = true;

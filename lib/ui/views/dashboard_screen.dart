@@ -25,26 +25,33 @@ class DashboardScreen extends StatelessWidget {
                 return const SizedBox.shrink();
               }
 
-              return ListenableBuilder(
-                listenable: dashboardVM,
-                builder: (context, child) {
+              return ValueListenableBuilder(
+                valueListenable: dashboardVM.isEditingValueNotifier,
+                builder: (context, value, child) {
                   return Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.home,
-                          color: dashboardVM.isEditing
-                              ? Colors.green
-                              : Colors.red,
-                        ),
-                        onPressed: () => dashboardVM.toggleEditing(),
-                      ),
-                      if (dashboardVM.isEditing)
+                      if (value)
                         IconButton(
                           onPressed: () => dashboardVM.addCard(CardType.metric),
                           icon: const Icon(Icons.add, color: Colors.purple),
                         ),
+                      if (value)
+                        IconButton(
+                          onPressed: () =>
+                              dashboardVM.addCard(CardType.propulsion),
+                          icon: const Icon(
+                            Icons.rotate_90_degrees_cw_sharp,
+                            color: Colors.purple,
+                          ),
+                        ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.home,
+                          color: value ? Colors.green : Colors.red,
+                        ),
+                        onPressed: () => dashboardVM.toggleEditing(),
+                      ),
                     ],
                   );
                 },

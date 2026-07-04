@@ -19,16 +19,8 @@ class ChartsScreen extends StatelessWidget {
         LayoutItem(id: '2', x: -1, y: -1, w: 2, h: 1),
       ],
       cards: [
-        MetricCardModel(
-          id: '1',
-          type: CardType.metric,
-          selectedMetric: 'Nível de bateria',
-        ),
-        MetricCardModel(
-          id: '2',
-          type: CardType.metric,
-          selectedMetric: 'Tensão da bateria',
-        ),
+        MetricCardModel(id: '1', selectedMetric: 'Nível de bateria'),
+        MetricCardModel(id: '2', selectedMetric: 'Tensão da bateria'),
       ],
     );
   }

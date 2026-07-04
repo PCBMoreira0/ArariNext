@@ -1,9 +1,11 @@
 import 'package:arari_next/domain/dashboard/card_model.dart';
 import 'package:arari_next/domain/dashboard/card_type.dart';
+import 'package:arari_next/domain/dashboard/metric_card_model.dart';
+import 'package:arari_next/domain/dashboard/propulsion_card_model.dart';
+import 'package:arari_next/ui/core/widgets/cards/propulsion_card.dart';
 import 'package:arari_next/ui/viewmodels/dashboard_viewmodel.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
 import 'package:arari_next/ui/core/widgets/cards/metric_card.dart';
-import 'package:arari_next/ui/viewmodels/metric_card_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:sliver_dashboard/sliver_dashboard.dart';
 
@@ -24,10 +26,16 @@ class DashboardWidget extends StatelessWidget {
         switch (card.type) {
           case CardType.metric:
             return MetricCard(
-              viewModel: viewmodel.getViewModel(card) as MetricCardViewmodel,
+              initialModel: card as MetricCardModel,
+              boatDataListenable: viewmodel.dataValueNotifier,
+              onConfigChanged: viewmodel.updateCard,
             );
           case CardType.propulsion:
-            return CustomCard(title: "title", child: Text("data"));
+            return PropulsionCard(
+              boatDataListenable: viewmodel.dataValueNotifier,
+              initialModel: card as PropulsionCardModel,
+              onConfigChanged: viewmodel.updateCard,
+            );
           case CardType.battery:
             return CustomCard(title: "title", child: Text("data"));
         }
@@ -63,6 +71,7 @@ class DashboardWidget extends StatelessWidget {
           ),
         );
       },
+      onItemsDeleted: viewmodel.deleteCardsByLayoutItem,
       trashHoverDelay: const Duration(milliseconds: 0),
     );
   }

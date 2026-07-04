@@ -1,9 +1,11 @@
 import 'package:arari_next/domain/dashboard/card_type.dart';
 import 'package:arari_next/domain/dashboard/metric_card_model.dart';
+import 'package:arari_next/domain/dashboard/propulsion_card_model.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
 
 abstract class CardModel {
   final String id;
-  final CardType type;
+  CardType get type;
 
   int get defaultW => 1;
   int get defaultH => 1;
@@ -12,7 +14,7 @@ abstract class CardModel {
   double get maxW => double.infinity;
   double get maxH => double.infinity;
 
-  const CardModel({required this.id, required this.type});
+  const CardModel({required this.id});
 
   Map<String, dynamic> configToJson();
 
@@ -29,7 +31,13 @@ abstract class CardModel {
         return MetricCardModel(
           id: id,
           selectedMetric: config['selectedMetric'],
-          type: CardType.metric,
+        );
+      case CardType.propulsion:
+        return PropulsionCardModel(
+          id: id,
+          selectedInstance: MotorInstance.values.byName(
+            config['selectedInstance'],
+          ),
         );
 
       default:

@@ -1,6 +1,7 @@
 import 'package:arari_next/domain/dashboard/card_model.dart';
 import 'package:arari_next/domain/dashboard/metric_card_model.dart';
-import 'package:arari_next/ui/viewmodels/metric_card_viewmodel.dart';
+import 'package:arari_next/domain/dashboard/propulsion_card_model.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
 
 enum CardType {
   metric(defaultW: 2, defaultH: 2),
@@ -15,32 +16,12 @@ enum CardType {
   CardModel createModel(String id) {
     switch (this) {
       case CardType.metric:
-        return MetricCardModel(
+        return MetricCardModel(id: id, selectedMetric: 'Nível de bateria');
+      case CardType.propulsion:
+        return PropulsionCardModel(
+          selectedInstance: MotorInstance.left,
           id: id,
-          type: this,
-          selectedMetric: 'Nível de bateria',
         );
-      case CardType.propulsion:
-        throw UnimplementedError();
-      case CardType.battery:
-        throw UnimplementedError();
-    }
-  }
-
-  dynamic createViewModel({
-    required CardModel model,
-    required dynamic packetRepository,
-    required Function(CardModel) onConfigChanged,
-  }) {
-    switch (this) {
-      case CardType.metric:
-        return MetricCardViewmodel(
-          packetRepository: packetRepository,
-          model: model as MetricCardModel,
-          onConfigChanged: onConfigChanged,
-        );
-      case CardType.propulsion:
-        throw UnimplementedError();
       case CardType.battery:
         throw UnimplementedError();
     }

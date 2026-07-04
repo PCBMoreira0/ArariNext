@@ -1,23 +1,29 @@
+import 'dart:async';
+
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart';
 import 'package:arari_next/data/repositories/packet/packet_repository.dart';
 import 'package:arari_next/domain/dashboard/card_model.dart';
 import 'package:arari_next/domain/dashboard/card_type.dart';
 import 'package:arari_next/domain/dashboard/dashboard_model.dart';
-import 'package:arari_next/domain/dashboard/metric_card_model.dart';
-import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
-import 'package:arari_next/ui/viewmodels/metric_card_viewmodel.dart';
+import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sliver_dashboard/sliver_dashboard.dart';
 
-class DashboardViewModel extends ChangeNotifier {
+class DashboardViewModel {
+  final bool isReadOnly;
+
+  final ValueNotifier<bool> isEditingValueNotifier = ValueNotifier(false);
+  final ValueNotifier<FullBoatData> dataValueNotifier = ValueNotifier(
+    FullBoatData.empty(),
+  );
+
+  late StreamSubscription _packetSubscription;
+
   final DashboardModel dashboardModel;
   final DashboardController dashboardController;
   final DashboardRepository _dashboardRepository;
   final PacketRepository _packetRepository;
-  final bool isReadOnly;
-  bool isEditing = false;
-
-  final Map<String, dynamic> viewModelsCache = {};
 
   DashboardViewModel({
     required this.dashboardModel,
@@ -28,56 +34,13 @@ class DashboardViewModel extends ChangeNotifier {
   }) : _dashboardRepository = dashboardRepository,
        _packetRepository = packetRepository {
     dashboardController.importLayout(dashboardModel.toJson()['layout']);
+
+    _packetSubscription = _packetRepository.data.listen(onNewDataReceived);
   }
 
-  CardModel _createCardByType(String id, CardType type) {
-    switch (type) {
-      case CardType.metric:
-        return MetricCardModel(
-          id: id,
-          type: type,
-          selectedMetric: MetricsCatalog.bms.first.label,
-        );
-      case CardType.propulsion:
-        return MetricCardModel(
-          id: id,
-          type: type,
-          selectedMetric: MetricsCatalog.motor.first.label,
-        );
-      case CardType.battery:
-        return MetricCardModel(
-          id: id,
-          type: type,
-          selectedMetric: MetricsCatalog.bms.first.label,
-        );
-    }
-  }
-
-  void _createViewModelByModel(CardModel model) {
-    switch (model.type) {
-      case CardType.metric:
-        viewModelsCache[model.id] = MetricCardViewmodel(
-          packetRepository: _packetRepository,
-          model: model as MetricCardModel,
-          onConfigChanged: updateCard,
-        );
-        break;
-      case CardType.propulsion:
-        throw UnimplementedError();
-      case CardType.battery:
-        throw UnimplementedError();
-    }
-  }
-
-  dynamic getViewModel(CardModel card) {
-    if (!viewModelsCache.containsKey(card.id)) {
-      viewModelsCache[card.id] = card.type.createViewModel(
-        model: card,
-        packetRepository: _packetRepository,
-        onConfigChanged: updateCard,
-      );
-    }
-    return viewModelsCache[card.id];
+  void onNewDataReceived(FullBoatData? newData) {
+    if (newData == null) return;
+    dataValueNotifier.value = newData;
   }
 
   void addCard(CardType type) {
@@ -98,13 +61,12 @@ class DashboardViewModel extends ChangeNotifier {
         maxW: newCard.maxW,
       ),
     );
-    notifyListeners();
   }
 
   void toggleEditing() async {
     if (isReadOnly) return;
-    if (isEditing) {
-      isEditing = false;
+    if (isEditingValueNotifier.value) {
+      isEditingValueNotifier.value = false;
 
       dashboardModel.layout.clear();
       dashboardModel.layout.addAll(dashboardController.layout.value);
@@ -112,10 +74,9 @@ class DashboardViewModel extends ChangeNotifier {
       dashboardController.toggleEditing();
       await _saveDashboard();
     } else {
-      isEditing = true;
+      isEditingValueNotifier.value = true;
       dashboardController.toggleEditing();
     }
-    notifyListeners();
   }
 
   void updateCard(CardModel updatedCard) async {
@@ -124,7 +85,6 @@ class DashboardViewModel extends ChangeNotifier {
     );
     if (index != -1) {
       dashboardModel.cards[index] = updatedCard;
-      notifyListeners();
       await _saveDashboard();
     }
   }
@@ -136,15 +96,21 @@ class DashboardViewModel extends ChangeNotifier {
     );
 
     if (index != -1) {
-      final vm = viewModelsCache.remove(deleteCard.id);
-      if (vm != null) {
-        vm.dispose();
-      }
-
       dashboardController.removeItem(deleteCard.id);
       dashboardModel.cards.removeAt(index);
-      notifyListeners();
       await _saveDashboard();
+    }
+  }
+
+  void deleteCards(List<CardModel> cards) {
+    for (var card in cards) {
+      deleteCard(card);
+    }
+  }
+
+  void deleteCardsByLayoutItem(List<LayoutItem> items) {
+    for (var item in items) {
+      deleteCards(dashboardModel.cards.where((c) => c.id == item.id).toList());
     }
   }
 
@@ -152,15 +118,10 @@ class DashboardViewModel extends ChangeNotifier {
     await _dashboardRepository.saveDashboard(dashboardModel);
   }
 
-  @override
   void dispose() {
-    for (var viewModel in viewModelsCache.values) {
-      if (viewModel is ChangeNotifier) {
-        viewModel.dispose();
-      }
-    }
-    viewModelsCache.clear();
+    _packetSubscription.cancel();
     dashboardController.dispose();
-    super.dispose();
+    dataValueNotifier.dispose();
+    isEditingValueNotifier.dispose();
   }
 }

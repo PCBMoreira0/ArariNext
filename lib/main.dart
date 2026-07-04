@@ -10,6 +10,7 @@ import 'package:arari_next/data/services/file/file_storage_service.dart';
 import 'package:arari_next/data/services/file/local_file_storage_service.dart';
 import 'package:arari_next/data/services/logging/logging_service_influx.dart';
 import 'package:arari_next/data/services/datasource/serial_datasource.dart';
+import 'package:arari_next/mocks/mock_packet_repository.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/routing/router.dart';
@@ -48,9 +49,7 @@ void main() async {
           create: (context) => context.read<SerialDatasource>(),
         ),
         Provider(
-          create: (context) =>
-              MavlinkRepository(dataSource: context.read(), log: context.read())
-                  as PacketRepository,
+          create: (context) => MockPacketRepository() as PacketRepository,
         ),
       ],
       child: const ArariNextApp(),
