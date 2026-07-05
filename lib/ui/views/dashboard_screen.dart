@@ -1,8 +1,10 @@
 import 'package:arari_next/domain/dashboard/card_type.dart';
 import 'package:arari_next/ui/core/ui/side_menu.dart';
+import 'package:arari_next/ui/core/ui/theme_provider.dart';
 import 'package:arari_next/ui/viewmodels/dashboard_screen_viewmodel.dart';
 import 'package:arari_next/ui/core/widgets/dashboard_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatelessWidget {
   final DashboardScreenViewmodel viewmodel;
@@ -11,11 +13,46 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
+
     return Scaffold(
       drawer: const SideMenu(),
       appBar: AppBar(
         title: const Text("Dashboard Screen"),
         actions: [
+          DropdownButtonHideUnderline(
+            child: DropdownButton<Color>(
+              value: themeProvider.seedColor,
+              icon: Icon(
+                Icons.color_lens,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              items: const [
+                DropdownMenuItem(value: Colors.blue, child: Text('Azul')),
+                DropdownMenuItem(value: Colors.white, child: Text('Branco')),
+                DropdownMenuItem(value: Colors.deepPurple, child: Text('Roxo')),
+              ],
+              onChanged: (Color? novaCor) {
+                if (novaCor != null) {
+                  themeProvider.changeColor(novaCor);
+                }
+              },
+            ),
+          ),
+
+          const SizedBox(width: 8),
+          IconButton(
+            // Troca o ícone dinamicamente baseado no modo atual
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+            tooltip: isDark ? 'Ativar Modo Claro' : 'Ativar Modo Escuro',
+            onPressed: () {
+              themeProvider.toggleThemeMode();
+            },
+          ),
+
+          const SizedBox(width: 8),
+
           ListenableBuilder(
             listenable: viewmodel,
             builder: (context, child) {

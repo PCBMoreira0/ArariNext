@@ -2,7 +2,6 @@ import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository_impl.dart';
 import 'package:arari_next/managers/settings_manager.dart';
 import 'package:arari_next/data/repositories/settings/local_settings_repository.dart';
-import 'package:arari_next/data/repositories/packet/mavlink_repository.dart';
 import 'package:arari_next/data/repositories/packet/packet_repository.dart';
 import 'package:arari_next/data/repositories/settings/settings_repository.dart';
 import 'package:arari_next/data/services/datasource/data_source_interface.dart';
@@ -13,6 +12,7 @@ import 'package:arari_next/data/services/datasource/serial_datasource.dart';
 import 'package:arari_next/mocks/mock_packet_repository.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:arari_next/ui/core/history_store.dart';
+import 'package:arari_next/ui/core/ui/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/routing/router.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +26,7 @@ void main() async {
     fileStorageService: fileStorageService,
   );
 
-  settingsRepository.initialize();
+  await settingsRepository.initialize();
 
   runApp(
     MultiProvider(
@@ -56,6 +56,7 @@ void main() async {
           create: (context) => HistoryStore(packetRepository: context.read()),
           dispose: (context, value) => value.dispose(),
         ),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ],
       child: const ArariNextApp(),
     ),
@@ -77,14 +78,13 @@ class _ArariNextAppState extends State<ArariNextApp> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'MavBoia',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.white,
-          brightness: Brightness.light,
-        ),
-      ),
+      theme: themeProvider.lightTheme,
+      darkTheme: themeProvider.darkTheme,
+      themeMode: themeProvider.themeMode,
       // Carrega a pagina inicial.
       initialRoute: Routes.dashboard,
       onGenerateRoute: RouteGenerator.generateRoute,
