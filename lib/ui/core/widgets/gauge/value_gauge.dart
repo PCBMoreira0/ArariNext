@@ -10,12 +10,6 @@ class ValueGauge extends StatelessWidget {
   final TextStyle? valueStyle;
   final double? maxWidth;
 
-  final defaultValueStyle = const TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    color: Colors.black,
-  );
-
   final _textSizeRatio = 0.58;
 
   const ValueGauge({
@@ -32,13 +26,31 @@ class ValueGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final defaultValueStyle =
+        theme.textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: colorScheme.onSurface,
+        ) ??
+        TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: colorScheme.onSurface,
+        );
+
     final mergedValueStyle = defaultValueStyle.merge(valueStyle);
-    final detailsTextSize = mergedValueStyle.fontSize! * _textSizeRatio;
+
+    final currentFontSize = mergedValueStyle.fontSize ?? 24.0;
+    final detailsTextSize = currentFontSize * _textSizeRatio;
+
+    final mutedTextColor = colorScheme.onSurfaceVariant;
 
     return Container(
-      padding: padding ?? const EdgeInsetsGeometry.all(1.0),
+      padding: padding ?? const EdgeInsets.all(1.0),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
         color: color ?? Colors.transparent,
       ),
       child: IntrinsicWidth(
@@ -54,20 +66,19 @@ class ValueGauge extends StatelessWidget {
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.fade,
                   maxLines: 2,
-                  style: TextStyle(
+                  style: theme.textTheme.labelMedium?.copyWith(
                     fontSize: detailsTextSize,
-                    color: Colors.black54,
+                    color: mutedTextColor,
                     fontWeight: FontWeight.w500,
-                    fontFamily: 'Roboto',
                   ),
                 ),
               ),
               SizedBox(
                 child: Padding(
-                  padding: const EdgeInsetsGeometry.symmetric(horizontal: 3.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 3.0),
                   child: Divider(
                     thickness: 1,
-                    color: Colors.black26,
+                    color: colorScheme.outlineVariant,
                     height: 2,
                   ),
                 ),
@@ -81,7 +92,11 @@ class ValueGauge extends StatelessWidget {
                 if (icon != null)
                   Padding(
                     padding: const EdgeInsets.only(right: 4.0),
-                    child: Icon(icon, size: detailsTextSize),
+                    child: Icon(
+                      icon,
+                      size: detailsTextSize,
+                      color: mutedTextColor,
+                    ),
                   ),
 
                 Text(value, style: mergedValueStyle),
@@ -92,7 +107,7 @@ class ValueGauge extends StatelessWidget {
                     unit!,
                     style: TextStyle(
                       fontSize: detailsTextSize,
-                      color: Colors.black54,
+                      color: mutedTextColor,
                     ),
                   ),
                 ],

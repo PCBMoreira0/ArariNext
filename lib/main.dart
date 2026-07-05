@@ -74,7 +74,12 @@ class _ArariNextAppState extends State<ArariNextApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MavBoia',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.white,
+          brightness: Brightness.light,
+        ),
+      ),
       // Carrega a pagina inicial.
       initialRoute: Routes.dashboard,
       onGenerateRoute: RouteGenerator.generateRoute,
