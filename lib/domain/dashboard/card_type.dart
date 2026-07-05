@@ -1,5 +1,6 @@
 import 'package:arari_next/domain/dashboard/battery_card_model.dart';
 import 'package:arari_next/domain/dashboard/card_model.dart';
+import 'package:arari_next/domain/dashboard/chart_card_model.dart';
 import 'package:arari_next/domain/dashboard/metric_card_model.dart';
 import 'package:arari_next/domain/dashboard/propulsion_card_model.dart';
 import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
@@ -7,7 +8,8 @@ import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
 enum CardType {
   metric,
   propulsion,
-  battery;
+  battery,
+  chart;
 
   CardModel createModel({required String id, Map<String, dynamic>? config}) {
     final cfg = config ?? {};
@@ -27,6 +29,12 @@ enum CardType {
         );
       case CardType.battery:
         return BatteryCardModel(id: id);
+      case CardType.chart:
+        return ChartCardModel(
+          id: id,
+          selectedInterval: Duration(minutes: cfg['selectedInterval'] ?? 1),
+          selectedMetrics: List<String>.from(cfg['selectedMetrics'] ?? []),
+        );
     }
   }
 }

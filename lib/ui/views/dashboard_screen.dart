@@ -54,6 +54,14 @@ class DashboardScreen extends StatelessWidget {
                             color: Colors.yellow,
                           ),
                         ),
+                      if (value)
+                        IconButton(
+                          onPressed: () => dashboardVM.addCard(CardType.chart),
+                          icon: const Icon(
+                            Icons.line_axis,
+                            color: Colors.yellow,
+                          ),
+                        ),
                       IconButton(
                         icon: Icon(
                           Icons.home,

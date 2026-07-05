@@ -30,16 +30,9 @@ class _MetricCardState extends State<MetricCard> {
   @override
   void initState() {
     super.initState();
-    _selectedMetric = _findMetricDefinition(widget.model.selectedMetric);
-  }
-
-  MetricDefinition _findMetricDefinition(String id) {
-    for (var group in MetricsCatalog.grouped.values) {
-      for (var metric in group) {
-        if (metric.id == id) return metric;
-      }
-    }
-    return MetricsCatalog.bms.first;
+    _selectedMetric =
+        MetricsCatalog.findMetricDefinitionById(widget.model.selectedMetric) ??
+        MetricsCatalog.bms.first;
   }
 
   void _changeSelection(MetricDefinition newMetric) {

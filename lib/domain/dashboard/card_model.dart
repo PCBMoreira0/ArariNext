@@ -13,7 +13,7 @@ abstract class CardModel {
 
   const CardModel({required this.id});
 
-  Map<String, dynamic> configToJson();
+  Map<String, dynamic> configToJson() => {};
 
   Map<String, dynamic> toJson() {
     return {'id': id, 'type': type.name, 'config': configToJson()};

@@ -12,6 +12,7 @@ import 'package:arari_next/data/services/logging/logging_service_influx.dart';
 import 'package:arari_next/data/services/datasource/serial_datasource.dart';
 import 'package:arari_next/mocks/mock_packet_repository.dart';
 import 'package:arari_next/routing/routes.dart';
+import 'package:arari_next/ui/core/history_store.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/routing/router.dart';
 import 'package:provider/provider.dart';
@@ -50,6 +51,10 @@ void main() async {
         ),
         Provider(
           create: (context) => MockPacketRepository() as PacketRepository,
+        ),
+        Provider(
+          create: (context) => HistoryStore(packetRepository: context.read()),
+          dispose: (context, value) => value.dispose(),
         ),
       ],
       child: const ArariNextApp(),

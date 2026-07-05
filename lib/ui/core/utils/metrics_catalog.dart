@@ -62,4 +62,13 @@ class MetricsCatalog {
     "Bateria": bms,
     "Motor": motor,
   };
+
+  static final Map<String, MetricDefinition> byId = {
+    for (final group in grouped.values)
+      for (final metric in group) metric.id: metric,
+  };
+
+  static MetricDefinition? findMetricDefinitionById(String id) {
+    return byId[id];
+  }
 }

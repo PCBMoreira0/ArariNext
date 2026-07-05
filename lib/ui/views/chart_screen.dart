@@ -29,6 +29,7 @@ class ChartsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final factoryViewModel = DashboardViewModel(
+      historyStore: context.read(),
       dashboardModel: _generateDefaultChartsModel(),
       isReadOnly: true,
       dashboardRepository: context.read(),
