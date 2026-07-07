@@ -41,7 +41,7 @@ class RouteGenerator {
           builder: (context) {
             return ChangeNotifierProvider(
               create: (context) => SettingsViewmodel(
-                serial: context.read(),
+                connectionManager: context.read(),
                 settings: context.read(),
                 log: context.read(),
               ),

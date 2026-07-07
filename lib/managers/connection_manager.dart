@@ -8,22 +8,28 @@ import 'package:arari_next/data/services/datasource/serial_datasource.dart';
 import 'package:async/async.dart';
 
 class ConnectionManager {
+  final SerialDatasource _serial;
+  final MqttDatasource _mqtt;
+
+  ConnectionStatus get serialStatus => _serial.status;
+  ConnectionStatus get mqttStatus => _mqtt.status;
+
+  late final Stream<ConnectionEvent> _connectionStreamGroup;
+  Stream<ConnectionEvent> get connectionStream => _connectionStreamGroup;
+
   ConnectionManager({
     required SerialDatasource serial,
     required MqttDatasource mqtt,
   }) : _serial = serial,
        _mqtt = mqtt {
-        _connectionStreamGroup = StreamGroup.mergeBroadcast([_serial.statusStream, _mqtt.statusStream]);
-       }
+    _connectionStreamGroup = StreamGroup.mergeBroadcast([
+      _serial.statusStream,
+      _mqtt.statusStream,
+    ]);
+  }
 
-  final SerialDatasource _serial;
-  final MqttDatasource _mqtt;
-
-  late final Stream<ConnectionEvent> _connectionStreamGroup;
-  Stream<ConnectionEvent> get connectionStream => _connectionStreamGroup;
-
-  void setSerialConfig(SerialSettings config) {
-    _serial.setConfig(config);
+  Future<void> setSerialConfig(SerialSettings config) async {
+    await _serial.setConfig(config);
   }
 
   Future<void> setMqttConfig(MqttSettings config) async {
@@ -33,9 +39,9 @@ class ConnectionManager {
   Future<void> connect(ConnectionType connection) async {
     try {
       if (connection == ConnectionType.mqtt) {
-        _mqtt.connect();
+        await _mqtt.connect();
       } else if (connection == ConnectionType.serial) {
-        _serial.connect();
+        await _serial.connect();
       }
     } on Exception catch (err, _) {
       print("Houve uma exceção: $err");
@@ -44,14 +50,14 @@ class ConnectionManager {
 
   Future<void> disconnect(ConnectionType connection) async {
     if (connection == ConnectionType.mqtt) {
-      _mqtt.disconnect();
+      await _mqtt.disconnect();
     } else if (connection == ConnectionType.serial) {
-      _serial.disconnect();
+      await _serial.disconnect();
     }
   }
 
-  void dispose(){
-    _mqtt.dispose();
-    _serial.dispose();
+  Future<void> dispose() async {
+    await _mqtt.dispose();
+    await _serial.dispose();
   }
 }

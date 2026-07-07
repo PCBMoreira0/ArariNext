@@ -1,9 +1,11 @@
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart';
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository_impl.dart';
 import 'package:arari_next/data/repositories/packet/telemetry_repository.dart';
+import 'package:arari_next/data/services/datasource/mqtt_datasource.dart';
 import 'package:arari_next/data/services/pipeline/mavlink_mapper.dart';
 import 'package:arari_next/data/services/pipeline/mavlink_telemetry_source.dart';
 import 'package:arari_next/data/services/pipeline/telemetry_source_interface.dart';
+import 'package:arari_next/managers/connection_manager.dart';
 import 'package:arari_next/managers/settings_manager.dart';
 import 'package:arari_next/data/repositories/settings/local_settings_repository.dart';
 import 'package:arari_next/data/repositories/packet/telemetry_repository_interface.dart';
@@ -37,6 +39,22 @@ void main() async {
         Provider.value(value: fileStorageService),
         Provider.value(value: settingsRepository),
         Provider(
+          create: (context) => SerialDatasource(),
+          dispose: (context, value) => value.dispose(),
+        ),
+        Provider(
+          create: (context) => MqttDatasource(),
+          dispose: (context, value) => value.dispose(),
+        ),
+        Provider<IDataSource>(
+          create: (context) => context.read<SerialDatasource>(),
+        ),
+        Provider(
+          create: (context) =>
+              ConnectionManager(mqtt: context.read(), serial: context.read()),
+          dispose: (context, value) => value.dispose(),
+        ),
+        Provider(
           create: (context) =>
               SettingsManager(settingsRepository: context.read()),
         ),
@@ -49,13 +67,6 @@ void main() async {
         Provider.value(value: LoggingServiceInflux()),
 
         Provider(
-          create: (context) => SerialDatasource(),
-          dispose: (context, value) => value.dispose(),
-        ),
-        Provider<IDataSource>(
-          create: (context) => context.read<SerialDatasource>(),
-        ),
-        Provider(
           create: (context) =>
               MavlinkTelemetrySource(
                     source: context.read(),
@@ -66,7 +77,8 @@ void main() async {
         ),
         Provider(
           create: (context) =>
-              TelemetryRepository(source: context.read()) as ITelemetryRepository,
+              TelemetryRepository(source: context.read())
+                  as ITelemetryRepository,
           dispose: (context, value) => value.dispose(),
         ),
         Provider(
