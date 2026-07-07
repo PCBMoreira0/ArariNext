@@ -1,5 +1,5 @@
 import 'package:arari_next/domain/dashboard/metric_card_model.dart';
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
 import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
 import 'package:arari_next/ui/core/widgets/gauge/value_gauge.dart';
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class MetricCard extends StatefulWidget {
   final MetricCardModel model;
 
-  final ValueListenable<FullBoatData> boatDataListenable;
+  final ValueListenable<TelemetryModel> boatDataListenable;
 
   final ValueChanged<MetricCardModel> onConfigChanged;
 
@@ -98,7 +98,7 @@ class _MetricCardState extends State<MetricCard> {
         onPressed: () => _showMetricSelector(context),
       ),
 
-      child: ValueListenableBuilder<FullBoatData>(
+      child: ValueListenableBuilder<TelemetryModel>(
         valueListenable: widget.boatDataListenable,
         builder: (context, data, child) {
           final double? extractedValue = _selectedMetric.valueExtractor(data);

@@ -1,12 +1,12 @@
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart';
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository_impl.dart';
-import 'package:arari_next/data/repositories/packet/mavlink_repository.dart';
+import 'package:arari_next/data/repositories/packet/telemetry_repository.dart';
 import 'package:arari_next/data/services/pipeline/mavlink_mapper.dart';
 import 'package:arari_next/data/services/pipeline/mavlink_telemetry_source.dart';
 import 'package:arari_next/data/services/pipeline/telemetry_source_interface.dart';
 import 'package:arari_next/managers/settings_manager.dart';
 import 'package:arari_next/data/repositories/settings/local_settings_repository.dart';
-import 'package:arari_next/data/repositories/packet/packet_repository.dart';
+import 'package:arari_next/data/repositories/packet/telemetry_repository_interface.dart';
 import 'package:arari_next/data/repositories/settings/settings_repository.dart';
 import 'package:arari_next/data/services/datasource/data_source_interface.dart';
 import 'package:arari_next/data/services/file/file_storage_service.dart';
@@ -66,7 +66,7 @@ void main() async {
         ),
         Provider(
           create: (context) =>
-              MavlinkRepository(source: context.read()) as PacketRepository,
+              TelemetryRepository(source: context.read()) as ITelemetryRepository,
           dispose: (context, value) => value.dispose(),
         ),
         Provider(

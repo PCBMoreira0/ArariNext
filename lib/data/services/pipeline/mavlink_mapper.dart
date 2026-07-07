@@ -1,22 +1,22 @@
-import 'package:arari_next/domain/telemetry/bms_data.dart';
-import 'package:arari_next/domain/telemetry/bms_status_data.dart';
-import 'package:arari_next/domain/telemetry/gps_data.dart';
-import 'package:arari_next/domain/telemetry/iboat_data.dart';
-import 'package:arari_next/domain/telemetry/instrumentation_data.dart';
-import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
-import 'package:arari_next/domain/telemetry/motor_state_data.dart';
-import 'package:arari_next/domain/telemetry/mppt_data.dart';
-import 'package:arari_next/domain/telemetry/mppt_state_data.dart';
-import 'package:arari_next/domain/telemetry/pump_data.dart';
-import 'package:arari_next/domain/telemetry/radio_status_data.dart';
-import 'package:arari_next/domain/telemetry/temperature_data.dart';
+import 'package:arari_next/domain/telemetry/bms_model.dart';
+import 'package:arari_next/domain/telemetry/bms_status_model.dart';
+import 'package:arari_next/domain/telemetry/gps_model.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model_interface.dart';
+import 'package:arari_next/domain/telemetry/instrumentation_model.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_model.dart';
+import 'package:arari_next/domain/telemetry/motor_state_model.dart';
+import 'package:arari_next/domain/telemetry/mppt_model.dart';
+import 'package:arari_next/domain/telemetry/mppt_state_model.dart';
+import 'package:arari_next/domain/telemetry/pump_model.dart';
+import 'package:arari_next/domain/telemetry/radio_status_model.dart';
+import 'package:arari_next/domain/telemetry/temperature_model.dart';
 import 'package:arari_next/utils/mavlink/mavlink_dialect/arariboat.dart';
 import 'package:arari_next/utils/mavlink/mavlink_to_models.dart';
 import 'package:dart_mavlink/mavlink.dart';
 
 class MavlinkMapper {
-  GPSData toGPS(Gps gps) {
-    return GPSData(
+  GpsModel toGPS(Gps gps) {
+    return GpsModel(
       latitude: gps.latitude / 1e7,
       longitude: gps.longitude / 1e7,
       speed: double.parse((gps.speed * 0.0194384).toStringAsFixed(2)),
@@ -28,8 +28,8 @@ class MavlinkMapper {
     );
   }
 
-  BMSData toBms(Bms bms) {
-    return BMSData(
+  BmsModel toBms(Bms bms) {
+    return BmsModel(
       voltagesMillivolts: bms.voltages,
       temperatures: bms.temperatures,
       batteryCurrent: bms.currentBattery / 10.0,
@@ -57,8 +57,8 @@ class MavlinkMapper {
     );
   }
 
-  InstrumentationData toInstrumentation(Instrumentation instrumentation) {
-    return InstrumentationData(
+  InstrumentationModel toInstrumentation(Instrumentation instrumentation) {
+    return InstrumentationModel(
       batteryCurrent: instrumentation.batteryCurrent / 100.0,
       batteryVoltage: instrumentation.batteryVoltage / 100.0,
       motorCurrentLeft: instrumentation.motorCurrentLeft / 100.0,
@@ -76,8 +76,8 @@ class MavlinkMapper {
     );
   }
 
-  MotorEletricalData toMotor1(EzkontrolMcuMeterDataI motorData1) {
-    return MotorEletricalData(
+  MotorEletricalModel toMotor1(EzkontrolMcuMeterDataI motorData1) {
+    return MotorEletricalModel(
       busVoltage: motorData1.busVoltage / 10.0,
       busCurrent: motorData1.busCurrent / 10.0,
       rpm: motorData1.rpm,
@@ -90,8 +90,8 @@ class MavlinkMapper {
     );
   }
 
-  MotorStateData toMotor2(EzkontrolMcuMeterDataIi motorData2) {
-    return MotorStateData(
+  MotorStateModel toMotor2(EzkontrolMcuMeterDataIi motorData2) {
+    return MotorStateModel(
       controllerTemperature: motorData2.controllerTemperature,
       motorTemperature: motorData2.motorTemperature,
       status: motorData2.status,
@@ -107,8 +107,8 @@ class MavlinkMapper {
     );
   }
 
-  MPPTData toMppt(Mppt mppt) {
-    return MPPTData(
+  MpptModel toMppt(Mppt mppt) {
+    return MpptModel(
       pvVoltage: mppt.pvVoltage / 100.0,
       pvCurrent: mppt.pvCurrent / 100.0,
       batteryCurrent: mppt.batteryCurrent / 100.0,
@@ -126,15 +126,15 @@ class MavlinkMapper {
     );
   }
 
-  PumpData toPump(Pumps pump) {
-    return PumpData(
+  PumpModel toPump(Pumps pump) {
+    return PumpModel(
       pump.pumpStates == 0 ? PumpState.left : PumpState.right,
       timestamp: pump.timestampSeconds * 1000 + pump.timestampMilliseconds,
     );
   }
 
-  RadioStatusData toRadioStatus(RadioStatus radio) {
-    return RadioStatusData(
+  RadioStatusModel toRadioStatus(RadioStatus radio) {
+    return RadioStatusModel(
       rxErrors: radio.rxerrors,
       instance: radio.instance == 0
           ? RadioInstance.primary
@@ -144,8 +144,8 @@ class MavlinkMapper {
     );
   }
 
-  TemperatureData toTemperature(Temperatures temperatures) {
-    return TemperatureData(
+  TemperatureModel toTemperature(Temperatures temperatures) {
+    return TemperatureModel(
       temperatureBatteryLeft: temperatures.temperatureBatteryLeft / 100.0,
       temperatureBatteryRight: temperatures.temperatureBatteryRight / 100.0,
       temperatureMPPTLeft: temperatures.temperatureMpptLeft / 100.0,
@@ -163,7 +163,7 @@ class MavlinkMapper {
     );
   }
 
-  IBoatData? map(MavlinkFrame frame) {
+  ITelemetryModel? map(MavlinkFrame frame) {
     switch (frame.message) {
       case Bms bms:
         return MavlinkToModels.toBms(bms);

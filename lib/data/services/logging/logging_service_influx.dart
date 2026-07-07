@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:arari_next/data/services/logging/logging_service_interface.dart';
-import 'package:arari_next/domain/telemetry/bms_data.dart';
-import 'package:arari_next/domain/telemetry/gps_data.dart';
-import 'package:arari_next/domain/telemetry/iboat_data.dart';
-import 'package:arari_next/domain/telemetry/instrumentation_data.dart';
-import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
-import 'package:arari_next/domain/telemetry/motor_state_data.dart';
-import 'package:arari_next/domain/telemetry/mppt_data.dart';
+import 'package:arari_next/domain/telemetry/bms_model.dart';
+import 'package:arari_next/domain/telemetry/gps_model.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model_interface.dart';
+import 'package:arari_next/domain/telemetry/instrumentation_model.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_model.dart';
+import 'package:arari_next/domain/telemetry/motor_state_model.dart';
+import 'package:arari_next/domain/telemetry/mppt_model.dart';
 
 class LoggingServiceInflux implements ILoggingService {
   File? currentFile;
@@ -105,7 +105,7 @@ class LoggingServiceInflux implements ILoggingService {
 
   String mavlinkEzkontrolItoLineProtocol(
     String buffer,
-    MotorEletricalData data,
+    MotorEletricalModel data,
   ) {
     buffer = lineProtocolAddTable(buffer, "motorEletricalData");
 
@@ -128,7 +128,7 @@ class LoggingServiceInflux implements ILoggingService {
     return buffer;
   }
 
-  String mavlinkEzkontrolIItoLineProtocol(String buffer, MotorStateData data) {
+  String mavlinkEzkontrolIItoLineProtocol(String buffer, MotorStateModel data) {
     buffer = lineProtocolAddTable(buffer, "motorStateData");
     buffer = lineProtocolAddTag(buffer, [
       (
@@ -164,7 +164,7 @@ class LoggingServiceInflux implements ILoggingService {
     return buffer;
   }
 
-  String mavlinkBMSToLineProtocol(String buffer, BMSData data) {
+  String mavlinkBMSToLineProtocol(String buffer, BmsModel data) {
     buffer = lineProtocolAddTable(buffer, "bms");
 
     buffer = lineProtocolAddField(buffer, [
@@ -195,7 +195,7 @@ class LoggingServiceInflux implements ILoggingService {
     return buffer;
   }
 
-  String mavlinkGPSToLineProtocol(String buffer, GPSData data) {
+  String mavlinkGPSToLineProtocol(String buffer, GpsModel data) {
     buffer = lineProtocolAddTable(buffer, "gps");
 
     buffer = lineProtocolAddField(buffer, [
@@ -211,7 +211,7 @@ class LoggingServiceInflux implements ILoggingService {
 
   String mavlinkInstrumentationToLineProtocol(
     String buffer,
-    InstrumentationData data,
+    InstrumentationModel data,
   ) {
     buffer = lineProtocolAddTable(buffer, "instrumentation");
 
@@ -232,7 +232,7 @@ class LoggingServiceInflux implements ILoggingService {
     return buffer;
   }
 
-  String mavlinkMPPTToLineProtocol(String buffer, MPPTData data) {
+  String mavlinkMPPTToLineProtocol(String buffer, MpptModel data) {
     buffer = lineProtocolAddTable(buffer, "mppt");
 
     buffer = lineProtocolAddField(buffer, [
@@ -249,25 +249,25 @@ class LoggingServiceInflux implements ILoggingService {
   }
 
   @override
-  Future<void> save(IBoatData? data) async {
+  Future<void> save(ITelemetryModel? data) async {
     if (data == null) return;
 
     String buffer = '';
 
     switch (data) {
-      case MotorEletricalData motor:
+      case MotorEletricalModel motor:
         buffer = mavlinkEzkontrolItoLineProtocol(buffer, motor);
         break;
-      case MotorStateData motorStateData:
+      case MotorStateModel motorStateData:
         buffer = mavlinkEzkontrolIItoLineProtocol(buffer, motorStateData);
         break;
-      case BMSData bms:
+      case BmsModel bms:
         buffer = mavlinkBMSToLineProtocol(buffer, bms);
         break;
-      case InstrumentationData inst:
+      case InstrumentationModel inst:
         buffer = mavlinkInstrumentationToLineProtocol(buffer, inst);
         break;
-      case GPSData gps:
+      case GpsModel gps:
         buffer = mavlinkGPSToLineProtocol(buffer, gps);
         break;
       default:

@@ -1,7 +1,7 @@
-import 'package:arari_next/domain/telemetry/iboat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model_interface.dart';
 
 abstract interface class ITelemetrySource {
-  Stream<IBoatData> get stream;
+  Stream<ITelemetryModel> get stream;
 
   void dispose() {}
 }

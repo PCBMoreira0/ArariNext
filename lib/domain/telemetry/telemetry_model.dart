@@ -1,24 +1,24 @@
-import 'package:arari_next/domain/telemetry/bms_data.dart';
-import 'package:arari_next/domain/telemetry/gps_data.dart';
-import 'package:arari_next/domain/telemetry/instrumentation_data.dart';
-import 'package:arari_next/domain/telemetry/motor_data.dart';
-import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
-import 'package:arari_next/domain/telemetry/motor_state_data.dart';
-import 'package:arari_next/domain/telemetry/mppt_data.dart';
-import 'package:arari_next/domain/telemetry/pump_data.dart';
-import 'package:arari_next/domain/telemetry/radio_status_data.dart';
-import 'package:arari_next/domain/telemetry/temperature_data.dart';
+import 'package:arari_next/domain/telemetry/bms_model.dart';
+import 'package:arari_next/domain/telemetry/gps_model.dart';
+import 'package:arari_next/domain/telemetry/instrumentation_model.dart';
+import 'package:arari_next/domain/telemetry/motor_model.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_model.dart';
+import 'package:arari_next/domain/telemetry/motor_state_model.dart';
+import 'package:arari_next/domain/telemetry/mppt_model.dart';
+import 'package:arari_next/domain/telemetry/pump_model.dart';
+import 'package:arari_next/domain/telemetry/radio_status_model.dart';
+import 'package:arari_next/domain/telemetry/temperature_model.dart';
 
-class FullBoatData {
-  final BMSData? bmsData;
-  late final MotorData motorLeft;
-  late final MotorData motorRight;
-  final MPPTData? mpptData;
-  final InstrumentationData? instrumentationData;
-  final GPSData? gpsData;
-  final PumpData? pumpData;
-  final TemperatureData? temperatureData;
-  final RadioStatusData? radioStatusData;
+class TelemetryModel {
+  final BmsModel? bmsData;
+  late final MotorModel motorLeft;
+  late final MotorModel motorRight;
+  final MpptModel? mpptData;
+  final InstrumentationModel? instrumentationData;
+  final GpsModel? gpsData;
+  final PumpModel? pumpData;
+  final TemperatureModel? temperatureData;
+  final RadioStatusModel? radioStatusData;
 
   ({int hora, int minuto, bool isCharging})?
   get batteryRemainingTimeEstimation {
@@ -92,12 +92,12 @@ class FullBoatData {
     return (hora: hora, minuto: minuto, isCharging: isCharging);
   }
 
-  FullBoatData({
+  TelemetryModel({
     this.bmsData,
-    MotorEletricalData? motorEletricalDataLeft,
-    MotorEletricalData? motorEletricalDataRight,
-    MotorStateData? motorStateDataLeft,
-    MotorStateData? motorStateDataRight,
+    MotorEletricalModel? motorEletricalDataLeft,
+    MotorEletricalModel? motorEletricalDataRight,
+    MotorStateModel? motorStateDataLeft,
+    MotorStateModel? motorStateDataRight,
     this.mpptData,
     this.instrumentationData,
     this.gpsData,
@@ -105,49 +105,49 @@ class FullBoatData {
     this.temperatureData,
     this.radioStatusData,
   }) {
-    motorLeft = MotorData(
+    motorLeft = MotorModel(
       instance: MotorInstance.left,
       eletrical: motorEletricalDataLeft,
       state: motorStateDataLeft,
     );
 
-    motorRight = MotorData(
+    motorRight = MotorModel(
       instance: MotorInstance.right,
       eletrical: motorEletricalDataRight,
       state: motorStateDataRight,
     );
   }
 
-  factory FullBoatData.empty() {
-    return FullBoatData(
-      bmsData: BMSData.empty(),
-      motorEletricalDataLeft: MotorEletricalData.empty(),
-      motorEletricalDataRight: MotorEletricalData.empty(),
-      motorStateDataLeft: MotorStateData.empty(),
-      motorStateDataRight: MotorStateData.empty(),
-      mpptData: MPPTData.empty(),
-      instrumentationData: InstrumentationData.empty(),
-      gpsData: GPSData.empty(),
-      pumpData: PumpData.empty(),
-      temperatureData: TemperatureData.empty(),
-      radioStatusData: RadioStatusData.empty(),
+  factory TelemetryModel.empty() {
+    return TelemetryModel(
+      bmsData: BmsModel.empty(),
+      motorEletricalDataLeft: MotorEletricalModel.empty(),
+      motorEletricalDataRight: MotorEletricalModel.empty(),
+      motorStateDataLeft: MotorStateModel.empty(),
+      motorStateDataRight: MotorStateModel.empty(),
+      mpptData: MpptModel.empty(),
+      instrumentationData: InstrumentationModel.empty(),
+      gpsData: GpsModel.empty(),
+      pumpData: PumpModel.empty(),
+      temperatureData: TemperatureModel.empty(),
+      radioStatusData: RadioStatusModel.empty(),
     );
   }
 
-  FullBoatData copyWith({
-    BMSData? bmsData,
-    MotorEletricalData? motorEletricalDataLeft,
-    MotorEletricalData? motorEletricalDataRight,
-    MotorStateData? motorStateDataLeft,
-    MotorStateData? motorStateDataRight,
-    MPPTData? mpptData,
-    InstrumentationData? instrumentationData,
-    GPSData? gpsData,
-    PumpData? pumpData,
-    TemperatureData? temperatureData,
-    RadioStatusData? radioStatusData,
+  TelemetryModel copyWith({
+    BmsModel? bmsData,
+    MotorEletricalModel? motorEletricalDataLeft,
+    MotorEletricalModel? motorEletricalDataRight,
+    MotorStateModel? motorStateDataLeft,
+    MotorStateModel? motorStateDataRight,
+    MpptModel? mpptData,
+    InstrumentationModel? instrumentationData,
+    GpsModel? gpsData,
+    PumpModel? pumpData,
+    TemperatureModel? temperatureData,
+    RadioStatusModel? radioStatusData,
   }) {
-    return FullBoatData(
+    return TelemetryModel(
       bmsData: bmsData ?? this.bmsData,
       motorEletricalDataLeft: motorEletricalDataLeft ?? motorLeft.eletrical,
       motorEletricalDataRight: motorEletricalDataRight ?? motorRight.eletrical,

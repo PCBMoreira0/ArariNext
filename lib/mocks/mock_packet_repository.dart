@@ -1,25 +1,25 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:arari_next/data/repositories/packet/packet_repository.dart';
-import 'package:arari_next/domain/telemetry/bms_data.dart';
-import 'package:arari_next/domain/telemetry/gps_data.dart';
-import 'package:arari_next/domain/telemetry/instrumentation_data.dart';
-import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
-import 'package:arari_next/domain/telemetry/motor_state_data.dart';
-import 'package:arari_next/domain/telemetry/mppt_data.dart';
-import 'package:arari_next/domain/telemetry/pump_data.dart';
-import 'package:arari_next/domain/telemetry/radio_status_data.dart';
-import 'package:arari_next/domain/telemetry/temperature_data.dart';
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/data/repositories/packet/telemetry_repository_interface.dart';
+import 'package:arari_next/domain/telemetry/bms_model.dart';
+import 'package:arari_next/domain/telemetry/gps_model.dart';
+import 'package:arari_next/domain/telemetry/instrumentation_model.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_model.dart';
+import 'package:arari_next/domain/telemetry/motor_state_model.dart';
+import 'package:arari_next/domain/telemetry/mppt_model.dart';
+import 'package:arari_next/domain/telemetry/pump_model.dart';
+import 'package:arari_next/domain/telemetry/radio_status_model.dart';
+import 'package:arari_next/domain/telemetry/temperature_model.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
 
-class MockPacketRepository implements PacketRepository {
-  final StreamController<FullBoatData?> _streamController = StreamController.broadcast();
+class MockPacketRepository implements ITelemetryRepository {
+  final StreamController<TelemetryModel?> _streamController = StreamController.broadcast();
   final Random _random = Random();
   Timer? _timer;
 
   @override
-  Stream<FullBoatData?> get data => _streamController.stream;
+  Stream<TelemetryModel?> get data => _streamController.stream;
 
   MockPacketRepository() {
     _startGeneratingData();
@@ -40,10 +40,10 @@ class MockPacketRepository implements PacketRepository {
     return min + _random.nextDouble() * (max - min);
   }
 
-  FullBoatData _generateMockFullBoatData() {
+  TelemetryModel _generateMockFullBoatData() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
 
-    return FullBoatData(
+    return TelemetryModel(
       bmsData: _generateBMSData(timestamp),
       motorEletricalDataLeft: _generateMotorEletricalData(MotorInstance.left, timestamp),
       motorStateDataLeft: _generateMotorStateData(MotorInstance.left, timestamp),
@@ -53,13 +53,13 @@ class MockPacketRepository implements PacketRepository {
       instrumentationData: _generateInstrumentationData(timestamp),
       gpsData: _generateGPSData(timestamp),
       temperatureData: _generateTemperatureData(timestamp),
-      pumpData: PumpData.empty(), 
-      radioStatusData: RadioStatusData.empty(), 
+      pumpData: PumpModel.empty(), 
+      radioStatusData: RadioStatusModel.empty(), 
     );
   }
 
-  BMSData _generateBMSData(int timestamp) {
-    return BMSData(
+  BmsModel _generateBMSData(int timestamp) {
+    return BmsModel(
       voltagesMillivolts: List.generate(14, (_) => 3200 + _random.nextInt(400)),
       temperatures: List.generate(4, (_) => 20 + _random.nextInt(25)),
       batteryCurrent: _randomDouble(-50.0, 50.0),
@@ -68,8 +68,8 @@ class MockPacketRepository implements PacketRepository {
     );
   }
 
-  MotorEletricalData _generateMotorEletricalData(MotorInstance instance, int timestamp) {
-    return MotorEletricalData(
+  MotorEletricalModel _generateMotorEletricalData(MotorInstance instance, int timestamp) {
+    return MotorEletricalModel(
       busVoltage: _randomDouble(45.0, 58.0),
       busCurrent: _randomDouble(0.0, 100.0),
       rpm: _random.nextInt(3000),
@@ -79,8 +79,8 @@ class MockPacketRepository implements PacketRepository {
     );
   }
 
-  MotorStateData _generateMotorStateData(MotorInstance instance, int timestamp) {
-    return MotorStateData(
+  MotorStateModel _generateMotorStateData(MotorInstance instance, int timestamp) {
+    return MotorStateModel(
       controllerTemperature: 30 + _random.nextInt(50),
       motorTemperature: 30 + _random.nextInt(60),
       status: _random.nextInt(4),
@@ -93,8 +93,8 @@ class MockPacketRepository implements PacketRepository {
     );
   }
 
-  MPPTData _generateMPPTData(int timestamp) {
-    return MPPTData(
+  MpptModel _generateMPPTData(int timestamp) {
+    return MpptModel(
       pvVoltage: _randomDouble(60.0, 120.0),
       pvCurrent: _randomDouble(0.0, 20.0),
       batteryVoltage: _randomDouble(48.0, 58.0),
@@ -103,8 +103,8 @@ class MockPacketRepository implements PacketRepository {
     );
   }
 
-  InstrumentationData _generateInstrumentationData(int timestamp) {
-    return InstrumentationData(
+  InstrumentationModel _generateInstrumentationData(int timestamp) {
+    return InstrumentationModel(
       batteryCurrent: _randomDouble(-40.0, 40.0),
       batteryVoltage: _randomDouble(48.0, 58.0),
       motorCurrentLeft: _randomDouble(0.0, 50.0),
@@ -118,8 +118,8 @@ class MockPacketRepository implements PacketRepository {
     );
   }
 
-  GPSData _generateGPSData(int timestamp) {
-    return GPSData(
+  GpsModel _generateGPSData(int timestamp) {
+    return GpsModel(
       latitude: _randomDouble(-22.95, -22.85),
       longitude: _randomDouble(-43.15, -43.05),
       speed: _randomDouble(0.0, 15.0),
@@ -131,8 +131,8 @@ class MockPacketRepository implements PacketRepository {
     );
   }
 
-  TemperatureData _generateTemperatureData(int timestamp) {
-    return TemperatureData(
+  TemperatureModel _generateTemperatureData(int timestamp) {
+    return TemperatureModel(
       temperatureBatteryLeft: _randomDouble(25.0, 45.0),
       temperatureBatteryRight: _randomDouble(25.0, 45.0),
       temperatureMPPTLeft: _randomDouble(30.0, 60.0),

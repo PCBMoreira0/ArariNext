@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:arari_next/data/services/datasource/data_source_interface.dart';
 import 'package:arari_next/data/services/pipeline/mavlink_mapper.dart';
 import 'package:arari_next/data/services/pipeline/telemetry_source_interface.dart';
-import 'package:arari_next/domain/telemetry/iboat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model_interface.dart';
 import 'package:arari_next/utils/mavlink/mavlink_dialect/arariboat.dart';
 import 'package:dart_mavlink/mavlink_frame.dart';
 import 'package:dart_mavlink/mavlink_parser.dart';
@@ -17,11 +17,11 @@ class MavlinkTelemetrySource implements ITelemetrySource {
 
   final MavlinkParser _parser = MavlinkParser(MavlinkDialectArariboat());
 
-  final StreamController<IBoatData> _streamController =
+  final StreamController<ITelemetryModel> _streamController =
       StreamController.broadcast();
 
   @override
-  Stream<IBoatData> get stream => _streamController.stream;
+  Stream<ITelemetryModel> get stream => _streamController.stream;
 
   MavlinkTelemetrySource({
     required IDataSource source,
@@ -39,7 +39,7 @@ class MavlinkTelemetrySource implements ITelemetrySource {
   }
 
   void _handleMavlinkFrame(MavlinkFrame frame) {
-    IBoatData? data = _mapper.map(frame);
+    ITelemetryModel? data = _mapper.map(frame);
     if (data == null) return;
 
     _streamController.add(data);

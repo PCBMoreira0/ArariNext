@@ -1,11 +1,11 @@
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
 
 class MetricDefinition {
   final String id;
   final String label;
   final String unit;
-  final double? Function(FullBoatData data) valueExtractor;
-  final int Function(FullBoatData data) timeExtractor;
+  final double? Function(TelemetryModel data) valueExtractor;
+  final int Function(TelemetryModel data) timeExtractor;
 
   MetricDefinition({
     required this.id,

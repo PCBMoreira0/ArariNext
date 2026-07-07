@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart';
-import 'package:arari_next/data/repositories/packet/packet_repository.dart';
+import 'package:arari_next/data/repositories/packet/telemetry_repository_interface.dart';
 import 'package:arari_next/domain/dashboard/card_model.dart';
 import 'package:arari_next/domain/dashboard/card_type.dart';
 import 'package:arari_next/domain/dashboard/dashboard_model.dart';
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
 import 'package:arari_next/ui/core/history_store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +15,8 @@ class DashboardViewModel {
   final bool isReadOnly;
 
   final ValueNotifier<bool> isEditingValueNotifier = ValueNotifier(false);
-  final ValueNotifier<FullBoatData> dataValueNotifier = ValueNotifier(
-    FullBoatData.empty(),
+  final ValueNotifier<TelemetryModel> dataValueNotifier = ValueNotifier(
+    TelemetryModel.empty(),
   );
 
   late StreamSubscription _packetSubscription;
@@ -25,14 +25,14 @@ class DashboardViewModel {
   final DashboardModel dashboardModel;
   final DashboardController dashboardController = DashboardController();
   final DashboardRepository _dashboardRepository;
-  final PacketRepository _packetRepository;
+  final ITelemetryRepository _packetRepository;
   final HistoryStore _historyStore;
   HistoryStore get historyStore => _historyStore;
 
   DashboardViewModel({
     required this.dashboardModel,
     required DashboardRepository dashboardRepository,
-    required PacketRepository packetRepository,
+    required ITelemetryRepository packetRepository,
     required HistoryStore historyStore,
     this.isReadOnly = false,
   }) : _dashboardRepository = dashboardRepository,
@@ -43,7 +43,7 @@ class DashboardViewModel {
     _packetSubscription = _packetRepository.data.listen(onNewDataReceived);
   }
 
-  void onNewDataReceived(FullBoatData? newData) {
+  void onNewDataReceived(TelemetryModel? newData) {
     if (newData == null) return;
     dataValueNotifier.value = newData;
   }

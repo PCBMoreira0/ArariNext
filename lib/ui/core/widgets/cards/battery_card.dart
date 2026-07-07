@@ -1,4 +1,4 @@
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
 import 'package:arari_next/ui/core/utils/layout_constraint.dart';
 import 'package:arari_next/ui/core/utils/layout_mode.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class BatteryCard extends StatelessWidget {
-  final ValueListenable<FullBoatData> boatDataListenable;
+  final ValueListenable<TelemetryModel> boatDataListenable;
 
   const BatteryCard({super.key, required this.boatDataListenable});
 
@@ -38,7 +38,7 @@ class _CompactLayout extends LayoutConstraint {
   @override
   double get minWidth => 54;
 
-  final ValueListenable<FullBoatData> boatDataListenable;
+  final ValueListenable<TelemetryModel> boatDataListenable;
 
   _CompactLayout({required this.boatDataListenable});
 
@@ -78,7 +78,7 @@ class _FullLayout extends LayoutConstraint {
   @override
   double get minWidth => 232;
 
-  final ValueListenable<FullBoatData> boatDataListenable;
+  final ValueListenable<TelemetryModel> boatDataListenable;
 
   _FullLayout({required this.boatDataListenable});
 

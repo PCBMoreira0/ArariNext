@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:collection';
-import 'package:arari_next/data/repositories/packet/packet_repository.dart';
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/data/repositories/packet/telemetry_repository_interface.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
 import 'package:flutter/foundation.dart'; 
 
 class HistoryStore {
-  final PacketRepository _packetRepository;
-  late final StreamSubscription<FullBoatData?> _subscription;
-  final Queue<({DateTime time, FullBoatData data})> _buffer = Queue();
+  final ITelemetryRepository _packetRepository;
+  late final StreamSubscription<TelemetryModel?> _subscription;
+  final Queue<({DateTime time, TelemetryModel data})> _buffer = Queue();
   static const Duration _maxHistory = Duration(minutes: 5);
 
   DateTime? _lastSavedTime; 
@@ -15,12 +15,12 @@ class HistoryStore {
 
   final ValueNotifier<int> onThrottledUpdate = ValueNotifier(0);
 
-  HistoryStore({required PacketRepository packetRepository}) 
+  HistoryStore({required ITelemetryRepository packetRepository}) 
       : _packetRepository = packetRepository {
     _subscription = _packetRepository.data.listen(_onNewData);
   }
 
-  void _onNewData(FullBoatData? newData) {
+  void _onNewData(TelemetryModel? newData) {
     if (newData == null) return;
     final now = DateTime.now();
 
@@ -39,7 +39,7 @@ class HistoryStore {
     onThrottledUpdate.value++; 
   }
 
-  List<({DateTime time, FullBoatData data})> getHistory(Duration interval) {
+  List<({DateTime time, TelemetryModel data})> getHistory(Duration interval) {
     final safeInterval = interval > _maxHistory ? _maxHistory : interval;
     final cutoffTime = DateTime.now().subtract(safeInterval);
 

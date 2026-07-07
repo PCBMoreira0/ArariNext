@@ -1,4 +1,4 @@
-import 'package:arari_next/domain/telemetry/iboat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model_interface.dart';
 
 enum MpptBatteryStatus {
   normal,
@@ -9,7 +9,7 @@ enum MpptBatteryStatus {
   unknown
 }
 
-final class MPPTStateData extends IBoatData {
+final class MPPTStateData extends ITelemetryModel {
   final int batteryStatus;
   final int chargingEquipmentStatus;
 

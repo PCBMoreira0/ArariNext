@@ -1,6 +1,6 @@
 import 'package:arari_next/domain/dashboard/propulsion_card_model.dart';
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
-import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_model.dart';
 import 'package:arari_next/ui/core/utils/layout_constraint.dart';
 import 'package:arari_next/ui/core/utils/layout_mode.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PropulsionCard extends StatefulWidget {
-  final ValueListenable<FullBoatData> boatDataListenable;
+  final ValueListenable<TelemetryModel> boatDataListenable;
   final PropulsionCardModel model;
   final ValueChanged<PropulsionCardModel> onConfigChanged;
 
@@ -77,7 +77,7 @@ class _PropulsionCardState extends State<PropulsionCard> {
 
 class _CompactLayout extends LayoutConstraint {
   final double _valueTextSize = 16;
-  final ValueListenable<FullBoatData> boatDataListenable;
+  final ValueListenable<TelemetryModel> boatDataListenable;
   final MotorInstance selectedInstance;
 
   _CompactLayout({
@@ -186,7 +186,7 @@ class _CompactLayout extends LayoutConstraint {
 class _FullLayout extends LayoutConstraint {
   final double valueTextSize = 16;
 
-  final ValueListenable<FullBoatData> boatDataListenable;
+  final ValueListenable<TelemetryModel> boatDataListenable;
   final MotorInstance selectedInstance;
 
   @override
