@@ -1,6 +1,7 @@
 import 'package:arari_next/domain/telemetry/bms_data.dart';
 import 'package:arari_next/domain/telemetry/gps_data.dart';
 import 'package:arari_next/domain/telemetry/instrumentation_data.dart';
+import 'package:arari_next/domain/telemetry/motor_data.dart';
 import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
 import 'package:arari_next/domain/telemetry/motor_state_data.dart';
 import 'package:arari_next/domain/telemetry/mppt_data.dart';
@@ -9,24 +10,24 @@ import 'package:arari_next/domain/telemetry/radio_status_data.dart';
 import 'package:arari_next/domain/telemetry/temperature_data.dart';
 
 class FullBoatData {
-  final BMSData bmsData;
-  final MotorEletricalData motorEletricalDataLeft;
-  final MotorStateData motorStateDataLeft;
-  final MotorEletricalData motorEletricalDataRight;
-  final MotorStateData motorStateDataRight;
-  final MPPTData mpptData;
-  final InstrumentationData instrumentationData;
-  final GPSData gpsData;
-  final PumpData pumpData;
-  final TemperatureData temperatureData;
-  final RadioStatusData radioStatusData;
+  final BMSData? bmsData;
+  late final MotorData motorLeft;
+  late final MotorData motorRight;
+  final MPPTData? mpptData;
+  final InstrumentationData? instrumentationData;
+  final GPSData? gpsData;
+  final PumpData? pumpData;
+  final TemperatureData? temperatureData;
+  final RadioStatusData? radioStatusData;
 
-  ({int hora, int minuto, bool isCharging})
+  ({int hora, int minuto, bool isCharging})?
   get batteryRemainingTimeEstimation {
-    double netCurrent = bmsData.batteryCurrent;
+    if (bmsData == null) return null;
+
+    double netCurrent = bmsData!.batteryCurrent;
 
     const double totalCapacityAh = 40.0;
-    double currentAh = (bmsData.stateOfCharge / 100.0) * totalCapacityAh;
+    double currentAh = (bmsData!.stateOfCharge / 100.0) * totalCapacityAh;
 
     if (netCurrent == 0) {
       return (hora: 0, minuto: 0, isCharging: false);
@@ -55,13 +56,14 @@ class FullBoatData {
     return (hora: hora, minuto: minuto, isCharging: isCharging);
   }
 
-  ({int hora, int minuto, bool isCharging}) get batteryTimeWithoutGeneration {
+  ({int hora, int minuto, bool isCharging})? get batteryTimeWithoutGeneration {
+    if (bmsData == null || instrumentationData == null) return null;
     double currentSum =
-        instrumentationData.motorCurrentLeft +
-        instrumentationData.motorCurrentRight;
+        instrumentationData!.motorCurrentLeft +
+        instrumentationData!.motorCurrentRight;
 
     const double totalCapacityAh = 40.0;
-    double currentAh = (bmsData.stateOfCharge / 100.0) * totalCapacityAh;
+    double currentAh = (bmsData!.stateOfCharge / 100.0) * totalCapacityAh;
 
     if (currentSum == 0) {
       return (hora: 0, minuto: 0, isCharging: false);
@@ -91,25 +93,37 @@ class FullBoatData {
   }
 
   FullBoatData({
-    required this.bmsData,
-    required this.motorEletricalDataLeft,
-    required this.motorStateDataLeft,
-    required this.motorEletricalDataRight,
-    required this.motorStateDataRight,
-    required this.mpptData,
-    required this.instrumentationData,
-    required this.gpsData,
-    required this.pumpData,
-    required this.temperatureData,
-    required this.radioStatusData,
-  });
+    this.bmsData,
+    MotorEletricalData? motorEletricalDataLeft,
+    MotorEletricalData? motorEletricalDataRight,
+    MotorStateData? motorStateDataLeft,
+    MotorStateData? motorStateDataRight,
+    this.mpptData,
+    this.instrumentationData,
+    this.gpsData,
+    this.pumpData,
+    this.temperatureData,
+    this.radioStatusData,
+  }) {
+    motorLeft = MotorData(
+      instance: MotorInstance.left,
+      eletrical: motorEletricalDataLeft,
+      state: motorStateDataLeft,
+    );
+
+    motorRight = MotorData(
+      instance: MotorInstance.right,
+      eletrical: motorEletricalDataRight,
+      state: motorStateDataRight,
+    );
+  }
 
   factory FullBoatData.empty() {
     return FullBoatData(
       bmsData: BMSData.empty(),
       motorEletricalDataLeft: MotorEletricalData.empty(),
-      motorStateDataLeft: MotorStateData.empty(),
       motorEletricalDataRight: MotorEletricalData.empty(),
+      motorStateDataLeft: MotorStateData.empty(),
       motorStateDataRight: MotorStateData.empty(),
       mpptData: MPPTData.empty(),
       instrumentationData: InstrumentationData.empty(),
@@ -123,8 +137,8 @@ class FullBoatData {
   FullBoatData copyWith({
     BMSData? bmsData,
     MotorEletricalData? motorEletricalDataLeft,
-    MotorStateData? motorStateDataLeft,
     MotorEletricalData? motorEletricalDataRight,
+    MotorStateData? motorStateDataLeft,
     MotorStateData? motorStateDataRight,
     MPPTData? mpptData,
     InstrumentationData? instrumentationData,
@@ -135,10 +149,10 @@ class FullBoatData {
   }) {
     return FullBoatData(
       bmsData: bmsData ?? this.bmsData,
-      motorEletricalDataLeft: motorEletricalDataLeft ?? this.motorEletricalDataLeft,
-      motorStateDataLeft: motorStateDataLeft ?? this.motorStateDataLeft,
-      motorEletricalDataRight: motorEletricalDataRight ?? this.motorEletricalDataRight,
-      motorStateDataRight: motorStateDataRight ?? this.motorStateDataRight,
+      motorEletricalDataLeft: motorEletricalDataLeft ?? motorLeft.eletrical,
+      motorEletricalDataRight: motorEletricalDataRight ?? motorRight.eletrical,
+      motorStateDataLeft: motorStateDataLeft ?? motorLeft.state,
+      motorStateDataRight: motorStateDataRight ?? motorRight.state,
       mpptData: mpptData ?? this.mpptData,
       instrumentationData: instrumentationData ?? this.instrumentationData,
       gpsData: gpsData ?? this.gpsData,

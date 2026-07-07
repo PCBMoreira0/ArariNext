@@ -1,123 +1,102 @@
 import 'dart:async';
-
 import 'package:arari_next/data/repositories/packet/packet_repository.dart';
-import 'package:arari_next/data/services/datasource/data_source_interface.dart';
-import 'package:arari_next/data/services/logging/logging_service_influx.dart';
+import 'package:arari_next/data/services/pipeline/telemetry_source_interface.dart';
+import 'package:arari_next/domain/telemetry/bms_data.dart';
 import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/domain/telemetry/gps_data.dart';
+import 'package:arari_next/domain/telemetry/iboat_data.dart';
+import 'package:arari_next/domain/telemetry/instrumentation_data.dart';
 import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
 import 'package:arari_next/domain/telemetry/motor_state_data.dart';
-import 'package:arari_next/utils/mavlink/mavlink_dialect/arariboat.dart';
-import 'package:arari_next/utils/mavlink/mavlink_to_models.dart';
-import 'package:dart_mavlink/mavlink.dart';
+import 'package:arari_next/domain/telemetry/mppt_data.dart';
+import 'package:arari_next/domain/telemetry/pump_data.dart';
+import 'package:arari_next/domain/telemetry/radio_status_data.dart';
+import 'package:arari_next/domain/telemetry/temperature_data.dart';
 
 class MavlinkRepository extends PacketRepository {
-  StreamController<FullBoatData?> streamController =
+  final ITelemetrySource _source;
+  late StreamSubscription _sourceSubscription;
+
+  final StreamController<FullBoatData?> _streamController =
       StreamController.broadcast();
 
   @override
-  Stream<FullBoatData?> get data => streamController.stream;
+  Stream<FullBoatData?> get data => _streamController.stream;
 
-  final MavlinkParser _mavlinkParser = MavlinkParser(MavlinkDialectArariboat());
+  FullBoatData _fullBoatData = FullBoatData();
 
-  final IDataSource _dataSource;
-  final LoggingServiceInflux _log;
-
-  FullBoatData _fullBoatData = FullBoatData.empty();
-
-  MavlinkRepository({
-    required IDataSource dataSource,
-    required LoggingServiceInflux log,
-  }) : _dataSource = dataSource,
-       _log = log {
-    _mavlinkParser.stream.listen(_processPackage);
-    _dataSource.stream.listen((data) => _mavlinkParser.parse(data));
+  MavlinkRepository({required ITelemetrySource source}) : _source = source {
+    _sourceSubscription = _source.stream.listen(
+      (data) => _processData(data),
+    );
   }
 
-  _updateFullDataFromMavlink(MavlinkFrame frame) {
-    switch (frame.message) {
-      case Bms bms:
-        _fullBoatData = _fullBoatData.copyWith(
-          bmsData: MavlinkToModels.toBms(bms),
-        );
+  void _processData(IBoatData data) {
+    _updateFullData(data);
+    _streamController.add(_fullBoatData);
+  }
+
+  void _updateFullData(IBoatData data) {
+    switch (data) {
+      case BMSData bms:
+        _fullBoatData = _fullBoatData.copyWith(bmsData: bms);
         break;
 
-      case Gps gps:
-        _fullBoatData = _fullBoatData.copyWith(
-          gpsData: MavlinkToModels.toGPS(gps),
-        );
+      case GPSData gps:
+        _fullBoatData = _fullBoatData.copyWith(gpsData: gps);
         break;
 
-      case Instrumentation instrumentation:
+      case InstrumentationData instrumentation:
         _fullBoatData = _fullBoatData.copyWith(
-          instrumentationData: MavlinkToModels.toInstrumentation(
-            instrumentation,
-          ),
+          instrumentationData: instrumentation,
         );
+
         break;
 
-      case EzkontrolMcuMeterDataI motorData1:
-        MotorEletricalData motorEletricalData = MavlinkToModels.toMotor1(
-          motorData1,
-        );
-        if (motorEletricalData.instance == MotorInstance.left) {
+      case MotorEletricalData motorEletrical:
+        if (motorEletrical.instance == MotorInstance.left) {
           _fullBoatData = _fullBoatData.copyWith(
-            motorEletricalDataLeft: motorEletricalData,
+            motorEletricalDataLeft: motorEletrical,
           );
-        } else if (motorEletricalData.instance == MotorInstance.right) {
+        } else if (motorEletrical.instance == MotorInstance.right) {
           _fullBoatData = _fullBoatData.copyWith(
-            motorEletricalDataRight: motorEletricalData,
+            motorEletricalDataRight: motorEletrical,
           );
         }
         break;
 
-      case EzkontrolMcuMeterDataIi motorData2:
-        MotorStateData motorStateData = MavlinkToModels.toMotor2(motorData2);
-        if (motorStateData.instance == MotorInstance.left) {
+      case MotorStateData motorState:
+        if (motorState.instance == MotorInstance.left) {
           _fullBoatData = _fullBoatData.copyWith(
-            motorStateDataLeft: motorStateData,
+            motorStateDataLeft: motorState,
           );
-        } else if (motorStateData.instance == MotorInstance.right) {
+        } else if (motorState.instance == MotorInstance.right) {
           _fullBoatData = _fullBoatData.copyWith(
-            motorStateDataRight: motorStateData,
+            motorStateDataRight: motorState,
           );
         }
         break;
 
-      case Mppt mppt:
-        _fullBoatData = _fullBoatData.copyWith(
-          mpptData: MavlinkToModels.toMppt(mppt),
-        );
+      case MPPTData mppt:
+        _fullBoatData = _fullBoatData.copyWith(mpptData: mppt);
         break;
 
-      case Pumps pump:
-        _fullBoatData = _fullBoatData.copyWith(
-          pumpData: MavlinkToModels.toPump(pump),
-        );
+      case PumpData pump:
+        _fullBoatData = _fullBoatData.copyWith(pumpData: pump);
         break;
 
-      case RadioStatus radio:
-        _fullBoatData = _fullBoatData.copyWith(
-          radioStatusData: MavlinkToModels.toRadioStatus(radio),
-        );
+      case RadioStatusData radio:
+        _fullBoatData = _fullBoatData.copyWith(radioStatusData: radio);
         break;
 
-      case Temperatures temperatures:
-        _fullBoatData = _fullBoatData.copyWith(
-          temperatureData: MavlinkToModels.toTemperature(temperatures),
-        );
+      case TemperatureData temperatures:
+        _fullBoatData = _fullBoatData.copyWith(temperatureData: temperatures);
         break;
-
-      default:
-        return null;
     }
   }
 
-  void _processPackage(MavlinkFrame frame) {
-    _updateFullDataFromMavlink(frame);
-    streamController.add(_fullBoatData);
-    if (_log.isOpen) {
-      // TODO: Fix logging to influxdb
-      // _log.save(model);
-    }
+  Future<void> dispose() async {
+    _sourceSubscription.cancel();
+    _streamController.close();
   }
 }
