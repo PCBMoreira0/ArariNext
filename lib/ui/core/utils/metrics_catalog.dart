@@ -4,7 +4,7 @@ class MetricDefinition {
   final String id;
   final String label;
   final String unit;
-  final double Function(FullBoatData data) valueExtractor;
+  final double? Function(FullBoatData data) valueExtractor;
   final int Function(FullBoatData data) timeExtractor;
 
   MetricDefinition({
@@ -22,15 +22,15 @@ class MetricsCatalog {
       id: "battery_level",
       label: "Nível Bat.",
       unit: '%',
-      valueExtractor: (data) => data.bmsData.stateOfCharge,
-      timeExtractor: (data) => data.bmsData.timestamp,
+      valueExtractor: (data) => data.bmsData?.stateOfCharge,
+      timeExtractor: (data) => data.bmsData?.timestamp ?? 0,
     ),
     MetricDefinition(
       id: "battery_voltage",
       label: "Tensão Bat.",
       unit: 'V',
-      valueExtractor: (data) => data.bmsData.totalVoltage,
-      timeExtractor: (data) => data.bmsData.timestamp,
+      valueExtractor: (data) => data.bmsData?.totalVoltage,
+      timeExtractor: (data) => data.bmsData?.timestamp ?? 0,
     ),
   ];
 
@@ -39,22 +39,22 @@ class MetricsCatalog {
       id: "motor_bb_voltage",
       label: "Tensão Mot.BB",
       unit: 'V',
-      valueExtractor: (data) => data.motorEletricalDataLeft.busVoltage,
-      timeExtractor: (data) => data.motorEletricalDataLeft.timestamp,
+      valueExtractor: (data) => data.motorLeft.eletrical?.busVoltage,
+      timeExtractor: (data) => data.motorLeft.eletrical?.timestamp ?? 0,
     ),
     MetricDefinition(
       id: "motor_be_voltage",
       label: "Tensão Mot.BE",
       unit: 'V',
-      valueExtractor: (data) => data.motorEletricalDataRight.busVoltage,
-      timeExtractor: (data) => data.motorEletricalDataRight.timestamp,
+      valueExtractor: (data) => data.motorRight.eletrical?.busVoltage,
+      timeExtractor: (data) => data.motorRight.eletrical?.timestamp ?? 0,
     ),
     MetricDefinition(
       id: "motor_be_current",
       label: "Corrente Mot.BE",
       unit: 'V',
-      valueExtractor: (data) => data.motorEletricalDataRight.busCurrent,
-      timeExtractor: (data) => data.motorEletricalDataRight.timestamp,
+      valueExtractor: (data) => data.motorRight.eletrical?.busCurrent,
+      timeExtractor: (data) => data.motorRight.eletrical?.timestamp ?? 0,
     ),
   ];
 

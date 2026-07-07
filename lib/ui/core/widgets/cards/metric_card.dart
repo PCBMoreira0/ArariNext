@@ -101,13 +101,13 @@ class _MetricCardState extends State<MetricCard> {
       child: ValueListenableBuilder<FullBoatData>(
         valueListenable: widget.boatDataListenable,
         builder: (context, data, child) {
-          final double extractedValue = _selectedMetric.valueExtractor(data);
+          final double? extractedValue = _selectedMetric.valueExtractor(data);
 
           return FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.center,
             child: ValueGauge(
-              value: extractedValue.toStringAsFixed(1),
+              value: extractedValue?.toStringAsFixed(1) ?? '--',
               unit: _selectedMetric.unit,
             ),
           );

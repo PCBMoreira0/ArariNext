@@ -4,4 +4,5 @@ import 'package:arari_next/domain/telemetry/full_boat_data.dart';
 
 abstract class PacketRepository {
   Stream<FullBoatData?> get data;
+  void dispose() {}
 }

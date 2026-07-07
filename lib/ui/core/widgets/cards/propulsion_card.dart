@@ -37,7 +37,7 @@ class _PropulsionCardState extends State<PropulsionCard> {
   @override
   Widget build(BuildContext context) {
     return CustomCard(
-      title: "Propulsion",
+      title: "Propulsão",
       action: IconButton(
         onPressed: () {
           setState(() {
@@ -99,8 +99,8 @@ class _CompactLayout extends LayoutConstraint {
                     valueListenable: boatDataListenable,
                     builder: (context, value, child) {
                       final busVoltage = selectedInstance == MotorInstance.left
-                          ? value.motorEletricalDataLeft.busVoltage
-                          : value.motorEletricalDataRight.busVoltage;
+                          ? value.motorLeft.eletrical?.busVoltage ?? 0.0
+                          : value.motorRight.eletrical?.busVoltage ?? 0.0;
                       return ValueGauge(
                         value: busVoltage.toStringAsFixed(2),
                         label: 'Tensão',
@@ -117,8 +117,8 @@ class _CompactLayout extends LayoutConstraint {
                     valueListenable: boatDataListenable,
                     builder: (context, value, child) {
                       final busCurrent = selectedInstance == MotorInstance.left
-                          ? value.motorEletricalDataLeft.busCurrent
-                          : value.motorEletricalDataRight.busCurrent;
+                          ? value.motorLeft.eletrical?.busCurrent ?? 0.0
+                          : value.motorRight.eletrical?.busCurrent ?? 0.0;
                       return ValueGauge(
                         value: busCurrent.toStringAsFixed(2),
                         label: 'Corrente',
@@ -132,7 +132,7 @@ class _CompactLayout extends LayoutConstraint {
             ],
           ),
         ),
-        // Linha
+        // Linha 2
         Expanded(
           child: Row(
             children: [
@@ -143,12 +143,12 @@ class _CompactLayout extends LayoutConstraint {
                     builder: (context, value, child) {
                       final motorTemperature =
                           selectedInstance == MotorInstance.left
-                          ? value.motorStateDataLeft.motorTemperature
-                          : value.motorStateDataRight.motorTemperature;
+                          ? value.motorLeft.state?.motorTemperature ?? 0.0
+                          : value.motorRight.state?.motorTemperature ?? 0.0;
                       return ValueGauge(
                         unit: 'ºC',
                         value: motorTemperature.toStringAsFixed(2),
-                        label: 'Temperatura Motor',
+                        label: 'Temp. Motor',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
                       );
                     },
@@ -162,12 +162,13 @@ class _CompactLayout extends LayoutConstraint {
                     builder: (context, value, child) {
                       final controllerTemperature =
                           selectedInstance == MotorInstance.left
-                          ? value.motorStateDataLeft.controllerTemperature
-                          : value.motorStateDataRight.controllerTemperature;
+                          ? value.motorLeft.state?.controllerTemperature ?? 0.0
+                          : value.motorRight.state?.controllerTemperature ??
+                                0.0;
                       return ValueGauge(
                         unit: 'ºC',
                         value: controllerTemperature.toStringAsFixed(2),
-                        label: 'Temperatura ESC',
+                        label: 'Temp. ESC',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
                       );
                     },
@@ -238,13 +239,12 @@ class _FullLayout extends LayoutConstraint {
             valueListenable: boatDataListenable,
             builder: (context, value, child) {
               final rpm = selectedInstance == MotorInstance.left
-                  ? value.motorEletricalDataLeft.rpm
-                  : value.motorEletricalDataRight.rpm;
+                  ? value.motorLeft.eletrical?.rpm ?? 0
+                  : value.motorRight.eletrical?.rpm ?? 0;
               return SpeedometerGauge(rpm: rpm.toDouble());
             },
           ),
           Row(
-            spacing: 10,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -252,29 +252,30 @@ class _FullLayout extends LayoutConstraint {
                 valueListenable: boatDataListenable,
                 builder: (context, value, child) {
                   final rpm = selectedInstance == MotorInstance.left
-                      ? value.motorEletricalDataLeft.rpm
-                      : value.motorEletricalDataRight.rpm;
+                      ? value.motorLeft.eletrical?.rpm ?? 0
+                      : value.motorRight.eletrical?.rpm ?? 0;
                   return ValueGauge(
                     value: '$rpm',
                     unit: 'rpm',
                     label: 'Velocidade',
-                    valueStyle: TextStyle(fontSize: 18),
+                    valueStyle: const TextStyle(fontSize: 18),
                   );
                 },
               ),
+              const SizedBox(width: 10),
               ValueListenableBuilder(
                 valueListenable: boatDataListenable,
                 builder: (context, value, child) {
                   final acceleratorOpening =
                       selectedInstance == MotorInstance.left
-                      ? value.motorEletricalDataLeft.acceleratorOpening
-                      : value.motorEletricalDataRight.acceleratorOpening;
+                      ? value.motorLeft.eletrical?.acceleratorOpening ?? 0
+                      : value.motorRight.eletrical?.acceleratorOpening ?? 0;
                   return ValueGauge(
                     value: acceleratorOpening.toString(),
                     unit: '%',
                     label: 'Abertura Acel.',
                     maxWidth: 100,
-                    valueStyle: TextStyle(fontSize: 18),
+                    valueStyle: const TextStyle(fontSize: 18),
                   );
                 },
               ),

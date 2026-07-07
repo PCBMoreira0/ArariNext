@@ -1,11 +1,8 @@
 import 'package:arari_next/routing/routes.dart';
-import 'package:arari_next/ui/viewmodels/chart_viewmodel.dart';
 import 'package:arari_next/ui/viewmodels/dashboard_screen_viewmodel.dart';
-import 'package:arari_next/ui/viewmodels/old_dashboard_viewmodel.dart';
 import 'package:arari_next/ui/viewmodels/settings_viewmodel.dart';
 import 'package:arari_next/ui/views/chart_screen.dart';
 import 'package:arari_next/ui/views/dashboard_screen.dart';
-import 'package:arari_next/ui/views/dashboard_view.dart';
 import 'package:arari_next/ui/views/settings_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,12 +17,6 @@ class RouteGenerator {
       case Routes.console:
         return MaterialPageRoute(builder: (_) => ConsoleView());
 
-      case Routes.oldDashboard:
-        return MaterialPageRoute(
-          builder: (context) => DashboardView(
-            viewmodel: OldDashboardViewmodel(repository: context.read()),
-          ),
-        );
       case Routes.chart:
         return MaterialPageRoute(builder: (context) => ChartsScreen());
       case Routes.dashboard:

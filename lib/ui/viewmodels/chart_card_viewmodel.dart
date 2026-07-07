@@ -41,7 +41,7 @@ class ChartCardViewmodel extends ChangeNotifier {
     final int cutoffTimeMemory = now - maxHistory.inMilliseconds;
 
     for (var metric in selectedMetrics) {
-      final double newValue = metric.valueExtractor(data);
+      final double newValue = metric.valueExtractor(data) ?? 0; // TODO data does not exist check
       final int newTimestamp = metric.timeExtractor(data);
 
       _seriesData.putIfAbsent(metric.label, () => []);

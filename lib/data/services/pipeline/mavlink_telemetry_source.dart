@@ -45,6 +45,7 @@ class MavlinkTelemetrySource implements ITelemetrySource {
     _streamController.add(data);
   }
 
+  @override
   Future<void> dispose() async {
     await _sourceSubscription.cancel();
     await _mapperSubscription.cancel();

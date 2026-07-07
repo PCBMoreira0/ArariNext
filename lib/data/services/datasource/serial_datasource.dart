@@ -44,8 +44,7 @@ class SerialDatasource implements IDataSource {
       disconnect();
       _config = config;
       connect();
-    }
-    else{
+    } else {
       _config = config;
     }
   }
@@ -74,7 +73,7 @@ class SerialDatasource implements IDataSource {
 
       _subscription?.cancel();
       _subscription = reader.stream.listen(
-        (data) { _outputStreamController.add(data); print(data); },
+        (data) => _outputStreamController.add(data),
         onError: (error) {
           _updateStatus(ConnectionStatus.error);
           _reconnect();

@@ -51,7 +51,7 @@ class _CompactLayout extends LayoutConstraint {
           child: ValueListenableBuilder(
             valueListenable: boatDataListenable,
             builder: (context, value, child) {
-              return BatteryGauge(level: value.bmsData.stateOfCharge);
+              return BatteryGauge(level: value.bmsData?.stateOfCharge ?? 0.0);
             },
           ),
         ),
@@ -59,9 +59,9 @@ class _CompactLayout extends LayoutConstraint {
           valueListenable: boatDataListenable,
           builder: (context, value, child) {
             return ValueGauge(
-              value: value.bmsData.stateOfCharge.toStringAsFixed(2),
+              value: (value.bmsData?.stateOfCharge ?? 0.0).toStringAsFixed(2),
               unit: '%',
-              valueStyle: TextStyle(fontSize: 16),
+              valueStyle: const TextStyle(fontSize: 16),
             );
           },
         ),
@@ -87,9 +87,7 @@ class _FullLayout extends LayoutConstraint {
     return Row(
       children: [
         _CompactLayout(boatDataListenable: boatDataListenable).build(),
-
         const SizedBox(width: 15),
-
         Expanded(
           child: Column(
             children: [
@@ -103,9 +101,8 @@ class _FullLayout extends LayoutConstraint {
                           valueListenable: boatDataListenable,
                           builder: (context, value, child) {
                             return ValueGauge(
-                              value: value.bmsData.totalVoltage.toStringAsFixed(
-                                2,
-                              ),
+                              value: (value.bmsData?.totalVoltage ?? 0.0)
+                                  .toStringAsFixed(2),
                               label: 'Tensão',
                               unit: 'V',
                               valueStyle: TextStyle(fontSize: valueTextSize),
@@ -120,7 +117,7 @@ class _FullLayout extends LayoutConstraint {
                           valueListenable: boatDataListenable,
                           builder: (context, value, child) {
                             return ValueGauge(
-                              value: value.bmsData.batteryCurrent
+                              value: (value.bmsData?.batteryCurrent ?? 0.0)
                                   .toStringAsFixed(2),
                               label: 'Corrente',
                               unit: 'A',
@@ -142,10 +139,14 @@ class _FullLayout extends LayoutConstraint {
                         child: ValueListenableBuilder(
                           valueListenable: boatDataListenable,
                           builder: (context, value, child) {
+                            final hora =
+                                value.batteryRemainingTimeEstimation?.hora ?? 0;
+                            final minuto =
+                                value.batteryRemainingTimeEstimation?.minuto ??
+                                0;
                             return ValueGauge(
                               unit: 'h',
-                              value:
-                                  '${value.batteryRemainingTimeEstimation.hora}:${value.batteryRemainingTimeEstimation.minuto}',
+                              value: '$hora:$minuto',
                               label: 'Tempo Restante',
                               valueStyle: TextStyle(fontSize: valueTextSize),
                             );
@@ -158,9 +159,12 @@ class _FullLayout extends LayoutConstraint {
                         child: ValueListenableBuilder(
                           valueListenable: boatDataListenable,
                           builder: (context, value, child) {
+                            final hora =
+                                value.batteryTimeWithoutGeneration?.hora ?? 0;
+                            final minuto =
+                                value.batteryTimeWithoutGeneration?.minuto ?? 0;
                             return ValueGauge(
-                              value:
-                                  '${value.batteryTimeWithoutGeneration.hora}:${value.batteryTimeWithoutGeneration.minuto}',
+                              value: '$hora:$minuto',
                               label: 'Tempo s/ geração',
                               unit: 'h',
                               valueStyle: TextStyle(fontSize: valueTextSize),
@@ -172,7 +176,7 @@ class _FullLayout extends LayoutConstraint {
                   ],
                 ),
               ),
-
+              // Linha 3
               Expanded(
                 child: Row(
                   children: [
@@ -181,10 +185,14 @@ class _FullLayout extends LayoutConstraint {
                         child: ValueListenableBuilder(
                           valueListenable: boatDataListenable,
                           builder: (context, value, child) {
+                            final hasTemp1 = value.bmsData != null &&
+                                value.bmsData!.temperatures.isNotEmpty;
+                            final temp1 = hasTemp1
+                                ? value.bmsData!.temperatures[0]
+                                : 0.0;
                             return ValueGauge(
                               unit: 'ºC',
-                              value:
-                                  '${value.bmsData.temperatures.isNotEmpty ? value.bmsData.temperatures[0].toStringAsFixed(2) : 0}',
+                              value: temp1.toStringAsFixed(2),
                               label: 'Temperatura 1',
                               valueStyle: TextStyle(fontSize: valueTextSize),
                             );
@@ -197,10 +205,14 @@ class _FullLayout extends LayoutConstraint {
                         child: ValueListenableBuilder(
                           valueListenable: boatDataListenable,
                           builder: (context, value, child) {
+                            final hasTemp2 = value.bmsData != null &&
+                                value.bmsData!.temperatures.length > 1;
+                            final temp2 = hasTemp2
+                                ? value.bmsData!.temperatures[1]
+                                : 0.0;
                             return ValueGauge(
                               unit: 'ºC',
-                              value:
-                                  '${value.bmsData.temperatures.isNotEmpty ? value.bmsData.temperatures[1].toStringAsFixed(2) : 0}',
+                              value: temp2.toStringAsFixed(2),
                               label: 'Temperatura 2',
                               valueStyle: TextStyle(fontSize: valueTextSize),
                             );

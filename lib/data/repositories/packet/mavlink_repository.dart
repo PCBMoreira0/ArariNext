@@ -95,6 +95,7 @@ class MavlinkRepository extends PacketRepository {
     }
   }
 
+  @override
   Future<void> dispose() async {
     _sourceSubscription.cancel();
     _streamController.close();
