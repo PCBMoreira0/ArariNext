@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 class SettingsViewmodel extends ChangeNotifier {
   List<String> _serialPorts = [];
   final List<int> _baudrates = [9600, 115200];
-  String? _selectedSerialPort;
+  String _selectedSerialPort = "";
   int _selectedBaudrate = 9600;
   bool get isSerialConnected => _serial.status == ConnectionStatus.connected;
   String _loggingPath = "";
@@ -34,23 +34,27 @@ class SettingsViewmodel extends ChangeNotifier {
        _settings = settings,
        _log = log {
     if (!Platform.isAndroid && !Platform.isIOS) {
-      downloadSettings();
+      _loadSettings();
     }
   }
 
-  void downloadSettings() {
+  void _loadSettings() {
     _serialPorts = SerialDatasource.availablePorts();
 
     String selectedSerial = _settings.serial.port;
+    _selectedSerialPort = selectedSerial;
     for (var serial in _serialPorts) {
       if (serial == selectedSerial) {
         _selectedSerialPort = serial;
         break;
       }
     }
-    _selectedSerialPort ??= null;
+
+    setSerialPort(_selectedSerialPort);
 
     _selectedBaudrate = _settings.serial.baudrate;
+
+    setBaudrate(_selectedBaudrate);
 
     _loggingPath = _settings.log.directory;
 
@@ -77,7 +81,7 @@ class SettingsViewmodel extends ChangeNotifier {
   Future<void> setBaudrate(int baudrate) async {
     await _settings.setSerial(_settings.serial.copyWith(baudrate: baudrate));
     _serial.setConfig(
-      SerialSettings(port: _selectedSerialPort ?? "", baudrate: baudrate),
+      SerialSettings(port: _selectedSerialPort, baudrate: baudrate),
     );
     _selectedBaudrate = baudrate;
     notifyListeners();
