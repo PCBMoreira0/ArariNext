@@ -23,6 +23,7 @@ dependencies:
   sliver_dashboard: ^0.9.1
   cristalyse: ^1.17.6
   path_provider: ^2.1.6
+  nativeapi: ^0.1.4
 
 dev_dependencies:
   flutter_test:

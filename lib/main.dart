@@ -16,10 +16,17 @@ import 'package:arari_next/ui/core/history_store.dart';
 import 'package:arari_next/ui/core/ui/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/routing/router.dart';
+import 'package:nativeapi/nativeapi.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final windowManager = WindowManager.instance;
+  final window = windowManager.getCurrent();
+  window?.setMinimumSize(400, double.infinity);
+  window?.show();
+  window?.center();
 
   FileStorageService fileStorageService = LocalFileStorageService();
 

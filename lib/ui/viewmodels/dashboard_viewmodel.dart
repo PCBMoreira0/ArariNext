@@ -53,19 +53,23 @@ class DashboardViewModel {
     final id = DateTime.now().microsecondsSinceEpoch.toString();
     final newCard = type.createModel(id: id);
     dashboardModel.cards.add(newCard);
-    dashboardController.addItem(
-      LayoutItem(
-        id: newCard.id,
-        x: -1,
-        y: -1,
-        w: newCard.defaultW,
-        h: newCard.defaultH,
-        minH: newCard.minH,
-        minW: newCard.minW,
-        maxH: newCard.maxH,
-        maxW: newCard.maxW,
-      ),
+    final layoutItem = LayoutItem(
+      id: newCard.id,
+      x: 0,
+      y: 0,
+      w: newCard.defaultW,
+      h: newCard.defaultH,
+      minH: newCard.minH,
+      minW: newCard.minW,
+      maxH: newCard.maxH,
+      maxW: newCard.maxW,
     );
+
+    for (var entry in dashboardModel.layouts.entries) {
+      entry.value.add(layoutItem);
+    }
+
+    dashboardController.addItem(layoutItem);
   }
 
   void toggleEditing() async {
@@ -107,6 +111,9 @@ class DashboardViewModel {
     if (index != -1) {
       dashboardController.removeItem(deleteCard.id);
       dashboardModel.cards.removeAt(index);
+      dashboardModel.layouts.forEach((slotCount, layoutItems) {
+        layoutItems.removeWhere((item) => item.id == deleteCard.id);
+      });
       await _saveDashboard();
     }
   }
@@ -127,11 +134,63 @@ class DashboardViewModel {
     await _dashboardRepository.saveDashboard(dashboardModel);
   }
 
-  void importDashboardBySlotCount(int slotCount) {
-    final List<LayoutItem> itensDoLayout =
+  void importDashboardBySlotCount(int slotCount) async {
+    final List<LayoutItem> layoutItems =
         dashboardModel.layouts[slotCount] ?? [];
-    final jsonLayout = itensDoLayout.map((item) => item.toMap()).toList();
-    dashboardController.importLayout(jsonLayout);
+
+    if (layoutItems.isEmpty) {
+      dashboardController.layout.value = dashboardModel.cards.map((card) {
+        return LayoutItem(
+          id: card.id,
+          x: 0,
+          y: 0,
+          w: card.defaultW,
+          h: card.defaultH,
+          minH: card.minH,
+          minW: card.minW,
+          maxH: card.maxH,
+          maxW: card.maxW,
+        );
+      }).toList();
+
+      dashboardModel.layouts[slotCount] = dashboardController.layout.value;
+      await _saveDashboard();
+    } else {
+      final jsonLayout = layoutItems.map((item) => item.toMap()).toList();
+      dashboardController.importLayout(jsonLayout);
+    }
+
+    // for (var card in dashboardModel.cards) {
+    //   bool found = false;
+    //   for (var layout in layoutItems) {
+    //     if (layout.id == card.id) {
+    //       found = true;
+    //       break;
+    //     }
+    //   }
+
+    //   if (found == false) {
+    //     dashboardController.addItem(
+    //       LayoutItem(
+    //         id: card.id,
+    //         x: -1,
+    //         y: -1,
+    //         w: card.defaultW,
+    //         h: card.defaultH,
+    //         minH: card.minH,
+    //         minW: card.minW,
+    //         maxH: card.maxH,
+    //         maxW: card.maxW,
+    //       ),
+    //     );
+    //   }
+    // }
+
+    // dashboardModel.layouts[slotCount] ??= [];
+    // dashboardModel.layouts[slotCount]!.clear();
+    // dashboardModel.layouts[slotCount]!.addAll(dashboardController.layout.value);
+
+    // await _saveDashboard();
   }
 
   void dispose() {
