@@ -1,325 +1,220 @@
-// import 'package:arari_next/ui/core/utils/layout_constraint.dart';
-// import 'package:arari_next/ui/core/utils/layout_mode.dart';
-// import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
-// import 'package:arari_next/ui/core/widgets/gauge/battery_gauge.dart';
-// import 'package:arari_next/ui/core/widgets/gauge/value_gauge.dart';
-// import 'package:arari_next/ui/viewmodels/battery_card_viewmodel.dart';
-// import 'package:flutter/material.dart';
+import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/ui/core/utils/layout_constraint.dart';
+import 'package:arari_next/ui/core/utils/layout_mode.dart';
+import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
+import 'package:arari_next/ui/core/widgets/gauge/battery_gauge.dart';
+import 'package:arari_next/ui/core/widgets/gauge/value_gauge.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
-// class BatteryCard extends StatelessWidget {
-//   final BatteryCardViewmodel viewModel;
+class BatteryCard extends StatelessWidget {
+  final ValueListenable<FullBoatData> boatDataListenable;
 
-//   const BatteryCard({super.key, required this.viewModel});
+  const BatteryCard({super.key, required this.boatDataListenable});
 
-//   final double valueTextSize = 16;
+  @override
+  Widget build(BuildContext context) {
+    return CustomCard(
+      title: "Bateria",
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          LayoutMode layoutMode = LayoutMode(
+            layouts: [
+              _FullLayout(boatDataListenable: boatDataListenable),
+              _CompactLayout(boatDataListenable: boatDataListenable),
+            ],
+          );
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return CustomCard(
-//       title: "Bateria",
-//       child: LayoutBuilder(
-//         builder: (context, constraints) {
-//           LayoutMode layoutMode = LayoutMode(
-//             layouts: [
-//               _FullLayout(viewModel: viewModel, minHeight: 124, minWidth: 232),
-//               _MinimumLayout(viewModel: viewModel, minHeight: 100, minWidth: 160),
-//               _CompactLayout(viewModel: viewModel, minHeight: 105, minWidth: 54),
-//               _UltraCompactLayout(viewModel: viewModel),
-//             ],
-//           );
+          return layoutMode.buildLayout(constraints);
+        },
+      ),
+    );
+  }
+}
 
-//           return layoutMode.buildLayout(constraints);
-//         },
-//       ),
-//     );
-//   }
-// }
+class _CompactLayout extends LayoutConstraint {
+  @override
+  double get minHeight => 105;
+  @override
+  double get minWidth => 54;
 
-// class _UltraCompactLayout extends LayoutConstraint {
-//   final BatteryCardViewmodel viewModel;
+  final ValueListenable<FullBoatData> boatDataListenable;
 
-//   _UltraCompactLayout({
-//     required this.viewModel,
-//     super.minHeight,
-//     super.minWidth,
-//   });
+  _CompactLayout({required this.boatDataListenable});
 
-//   @override
-//   Widget build() {
-//     return Center(
-//       child: FittedBox(
-//         fit: BoxFit.contain,
-//         child: ValueListenableBuilder(
-//           valueListenable: viewModel.fullBoatDataValueNotifier,
-//           builder: (context, value, child) {
-//             return ValueGauge(
-//               value: '${value.bmsData.stateOfCharge}',
-//               unit: '%',
-//               label: 'SoC',
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: ValueListenableBuilder(
+            valueListenable: boatDataListenable,
+            builder: (context, value, child) {
+              return BatteryGauge(level: value.bmsData.stateOfCharge);
+            },
+          ),
+        ),
+        ValueListenableBuilder(
+          valueListenable: boatDataListenable,
+          builder: (context, value, child) {
+            return ValueGauge(
+              value: value.bmsData.stateOfCharge.toStringAsFixed(2),
+              unit: '%',
+              valueStyle: TextStyle(fontSize: 16),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
 
-// class _CompactLayout extends LayoutConstraint {
-//   final BatteryCardViewmodel viewModel;
+class _FullLayout extends LayoutConstraint {
+  final double valueTextSize = 16;
 
-//   _CompactLayout({required this.viewModel, super.minHeight, super.minWidth});
+  @override
+  double get minHeight => 124;
+  @override
+  double get minWidth => 232;
 
-//   @override
-//   Widget build() {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.center,
-//       children: [
-//         Expanded(
-//           child: ValueListenableBuilder(
-//             valueListenable: viewModel.fullBoatDataValueNotifier,
-//             builder: (context, value, child) {
-//               return BatteryGauge(level: value.bmsData.stateOfCharge);
-//             },
-//           ),
-//         ),
-//         ValueListenableBuilder(
-//           valueListenable: viewModel.fullBoatDataValueNotifier,
-//           builder: (context, value, child) {
-//             return ValueGauge(
-//               value: '${value.bmsData.stateOfCharge}',
-//               unit: '%',
-//               valueStyle: TextStyle(fontSize: 16),
-//             );
-//           },
-//         ),
-//       ],
-//     );
-//   }
-// }
+  final ValueListenable<FullBoatData> boatDataListenable;
 
-// class _MinimumLayout extends LayoutConstraint {
-//   final BatteryCardViewmodel viewModel;
-//   final double valueTextSize;
+  _FullLayout({required this.boatDataListenable});
 
-//   _MinimumLayout({
-//     required this.viewModel,
-//     this.valueTextSize = 16,
-//     super.minHeight,
-//     super.minWidth,
-//   });
+  @override
+  Widget build() {
+    return Row(
+      children: [
+        _CompactLayout(boatDataListenable: boatDataListenable).build(),
 
-//   @override
-//   Widget build() {
-//     return Row(
-//       children: [
-//         _CompactLayout(viewModel: viewModel).build(),
+        const SizedBox(width: 15),
 
-//         const SizedBox(width: 15),
+        Expanded(
+          child: Column(
+            children: [
+              // Linha 1
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: ValueListenableBuilder(
+                          valueListenable: boatDataListenable,
+                          builder: (context, value, child) {
+                            return ValueGauge(
+                              value: value.bmsData.totalVoltage.toStringAsFixed(
+                                2,
+                              ),
+                              label: 'Tensão',
+                              unit: 'V',
+                              valueStyle: TextStyle(fontSize: valueTextSize),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: ValueListenableBuilder(
+                          valueListenable: boatDataListenable,
+                          builder: (context, value, child) {
+                            return ValueGauge(
+                              value: value.bmsData.batteryCurrent
+                                  .toStringAsFixed(2),
+                              label: 'Corrente',
+                              unit: 'A',
+                              valueStyle: TextStyle(fontSize: valueTextSize),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Linha 2
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: ValueListenableBuilder(
+                          valueListenable: boatDataListenable,
+                          builder: (context, value, child) {
+                            return ValueGauge(
+                              unit: 'h',
+                              value:
+                                  '${value.batteryRemainingTimeEstimation.hora}:${value.batteryRemainingTimeEstimation.minuto}',
+                              label: 'Tempo Restante',
+                              valueStyle: TextStyle(fontSize: valueTextSize),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: ValueListenableBuilder(
+                          valueListenable: boatDataListenable,
+                          builder: (context, value, child) {
+                            return ValueGauge(
+                              value:
+                                  '${value.batteryTimeWithoutGeneration.hora}:${value.batteryTimeWithoutGeneration.minuto}',
+                              label: 'Tempo s/ geração',
+                              unit: 'h',
+                              valueStyle: TextStyle(fontSize: valueTextSize),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
-//         Expanded(
-//           child: Column(
-//             children: [
-//               Expanded(
-//                 child: Row(
-//                   children: [
-//                     Expanded(
-//                       child: Center(
-//                         child: ValueListenableBuilder(
-//                           valueListenable: viewModel.fullBoatDataValueNotifier,
-//                           builder: (context, value, child) {
-//                             return ValueGauge(
-//                               value: '${value.bmsData.totalVoltage}',
-//                               label: 'Tensão',
-//                               unit: 'V',
-//                               valueStyle: TextStyle(fontSize: valueTextSize),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ),
-
-//                     Expanded(
-//                       child: Center(
-//                         child: ValueListenableBuilder(
-//                           valueListenable: viewModel.fullBoatDataValueNotifier,
-//                           builder: (context, value, child) {
-//                             return ValueGauge(
-//                               value: '${value.bmsData.batteryCurrent}',
-//                               label: 'Corrente',
-//                               unit: 'A',
-//                               valueStyle: TextStyle(fontSize: valueTextSize),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-
-//               Expanded(
-//                 child: Center(
-//                   child: ValueListenableBuilder(
-//                     valueListenable: viewModel.fullBoatDataValueNotifier,
-//                     builder: (context, value, child) {
-//                       return ValueGauge(
-//                         unit: 'h',
-//                         value:
-//                             '${value.batteryRemainingTimeEstimation.hora}:${value.batteryRemainingTimeEstimation.minuto}',
-//                         label: 'Tempo Restante',
-//                         valueStyle: TextStyle(fontSize: valueTextSize),
-//                       );
-//                     },
-//                   ),
-//                 ),
-//               ), // Linha
-//             ],
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
-
-// class _FullLayout extends LayoutConstraint {
-//   final double valueTextSize;
-//   final BatteryCardViewmodel viewModel;
-
-//   _FullLayout({
-//     required this.viewModel,
-//     this.valueTextSize = 16,
-//     super.minHeight,
-//     super.minWidth,
-//   });
-
-//   @override
-//   Widget build() {
-//     return Row(
-//       children: [
-//         _CompactLayout(viewModel: viewModel).build(),
-
-//         const SizedBox(width: 15),
-
-//         Expanded(
-//           child: Column(
-//             children: [
-//               // Linha 1
-//               Expanded(
-//                 child: Row(
-//                   children: [
-//                     Expanded(
-//                       child: Center(
-//                         child: ValueListenableBuilder(
-//                           valueListenable: viewModel.fullBoatDataValueNotifier,
-//                           builder: (context, value, child) {
-//                             return ValueGauge(
-//                               value: '${value.bmsData.totalVoltage}',
-//                               label: 'Tensão',
-//                               unit: 'V',
-//                               valueStyle: TextStyle(fontSize: valueTextSize),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                     Expanded(
-//                       child: Center(
-//                         child: ValueListenableBuilder(
-//                           valueListenable: viewModel.fullBoatDataValueNotifier,
-//                           builder: (context, value, child) {
-//                             return ValueGauge(
-//                               value: '${value.bmsData.batteryCurrent}',
-//                               label: 'Corrente',
-//                               unit: 'A',
-//                               valueStyle: TextStyle(fontSize: valueTextSize),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               // Linha 2
-//               Expanded(
-//                 child: Row(
-//                   children: [
-//                     Expanded(
-//                       child: Center(
-//                         child: ValueListenableBuilder(
-//                           valueListenable: viewModel.fullBoatDataValueNotifier,
-//                           builder: (context, value, child) {
-//                             return ValueGauge(
-//                               unit: 'h',
-//                               value:
-//                                   '${value.batteryRemainingTimeEstimation.hora}:${value.batteryRemainingTimeEstimation.minuto}',
-//                               label: 'Tempo Restante',
-//                               valueStyle: TextStyle(fontSize: valueTextSize),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                     Expanded(
-//                       child: Center(
-//                         child: ValueListenableBuilder(
-//                           valueListenable: viewModel.fullBoatDataValueNotifier,
-//                           builder: (context, value, child) {
-//                             return ValueGauge(
-//                               value:
-//                                   '${value.batteryTimeWithoutGeneration.hora}:${value.batteryTimeWithoutGeneration.minuto}',
-//                               label: 'Tempo s/ geração',
-//                               unit: 'h',
-//                               valueStyle: TextStyle(fontSize: valueTextSize),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-
-//               Expanded(
-//                 child: Row(
-//                   children: [
-//                     Expanded(
-//                       child: Center(
-//                         child: ValueListenableBuilder(
-//                           valueListenable: viewModel.fullBoatDataValueNotifier,
-//                           builder: (context, value, child) {
-//                             return ValueGauge(
-//                               unit: 'ºC',
-//                               value: '${value.bmsData.temperatures[0]}',
-//                               label: 'Temperatura 1',
-//                               valueStyle: TextStyle(fontSize: valueTextSize),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                     Expanded(
-//                       child: Center(
-//                         child: ValueListenableBuilder(
-//                           valueListenable: viewModel.fullBoatDataValueNotifier,
-//                           builder: (context, value, child) {
-//                             return ValueGauge(
-//                               unit: 'ºC',
-//                               value: '${value.bmsData.temperatures[1]}',
-//                               label: 'Temperatura 2',
-//                               valueStyle: TextStyle(fontSize: valueTextSize),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: ValueListenableBuilder(
+                          valueListenable: boatDataListenable,
+                          builder: (context, value, child) {
+                            return ValueGauge(
+                              unit: 'ºC',
+                              value:
+                                  '${value.bmsData.temperatures.isNotEmpty ? value.bmsData.temperatures[0].toStringAsFixed(2) : 0}',
+                              label: 'Temperatura 1',
+                              valueStyle: TextStyle(fontSize: valueTextSize),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: ValueListenableBuilder(
+                          valueListenable: boatDataListenable,
+                          builder: (context, value, child) {
+                            return ValueGauge(
+                              unit: 'ºC',
+                              value:
+                                  '${value.bmsData.temperatures.isNotEmpty ? value.bmsData.temperatures[1].toStringAsFixed(2) : 0}',
+                              label: 'Temperatura 2',
+                              valueStyle: TextStyle(fontSize: valueTextSize),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

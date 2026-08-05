@@ -1,4 +1,3 @@
-// custom_card_widget.dart
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
@@ -17,28 +16,43 @@ class CustomCard extends StatelessWidget {
     required this.child,
   });
 
-  final borderRadius = 8.0;
+  final double borderRadius = 8.0;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-        color: color ?? Colors.blueGrey,
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final headerBackgroundColor = color != null 
+        ? Color.lerp(color, isDark ? Colors.white : Colors.black, 0.08)
+        : colorScheme.surfaceContainerHighest;
+
+    final textColor = color != null
+        ? colorScheme.onSurface
+        : colorScheme.onSurfaceVariant;
+
+    return Card.outlined(
+      color: color,
+      margin: EdgeInsets.zero,
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(borderRadius),
+        side: !isDark
+            ? BorderSide.none
+            : BorderSide(color: colorScheme.outlineVariant),
       ),
+
+      clipBehavior: Clip.antiAlias,
+
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Cabeçalho
           Container(
             constraints: const BoxConstraints(maxHeight: 32),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(borderRadius),
-                topRight: Radius.circular(borderRadius),
-              ),
-              color: color ?? Colors.grey,
-            ),
+            color: headerBackgroundColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
@@ -49,10 +63,9 @@ class CustomCard extends StatelessWidget {
                       waitDuration: const Duration(milliseconds: 400),
                       child: Text(
                         title,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Roboto',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: textColor,
+                          fontWeight: FontWeight.w600,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -63,13 +76,14 @@ class CustomCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 4.0),
                       child: Theme(
-                        data: Theme.of(context).copyWith(
+                        data: theme.copyWith(
                           iconButtonTheme: IconButtonThemeData(
                             style: IconButton.styleFrom(
                               minimumSize: Size.zero,
                               padding: EdgeInsets.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               iconSize: 20,
+                              foregroundColor: textColor,
                             ),
                           ),
                         ),
@@ -80,6 +94,7 @@ class CustomCard extends StatelessWidget {
               ),
             ),
           ),
+          // Corpo do Card
           Expanded(
             child: Padding(
               padding: padding ?? const EdgeInsets.all(8.0),

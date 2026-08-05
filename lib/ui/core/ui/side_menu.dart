@@ -6,17 +6,29 @@ class SideMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+            ),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Arari Next',
-                style: TextStyle(color: Colors.white, fontSize: 24, fontFamily: "impact"),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: colorScheme.onPrimaryContainer,
+                  fontFamily: "impact", 
+                ) ?? TextStyle(
+                  color: colorScheme.onPrimaryContainer,
+                  fontSize: 24,
+                  fontFamily: "impact",
+                ),
               ),
             ),
           ),

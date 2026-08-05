@@ -1,7 +1,10 @@
 import 'package:arari_next/domain/dashboard/card_model.dart';
 import 'package:arari_next/domain/dashboard/card_type.dart';
+import 'package:arari_next/domain/dashboard/chart_card_model.dart';
 import 'package:arari_next/domain/dashboard/metric_card_model.dart';
 import 'package:arari_next/domain/dashboard/propulsion_card_model.dart';
+import 'package:arari_next/ui/core/widgets/cards/battery_card.dart';
+import 'package:arari_next/ui/core/widgets/cards/chart_card_wrapper.dart';
 import 'package:arari_next/ui/core/widgets/cards/propulsion_card.dart';
 import 'package:arari_next/ui/viewmodels/dashboard_viewmodel.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
@@ -18,7 +21,7 @@ class DashboardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dashboard<CustomCard>(
       controller: viewmodel.dashboardController,
-    
+
       itemBuilder: (context, item) {
         CardModel card = viewmodel.dashboardModel.cards.firstWhere(
           (c) => c.id == item.id,
@@ -37,10 +40,16 @@ class DashboardWidget extends StatelessWidget {
               onConfigChanged: viewmodel.updateCard,
             );
           case CardType.battery:
-            return CustomCard(title: "title", child: Text("data"));
+            return BatteryCard(boatDataListenable: viewmodel.dataValueNotifier);
+          case CardType.chart:
+            return ChartCardWrapper(
+              initialModel: card as ChartCardModel,
+              historyStore: viewmodel.historyStore,
+              onConfigChanged: viewmodel.updateCard,
+            );
         }
       },
-      
+
       gridStyle: const GridStyle(
         lineColor: Colors.black12, // Color of resize handles
         lineWidth: 1,

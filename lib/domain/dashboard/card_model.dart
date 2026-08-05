@@ -1,7 +1,4 @@
 import 'package:arari_next/domain/dashboard/card_type.dart';
-import 'package:arari_next/domain/dashboard/metric_card_model.dart';
-import 'package:arari_next/domain/dashboard/propulsion_card_model.dart';
-import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
 
 abstract class CardModel {
   final String id;
@@ -16,7 +13,7 @@ abstract class CardModel {
 
   const CardModel({required this.id});
 
-  Map<String, dynamic> configToJson();
+  Map<String, dynamic> configToJson() => {};
 
   Map<String, dynamic> toJson() {
     return {'id': id, 'type': type.name, 'config': configToJson()};
@@ -26,22 +23,7 @@ abstract class CardModel {
     final id = json['id'];
     final config = json['config'] as Map<String, dynamic>;
 
-    switch (CardType.values.byName(json['type'])) {
-      case CardType.metric:
-        return MetricCardModel(
-          id: id,
-          selectedMetric: config['selectedMetric'],
-        );
-      case CardType.propulsion:
-        return PropulsionCardModel(
-          id: id,
-          selectedInstance: MotorInstance.values.byName(
-            config['selectedInstance'],
-          ),
-        );
-
-      default:
-        throw Exception('Unknown card type: ${json['type']}');
-    }
+    final type = CardType.values.byName(json['type']);
+    return type.createModel(id: id, config: config);
   }
 }

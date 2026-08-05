@@ -10,24 +10,37 @@ class SpeedometerGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final safeColor = isDark ? Colors.green.shade400 : Colors.green.shade600;
+    final warningColor = isDark ? Colors.amber.shade400 : Colors.amber.shade500;
+    final dangerColor = colorScheme.error;
+
     return RadialGauge(
       track: RadialTrack(
         start: start ?? 0,
         end: end ?? 5000,
         steps: ((end ?? 5000) / 2).toInt(),
         thickness: 15,
-        color: Colors.black,
+        color: colorScheme.surfaceContainerHighest,
         trackLabelFormater: (p0) => p0.toInt().toString(),
         trackStyle: TrackStyle(
           secondaryRulersHeight: 3,
-          primaryRulerColor: Colors.black45,
-          secondaryRulerColor: Colors.black45,
           primaryRulersHeight: 3,
-          labelStyle: TextStyle(
-            fontSize: 10,
-            color: Colors.black45,
-            fontWeight: FontWeight.w700,
-          ),
+          primaryRulerColor: colorScheme.outline,
+          secondaryRulerColor: colorScheme.outlineVariant,
+          labelStyle:
+              theme.textTheme.labelSmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w700,
+              ) ??
+              TextStyle(
+                fontSize: 10,
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w700,
+              ),
         ),
       ),
       needlePointer: [
@@ -35,15 +48,15 @@ class SpeedometerGauge extends StatelessWidget {
           value: rpm,
           needleWidth: 5,
           tailRadius: 10,
-          color: Colors.black87,
-          tailColor: Colors.black,
+          color: colorScheme.onSurface,
+          tailColor: colorScheme.onSurfaceVariant,
         ),
       ],
       valueBar: [
         RadialValueBar(
           value: rpm,
           gradient: LinearGradient(
-            colors: [Colors.green, Colors.yellow, Colors.red],
+            colors: [safeColor, warningColor, dangerColor],
           ),
         ),
       ],

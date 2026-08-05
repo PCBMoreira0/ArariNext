@@ -6,6 +6,7 @@ import 'package:arari_next/domain/dashboard/card_model.dart';
 import 'package:arari_next/domain/dashboard/card_type.dart';
 import 'package:arari_next/domain/dashboard/dashboard_model.dart';
 import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/ui/core/history_store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sliver_dashboard/sliver_dashboard.dart';
@@ -25,14 +26,18 @@ class DashboardViewModel {
   final DashboardController dashboardController = DashboardController();
   final DashboardRepository _dashboardRepository;
   final PacketRepository _packetRepository;
+  final HistoryStore _historyStore;
+  HistoryStore get historyStore => _historyStore;
 
   DashboardViewModel({
     required this.dashboardModel,
     required DashboardRepository dashboardRepository,
     required PacketRepository packetRepository,
+    required HistoryStore historyStore,
     this.isReadOnly = false,
   }) : _dashboardRepository = dashboardRepository,
-       _packetRepository = packetRepository {
+       _packetRepository = packetRepository,
+       _historyStore = historyStore {
     dashboardController.slotCount.subscribe(importDashboardBySlotCount);
 
     _packetSubscription = _packetRepository.data.listen(onNewDataReceived);
@@ -46,7 +51,7 @@ class DashboardViewModel {
   void addCard(CardType type) {
     if (isReadOnly) return;
     final id = DateTime.now().microsecondsSinceEpoch.toString();
-    final newCard = type.createModel(id);
+    final newCard = type.createModel(id: id);
     dashboardModel.cards.add(newCard);
     dashboardController.addItem(
       LayoutItem(

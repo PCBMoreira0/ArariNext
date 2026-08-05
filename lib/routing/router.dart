@@ -33,6 +33,7 @@ class RouteGenerator {
           builder: (context) {
             return ChangeNotifierProvider(
               create: (context) => DashboardScreenViewmodel(
+                historyStore: context.read(),
                 dashboardRepository: context.read(),
                 packetRepository: context.read(),
               ),

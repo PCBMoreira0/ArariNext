@@ -1,22 +1,54 @@
+import 'package:arari_next/domain/telemetry/full_boat_data.dart';
 import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
-import 'package:arari_next/ui/viewmodels/chart_card_viewmodel.dart';
 import 'package:cristalyse/cristalyse.dart';
 import 'package:flutter/material.dart';
 
 class ChartCard extends StatelessWidget {
-  final ChartCardViewmodel viewmodel;
+  final List<({DateTime time, FullBoatData data})> historyData;
 
-  const ChartCard({super.key, required this.viewmodel});
+  final List<MetricDefinition> selectedMetrics;
+  final Duration selectedInterval;
 
-  void _showMultiMetricSelector(
-    BuildContext context,
-    ChartCardViewmodel viewModel,
-  ) {
-    List<MetricDefinition> tempSelected = List.from(viewModel.selectedMetrics);
+  final void Function(List<MetricDefinition> newMetrics, Duration newInterval)
+  onConfigChanged;
+
+  const ChartCard({
+    super.key,
+    required this.historyData,
+    required this.selectedMetrics,
+    required this.selectedInterval,
+    required this.onConfigChanged,
+  });
+
+  List<Map<String, dynamic>> _mapDataToChart() {
+    if (historyData.isEmpty || selectedMetrics.isEmpty) {
+      return [];
+    }
+
+    List<Map<String, dynamic>> chartData = [];
+
+    for (var point in historyData) {
+      final timeMs = point.time.millisecondsSinceEpoch;
+
+      for (var metric in selectedMetrics) {
+        final value = metric.valueExtractor(point.data);
+
+        chartData.add({
+          'timestamp': timeMs,
+          'value': value,
+          'category': metric.label,
+        });
+      }
+    }
+    return chartData;
+  }
+
+  void _showMultiMetricSelector(BuildContext context) {
+    List<MetricDefinition> tempSelected = List.from(selectedMetrics);
     const int maxSelections = 4;
     final List<int> intervalOptions = [1, 2, 5];
-    Duration tempInterval = viewModel.selectedInterval;
+    Duration tempInterval = selectedInterval;
 
     showModalBottomSheet(
       context: context,
@@ -31,7 +63,7 @@ class ChartCard extends StatelessWidget {
 
             return SafeArea(
               child: FractionallySizedBox(
-                heightFactor: 0.8, // Ocupa até 80% da tela
+                heightFactor: 0.8,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -78,7 +110,7 @@ class ChartCard extends StatelessWidget {
                     ),
                     const Divider(),
 
-                    // --- UX 3: CHIPS DAS MÉTRICAS SELECIONADAS NO TOPO ---
+                    // --- CHIPS DAS MÉTRICAS SELECIONADAS NO TOPO ---
                     if (tempSelected.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -104,7 +136,7 @@ class ChartCard extends StatelessWidget {
 
                     const Divider(),
 
-                    // --- UX 1 & 2: LISTA CATEGORIZADA COM CHECKBOX ---
+                    // --- LISTA CATEGORIZADA COM CHECKBOX ---
                     Expanded(
                       child: ListView.builder(
                         itemCount: MetricsCatalog.grouped.keys.length,
@@ -124,8 +156,6 @@ class ChartCard extends StatelessWidget {
                             ),
                             children: categoryMetrics.map((metric) {
                               final isSelected = tempSelected.contains(metric);
-
-                              // Desabilita visualmente se chegou no limite E o item atual não está selecionado
                               final isDisabled = limitReached && !isSelected;
 
                               return CheckboxListTile(
@@ -139,7 +169,6 @@ class ChartCard extends StatelessWidget {
                                 ),
                                 subtitle: Text(metric.unit),
                                 value: isSelected,
-                                // Se estiver desabilitado, o onChanged fica nulo (não clicável)
                                 onChanged: isDisabled
                                     ? null
                                     : (bool? value) {
@@ -165,10 +194,8 @@ class ChartCard extends StatelessWidget {
                         onPressed: tempSelected.isEmpty
                             ? null
                             : () {
-                                viewModel.updateSettings(
-                                  tempSelected,
-                                  tempInterval,
-                                );
+                                // Dispara o callback informando as novas escolhas do usuário
+                                onConfigChanged(tempSelected, tempInterval);
                                 Navigator.pop(context);
                               },
                         child: const Text('Aplicar no Gráfico'),
@@ -186,60 +213,102 @@ class ChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: viewmodel,
-      builder: (context, child) {
-        final hasData = viewmodel.chartData.isNotEmpty;
-        final now = DateTime.now().millisecondsSinceEpoch;
+    final appTheme = getTheme(context);
 
-        final double minTime = (now - viewmodel.selectedInterval.inMilliseconds)
-            .toDouble();
-        final double maxTime = now.toDouble();
+    final dataToShow = _mapDataToChart();
+    final hasData = dataToShow.isNotEmpty;
+    final now = DateTime.now().millisecondsSinceEpoch;
 
-        var dataToShow = hasData
-            ? viewmodel.chartData
-            : [
-                {
-                  'timestamp': DateTime.now().millisecondsSinceEpoch - 60000,
-                  'value': 0.0,
-                  'category': 'ghost',
-                },
-              ];
+    final double minTime = (now - selectedInterval.inMilliseconds).toDouble();
+    final double maxTime = now.toDouble();
 
-        return CustomCard(
-          title: "Gráfico",
-          action: IconButton(
-            icon: const Icon(Icons.tune, size: 20),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            onPressed: () => _showMultiMetricSelector(context, viewmodel),
-          ),
-          child: CristalyseChart()
-              .data(dataToShow)
-              .mapping(x: 'timestamp', y: 'value', color: 'category')
-              .geomLine(strokeWidth: 2.0, alpha: hasData ? 0.8 : 0.0)
-              .scaleXContinuous(
-                tickConfig: TickConfig(simpleLinear: true),
-                labels: (value) => formatTimeLabel(value),
-                min: minTime,
-                max: maxTime,
-              )
-              .scaleYContinuous(
-                min: hasData ? null : 0,
-                max: hasData ? null : 100,
-              )
-              .animate(duration: const Duration(milliseconds: 0))
-              .build(),
-        );
-      },
+    final finalData = hasData
+        ? dataToShow
+        : [
+            {
+              'timestamp': DateTime.now().millisecondsSinceEpoch - 60000,
+              'value': 0.0,
+              'category': 'ghost',
+            },
+          ];
+
+    return CustomCard(
+      title: "Gráfico",
+      action: IconButton(
+        icon: const Icon(Icons.tune, size: 20),
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints(),
+        onPressed: () => _showMultiMetricSelector(context),
+      ),
+      child: CristalyseChart()
+          .data(finalData)
+          .mapping(x: 'timestamp', y: 'value', color: 'category')
+          .geomLine(strokeWidth: 2.0, alpha: hasData ? 0.8 : 0.0)
+          .scaleXContinuous(
+            tickConfig: TickConfig(simpleLinear: true),
+            labels: (value) => formatTimeLabel(value, minTime),
+            min: minTime,
+            max: maxTime,
+          )
+          .scaleYContinuous(min: hasData ? null : 0, max: hasData ? null : 100)
+          .animate(duration: const Duration(milliseconds: 0))
+          .theme(appTheme)
+          .build(),
     );
   }
 
-  String formatTimeLabel(num x) {
-    final date = DateTime.fromMillisecondsSinceEpoch(x.toInt());
-    final h = date.hour.toString().padLeft(2, '0');
-    final m = date.minute.toString().padLeft(2, '0');
-    final s = date.second.toString().padLeft(2, '0');
-    return "$h:$m:$s";
+  String formatTimeLabel(num tickValue, double minTime) {
+    final differenceMs = tickValue - minTime;
+
+    if (differenceMs < 0) return "00:00";
+
+    final duration = Duration(milliseconds: differenceMs.toInt());
+    final m = duration.inMinutes.toString().padLeft(2, '0');
+    final s = (duration.inSeconds % 60).toString().padLeft(2, '0');
+
+    return "$m:$s";
+  }
+
+  ChartTheme getTheme(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final defaultChartTheme = ChartTheme.defaultTheme();
+
+    final appTheme = defaultChartTheme.copyWith(
+      backgroundColor: Colors.transparent,
+      plotBackgroundColor: Colors.transparent,
+
+      padding: EdgeInsets.only(right: 20, left: 8),
+      primaryColor: colorScheme.primary,
+      borderColor: Colors.transparent,
+      gridColor: colorScheme.surfaceContainerHighest,
+      axisColor: colorScheme.onSurfaceVariant,
+
+      colorPalette: [
+        colorScheme.primary,
+        colorScheme.secondary,
+        colorScheme.tertiary,
+        colorScheme.error,
+        colorScheme.primaryContainer,
+        colorScheme.secondaryContainer,
+        colorScheme.tertiaryContainer,
+      ],
+      axisTextStyle:
+          theme.textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ) ??
+          defaultChartTheme.axisTextStyle.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+      axisLabelStyle:
+          theme.textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ) ??
+          defaultChartTheme.axisLabelStyle?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+    );
+
+    return appTheme;
   }
 }
