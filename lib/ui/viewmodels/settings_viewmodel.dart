@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:arari_next/data/services/datasource/serial_datasource_interface.dart';
 import 'package:arari_next/managers/settings_manager.dart';
 import 'package:arari_next/data/services/datasource/connection_event.dart';
 import 'package:arari_next/data/services/logging/logging_service_influx.dart';
 import 'package:arari_next/domain/settings/serial_settings.dart';
-import 'package:arari_next/data/services/datasource/serial_datasource.dart';
 import 'package:flutter/material.dart';
 
 class SettingsViewmodel extends ChangeNotifier {
@@ -23,11 +23,11 @@ class SettingsViewmodel extends ChangeNotifier {
   String? get selectedSerialPort => _selectedSerialPort;
   int get selectedBaudrate => _selectedBaudrate;
   final SettingsManager _settings;
-  final SerialDatasource _serial;
+  final ISerialDatasource _serial;
   final LoggingServiceInflux _log;
 
   SettingsViewmodel({
-    required SerialDatasource serial,
+    required ISerialDatasource serial,
     required SettingsManager settings,
     required LoggingServiceInflux log,
   }) : _serial = serial,
@@ -39,7 +39,7 @@ class SettingsViewmodel extends ChangeNotifier {
   }
 
   void downloadSettings() {
-    _serialPorts = SerialDatasource.availablePorts();
+    _serialPorts = _serial.availablePorts();
 
     String selectedSerial = _settings.serial.port;
     for (var serial in _serialPorts) {

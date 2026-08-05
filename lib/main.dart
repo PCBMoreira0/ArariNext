@@ -1,5 +1,6 @@
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart';
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository_impl.dart';
+import 'package:arari_next/data/services/datasource/serial_datasource_interface.dart';
 import 'package:arari_next/managers/settings_manager.dart';
 import 'package:arari_next/data/repositories/settings/local_settings_repository.dart';
 import 'package:arari_next/data/repositories/packet/mavlink_repository.dart';
@@ -9,8 +10,7 @@ import 'package:arari_next/data/services/datasource/data_source_interface.dart';
 import 'package:arari_next/data/services/file/file_storage_service.dart';
 import 'package:arari_next/data/services/file/local_file_storage_service.dart';
 import 'package:arari_next/data/services/logging/logging_service_influx.dart';
-import 'package:arari_next/data/services/datasource/serial_datasource.dart';
-import 'package:arari_next/mocks/mock_packet_repository.dart';
+import 'package:arari_next/mocks/mock_serial_datasource.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/routing/router.dart';
@@ -44,12 +44,16 @@ void main() async {
 
         Provider.value(value: LoggingServiceInflux()),
 
-        Provider(create: (context) => SerialDatasource()),
+        Provider(
+          create: (context) => MockSerialDatasource() as ISerialDatasource,
+        ),
         Provider<IDataSource>(
-          create: (context) => context.read<SerialDatasource>(),
+          create: (context) => context.read<ISerialDatasource>(),
         ),
         Provider(
-          create: (context) => MockPacketRepository() as PacketRepository,
+          create: (context) =>
+              MavlinkRepository(dataSource: context.read(), log: context.read())
+                  as PacketRepository,
         ),
       ],
       child: const ArariNextApp(),
@@ -75,7 +79,7 @@ class _ArariNextAppState extends State<ArariNextApp> {
     return MaterialApp(
       title: 'MavBoia',
       theme: ThemeData(primarySwatch: Colors.blue),
-      // Carrega a pagina inicial.
+
       initialRoute: Routes.dashboard,
       onGenerateRoute: RouteGenerator.generateRoute,
     );
