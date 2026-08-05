@@ -39,13 +39,13 @@ class SideMenu extends StatelessWidget {
               Navigator.of(context).pushNamed('/dashboard');
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.graphic_eq),
-            title: const Text('Gráficos'),
-            onTap: () {
-              Navigator.of(context).pushNamed('/chart');
-            },
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.graphic_eq),
+          //   title: const Text('Gráficos'),
+          //   onTap: () {
+          //     Navigator.of(context).pushNamed('/chart');
+          //   },
+          // ),
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Configurações'),
