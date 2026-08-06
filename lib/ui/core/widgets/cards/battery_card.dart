@@ -145,7 +145,7 @@ class _FullLayout extends LayoutConstraint {
                             return ValueGauge(
                               unit: 'h',
                               value:
-                                  '${value.batteryRemainingTimeEstimation.hora}:${value.batteryRemainingTimeEstimation.minuto}',
+                                  '${value.batteryRemainingTimeEstimation.hora.toString().padLeft(2, '0')}:${value.batteryRemainingTimeEstimation.minuto.toString().padLeft(2, '0')}',
                               label: 'Tempo Restante',
                               valueStyle: TextStyle(fontSize: valueTextSize),
                             );
@@ -160,7 +160,7 @@ class _FullLayout extends LayoutConstraint {
                           builder: (context, value, child) {
                             return ValueGauge(
                               value:
-                                  '${value.batteryTimeWithoutGeneration.hora}:${value.batteryTimeWithoutGeneration.minuto}',
+                                  '${value.batteryTimeWithoutGeneration.hora.toString().padLeft(2, '0')}:${value.batteryTimeWithoutGeneration.minuto.toString().padLeft(2, '0')}',
                               label: 'Tempo s/ geração',
                               unit: 'h',
                               valueStyle: TextStyle(fontSize: valueTextSize),
@@ -184,7 +184,7 @@ class _FullLayout extends LayoutConstraint {
                             return ValueGauge(
                               unit: 'ºC',
                               value:
-                                  '${value.bmsData.temperatures.isNotEmpty ? value.bmsData.temperatures[0].toStringAsFixed(2) : 0}',
+                                  '${value.bmsData.temperatures.isNotEmpty ? value.bmsData.temperatures[0].toString() : 0}',
                               label: 'Temperatura 1',
                               valueStyle: TextStyle(fontSize: valueTextSize),
                             );
@@ -200,7 +200,7 @@ class _FullLayout extends LayoutConstraint {
                             return ValueGauge(
                               unit: 'ºC',
                               value:
-                                  '${value.bmsData.temperatures.isNotEmpty ? value.bmsData.temperatures[1].toStringAsFixed(2) : 0}',
+                                  '${value.bmsData.temperatures.isNotEmpty ? value.bmsData.temperatures[1].toString() : 0}',
                               label: 'Temperatura 2',
                               valueStyle: TextStyle(fontSize: valueTextSize),
                             );
