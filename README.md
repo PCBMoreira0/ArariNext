@@ -1,6 +1,13 @@
 # 🚤 Arari Next — Telemetry Dashboard
 
+> 🚧 **Status:** Em desenvolvimento (Work in Progress)
+A versão atual é funcional e pode ser executada normalmente. Algumas funcionalidades planejadas ainda estão em desenvolvimento. Consulte o roadmap para os próximos passos.
+
+## Apresentação
+
 Um software de dashboard de telemetria desenvolvido em **Flutter**, focado em visualização através de cards com dashboard customizável e monitoramento em tempo real via protocolo **MAVLink**.
+
+![Demonstração do Dashboard](assets/apresentação.png)
 
 ---
 
@@ -16,7 +23,7 @@ A aplicação possui suporte completo à comunicação serial via MAVLink. A imp
 
 Durante as competições da Equipe Arariboia, é preciso analisar a performance do barco em tempo real para tomada de decisão estratégica. Este aplicativo permite a visualização dos dados através de um dashboard, recebendo os pacotes que chegam via rádio.
 
-Este repositório (**`arari_next`**) é uma evolução do software de telemetria anterior. O objetivo principal desta versão é melhorar a interface e arquitetura geral do software, trazendo um dashboard customizável e novas fontes de dados (WIP).
+Este repositório (**`ArariNext`**) é uma evolução do [software de telemetria anterior](https://github.com/Arariboia/ArariNext.git). O objetivo principal desta versão é melhorar a interface e arquitetura geral do software, trazendo um dashboard customizável e novas fontes de dados (WIP).
 
 ---
 
@@ -31,13 +38,13 @@ Este repositório (**`arari_next`**) é uma evolução do software de telemetria
     - **Gráfico (`Chart Card`):** Gráficos temporais em tempo real para múltiplas métricas com seleção de intervalo de janela (minutos).
 
 - **Conexão Serial & MAVLink:**
-  - Suporte a recepção de dados via porta serial com detecção de portas e configuração de *Baudrate* (padrão `115200`).
+  - Suporte a recepção de dados via porta serial com detecção de portas e configuração de *Baudrate*.
   - Parsing de pacotes no protocolo **MAVLink** (dialeto *Arariboat*) convertidos automaticamente para modelos de domínio fortemente tipados.
   - Página de **Configurações** dedicada com controle de conexão e desconexão.
 
 - **Suporte a Temas:**
   - Alternância de temas **Claro / Escuro**.
-  - Personalização de cor primária (Seed Color) em tempo real na barra superior.
+  - Personalização de cor primária em tempo real na barra superior.
 
 - **Compatibilidade:**
   - Testado e validado em ambiente **Desktop (Windows)**.
@@ -48,26 +55,21 @@ Este repositório (**`arari_next`**) é uma evolução do software de telemetria
 
 ### Visão Geral do Dashboard
 <!-- ADICIONE O GIF DA GERAL DO DASHBOARD AQUI -->
-![Demonstração do Dashboard](https://via.placeholder.com/800x450?text=GIF+Geral+do+Dashboard)
+![Demonstração do Dashboard](assets/demonstração.gif)
 
-### Configuração e Customização de Cards
+### Customização do Dashboard
 <!-- ADICIONE O GIF REORDENANDO OU CONFIGURANDO CARDS AQUI -->
-![Configuração de Cards](https://via.placeholder.com/800x450?text=GIF+Configurando+Cards)
+![Customização do Dashboard](assets/dashboard_demo.gif)
 
-### Conexão Serial e Configurações
+### Customização de Cards e Temas
 <!-- ADICIONE O GIF DA TELA DE CONFIGURAÇÕES CONECTANDO NA PORTA AQUI -->
-![Tela de Configurações](https://via.placeholder.com/800x450?text=GIF+Conectando+Serial)
+![Customização dos Cards e Temas](assets/customização_e_temas.gif)
 
 ---
 
-## Arquitetura e Tecnologias
+## Arquitetura
 
-O projeto adota a arquitetura **MVVM (Model-View-ViewModel)** para desacoplar a lógica de comunicação, processamento de telemetria e apresentação:
-
-- **`lib/domain/`**: Modelos de domínio limpos (BMS, Motores, GPS, MPPT, Configurações dos Cards e Dashboards).
-- **`lib/data/`**: Repositórios (`DashboardRepository`, `PacketRepository`, `SettingsRepository`) e fontes de dados (`ISerialDatasource`, geradores de dados mock para testes).
-- **`lib/ui/viewmodels/`**: Gerenciamento de estado das views utilizando `ChangeNotifier` e `ValueNotifier`.
-- **`lib/ui/views/` & `lib/ui/core/widgets/`**: Interface de usuário e componentes visuais (gauges, gráficos e grade do dashboard).
+O projeto adota a arquitetura **MVVM (Model-View-ViewModel)** para desacoplar a lógica de comunicação, processamento de telemetria e apresentação.
 
 ### Principais Dependências
 - **`flutter_libserialport`**: Comunicação de baixo nível com portas seriais.
@@ -90,7 +92,7 @@ O projeto adota a arquitetura **MVVM (Model-View-ViewModel)** para desacoplar a 
 1. Clone este repositório:
    ```bash
    git clone https://github.com/PCBMoreira0/ArariNext.git
-   cd arari_next
+   cd ArariNext
    ```
 2. Instale as dependências:
    ```bash
