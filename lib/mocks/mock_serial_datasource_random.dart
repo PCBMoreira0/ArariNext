@@ -10,24 +10,17 @@ import 'package:dart_mavlink/mavlink_frame.dart';
 import 'package:dart_mavlink/mavlink_message.dart';
 import 'package:flutter/material.dart';
 
-class MockSerialDatasource implements ISerialDatasource {
+class MockSerialDatasourceRandom implements ISerialDatasource {
   final StreamController<Uint8List> _outputStreamController =
       StreamController<Uint8List>.broadcast();
   final StreamController<ConnectionEvent> _statusController =
       StreamController<ConnectionEvent>.broadcast();
 
+  final Random _random = Random();
+
   Timer? _timer;
   int _sequence = 0;
   ConnectionStatus _currentStatus = ConnectionStatus.disconnected;
-
-  // ==========================================
-  // Estado da Simulação (Coerência Temporal)
-  // ==========================================
-  int _tick = 0;
-  double _batterySoc = 98.0; // Começa em 98% e diminui progressivamente
-  double _latitude = -22.9068;
-  double _longitude = -43.1729;
-  final double _heading = 45.0; // Navegando para o Nordeste (graus)
 
   @override
   Stream<Uint8List> get stream => _outputStreamController.stream;
@@ -50,6 +43,7 @@ class MockSerialDatasource implements ISerialDatasource {
     if (_currentStatus == ConnectionStatus.connected) return;
 
     _updateStatus(ConnectionStatus.connecting);
+
     _updateStatus(ConnectionStatus.connected);
     _startGeneratingData();
   }
@@ -81,11 +75,8 @@ class MockSerialDatasource implements ISerialDatasource {
 
   void _startGeneratingData() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(milliseconds: 400), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 1000), (_) {
       if (_outputStreamController.isClosed) return;
-
-      _tick++;
-      _updateSimulationState();
 
       final now = DateTime.now();
       final timestampSeconds = (now.millisecondsSinceEpoch ~/ 1000);
@@ -147,75 +138,47 @@ class MockSerialDatasource implements ISerialDatasource {
     _outputStreamController.add(bytes);
   }
 
-  // ==========================================
-  // Atualização do Estado Coerente
-  // ==========================================
-  void _updateSimulationState() {
-    // Descarga contínua da bateria (0.05% a cada segundo, trava em 10%)
-    if (_batterySoc > 10.0) {
-      _batterySoc -= 0.05;
-    }
-
-    // Deslocamento suave do GPS com base na velocidade de cruzeiro
-    const double speedDegPerSec = 0.00002;
-    final double rad = _heading * (pi / 180.0);
-    _latitude += speedDegPerSec * cos(rad);
-    _longitude += speedDegPerSec * sin(rad);
+  double _randomDouble(double min, double max) {
+    return min + _random.nextDouble() * (max - min);
   }
-
-  // Funções auxiliares para valores correlacionados
-  double get _currentThrottle => 60.0 + 5.0 * sin(_tick * 0.1); // 55% a 65%
-  double get _currentRpm => _currentThrottle * 28.0; // ~1540 a 1820 RPM
-  double get _currentSpeed => _currentThrottle * 4.5; // ~250 a 290 cm/s
-  double get _currentMotorAmp =>
-      _currentThrottle * 0.35; // ~19A a 22A por motor
-  double get _currentBatteryVoltage =>
-      48.0 + ((_batterySoc - 10.0) / 90.0) * 8.0; // 48V a 56V
 
   // ==========================================
   // Geradores das mensagens MAVLink (Arariboat)
   // ==========================================
 
   Instrumentation _generateInstrumentation(int timestampSec, int timestampMs) {
-    final double motorCurrentTotal = _currentMotorAmp * 2;
-    final double mpptCurrent = 12.0 + 1.5 * sin(_tick * 0.05);
-    final double netBatteryCurrent = mpptCurrent - motorCurrentTotal;
-
     return Instrumentation(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      batteryCurrent: (netBatteryCurrent * 10).toInt(), // dA
-      motorCurrentLeft: (_currentMotorAmp * 10).toInt(),
-      motorCurrentRight: (_currentMotorAmp * 10).toInt(),
-      mpptCurrent: (mpptCurrent * 10).toInt(),
+      batteryCurrent: (_randomDouble(-40.0, 40.0) * 10).toInt(),
+      motorCurrentLeft: (_randomDouble(0.0, 50.0) * 10).toInt(),
+      motorCurrentRight: (_randomDouble(0.0, 50.0) * 10).toInt(),
+      mpptCurrent: (_randomDouble(0.0, 30.0) * 10).toInt(),
       panelStrings: List.generate(
         4,
-        (index) => (3.0 * 1000).toInt(),
-      ), // 3A por string
-      auxiliaryBatteryCurrent: 12, // 1.2A constante
-      batteryVoltage: (_currentBatteryVoltage * 100).toInt(), // cV
-      auxiliaryBatteryVoltage: 1260, // 12.60V estável
-      irradiance: (850 + 20 * sin(_tick * 0.05)).toInt(), // ~850 W/m² estável
+        (_) => (_randomDouble(0.0, 10.0) * 1000).toInt(),
+      ),
+      auxiliaryBatteryCurrent: (_randomDouble(0.0, 5.0) * 10).toInt(),
+      batteryVoltage: (_randomDouble(48.0, 58.0) * 100).toInt(),
+      auxiliaryBatteryVoltage: (_randomDouble(11.0, 14.5) * 100).toInt(),
+      irradiance: _random.nextInt(1200),
     );
   }
 
   Temperatures _generateTemperatures(int timestampSec, int timestampMs) {
-    // Temperaturas sobem levemente e estabilizam
-    final double drift = 2.0 * sin(_tick * 0.02);
-
     return Temperatures(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      temperatureBatteryLeft: ((32.0 + drift) * 100).toInt(),
-      temperatureBatteryRight: ((32.5 + drift) * 100).toInt(),
-      temperatureMpptLeft: ((41.0 + drift) * 100).toInt(),
-      temperatureMpptRight: ((40.5 + drift) * 100).toInt(),
-      temperatureMotorLeft: ((52.0 + drift * 1.5) * 100).toInt(),
-      temperatureMotorRight: ((53.0 + drift * 1.5) * 100).toInt(),
-      temperatureEscLeft: ((45.0 + drift) * 100).toInt(),
-      temperatureEscRight: ((44.5 + drift) * 100).toInt(),
-      temperatureMotorCoverLeft: ((30.0 + drift * 0.5) * 100).toInt(),
-      temperatureMotorCoverRight: ((30.0 + drift * 0.5) * 100).toInt(),
+      temperatureBatteryLeft: (_randomDouble(25.0, 45.0) * 100).toInt(),
+      temperatureBatteryRight: (_randomDouble(25.0, 45.0) * 100).toInt(),
+      temperatureMpptLeft: (_randomDouble(30.0, 60.0) * 100).toInt(),
+      temperatureMpptRight: (_randomDouble(30.0, 60.0) * 100).toInt(),
+      temperatureMotorLeft: (_randomDouble(35.0, 85.0) * 100).toInt(),
+      temperatureMotorRight: (_randomDouble(35.0, 85.0) * 100).toInt(),
+      temperatureEscLeft: (_randomDouble(30.0, 70.0) * 100).toInt(),
+      temperatureEscRight: (_randomDouble(30.0, 70.0) * 100).toInt(),
+      temperatureMotorCoverLeft: (_randomDouble(25.0, 50.0) * 100).toInt(),
+      temperatureMotorCoverRight: (_randomDouble(25.0, 50.0) * 100).toInt(),
     );
   }
 
@@ -223,29 +186,27 @@ class MockSerialDatasource implements ISerialDatasource {
     return Gps(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      latitude: (_latitude * 1e7).toInt(),
-      longitude: (_longitude * 1e7).toInt(),
-      speed: _currentSpeed.toInt(), // cm/s
-      course: _heading.toInt(),
-      heading: _heading.toInt(),
-      satellitesVisible: 12, // Estável em 12 satélites
-      hdop: 1, // HDOP excelente e fixo
+      latitude: (_randomDouble(-22.95, -22.85) * 1e7).toInt(),
+      longitude: (_randomDouble(-43.15, -43.05) * 1e7).toInt(),
+      speed: (_randomDouble(0.0, 500.0)).toInt(), // cm/s
+      course: _random.nextInt(360),
+      heading: _random.nextInt(360),
+      satellitesVisible: 4 + _random.nextInt(16),
+      hdop: _random.nextInt(5) + 1,
     );
   }
 
   Bms _generateBms(int timestampSec, int timestampMs) {
-    final int cellVoltageMv = ((_currentBatteryVoltage / 16.0) * 1000).toInt();
-
     return Bms(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      voltages: List.generate(
-        16,
-        (_) => cellVoltageMv,
-      ), // 16 células balanceadas
-      temperatures: [32, 33], // 32.0°C e 33°C em cdegC
-      currentBattery: ((12.0 - (_currentMotorAmp * 2)) * 10).toInt(), // dA
-      stateOfCharge: _batterySoc.toInt() * 10, // % [10-100] decrescente
+      voltages: List.generate(16, (_) => 3200 + _random.nextInt(400)), // mV
+      temperatures: List.generate(
+        2,
+        (_) => (25 + _random.nextInt(20)) * 100,
+      ), // cdegC
+      currentBattery: (_randomDouble(-50.0, 50.0) * 10).toInt(), // dA
+      stateOfCharge: _random.nextInt(91) + 10, // % [10-100]
     );
   }
 
@@ -253,7 +214,7 @@ class MockSerialDatasource implements ISerialDatasource {
     return BmsStatus(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      temperatures: [3200, 3250],
+      temperatures: List.generate(2, (_) => (25 + _random.nextInt(20)) * 100),
       status: chargeDischargeStateDischarging | chargeDischargeDischargeMosOn,
       failureFlagsByte0: 0,
       failureFlagsByte1: 0,
@@ -274,10 +235,10 @@ class MockSerialDatasource implements ISerialDatasource {
     return EzkontrolMcuMeterDataI(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      busVoltage: (_currentBatteryVoltage * 10).toInt(), // dV (0.1V/bit)
-      busCurrent: (_currentMotorAmp * 10).toInt(), // dA
-      rpm: _currentRpm.toInt(),
-      acceleratorOpening: _currentThrottle.toInt(), // %
+      busVoltage: (_randomDouble(45.0, 58.0) * 10).toInt(), // dV (0.1V/bit)
+      busCurrent: (_randomDouble(0.0, 100.0) * 10).toInt(), // dA
+      rpm: _random.nextInt(3000),
+      acceleratorOpening: _random.nextInt(101), // %
       instance: instance,
     );
   }
@@ -290,28 +251,26 @@ class MockSerialDatasource implements ISerialDatasource {
     return EzkontrolMcuMeterDataIi(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      controllerTemperature: 45 + 40, // 45°C + offset de 40
-      motorTemperature: 52 + 40, // 52°C + offset de 40
+      controllerTemperature:
+          30 + _random.nextInt(40) + 40, // offset -40 -> envia com +40
+      motorTemperature: 30 + _random.nextInt(50) + 40,
       status: ezkontrolGearD1 | (ezkontrolOpModeDrive << 4),
       errorFlagsByte4: 0,
       errorFlagsByte5: 0,
       errorFlagsByte6: 0,
-      lifeSignal: (_tick % 256), // Contador progressivo real
+      lifeSignal: _random.nextInt(256),
       instance: instance,
     );
   }
 
   Mppt _generateMppt(int timestampSec, int timestampMs) {
-    final double mpptAmp = 12.0 + 1.5 * sin(_tick * 0.05);
-
     return Mppt(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      pvVoltage: 7800, // 78.00V cV (tensão dos painéis estável)
-      pvCurrent: ((mpptAmp * _currentBatteryVoltage / 78.0) * 100)
-          .toInt(), // cA conservação de energia
-      batteryVoltage: (_currentBatteryVoltage * 100).toInt(),
-      batteryCurrent: (mpptAmp * 100).toInt(), // cA
+      pvVoltage: (_randomDouble(60.0, 120.0) * 100).toInt(), // cV
+      pvCurrent: (_randomDouble(0.0, 20.0) * 100).toInt(), // cA
+      batteryVoltage: (_randomDouble(48.0, 58.0) * 100).toInt(),
+      batteryCurrent: (_randomDouble(0.0, 15.0) * 100).toInt(),
     );
   }
 
@@ -319,7 +278,7 @@ class MockSerialDatasource implements ISerialDatasource {
     return Pumps(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      pumpStates: 1, // Bomba 1 ligada de forma constante
+      pumpStates: _random.nextInt(4), // Bit 0 e 1
     );
   }
 
@@ -327,9 +286,9 @@ class MockSerialDatasource implements ISerialDatasource {
     return RadioStatus(
       timestampSeconds: timestampSec,
       timestampMilliseconds: timestampMs,
-      rxerrors: 0,
+      rxerrors: _random.nextInt(5),
       instance: 0,
-      rssi: 210, // Sinal de rádio forte e estável
+      rssi: 180 + _random.nextInt(70), // [0-254]
     );
   }
 }
