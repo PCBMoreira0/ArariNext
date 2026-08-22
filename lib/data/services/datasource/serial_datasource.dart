@@ -40,20 +40,18 @@ class SerialDatasource implements ISerialDatasource {
     }
   }
 
-  @override
-  void setConfig(SerialSettings config) {
+  Future<void> setConfig(SerialSettings config) async {
     if (status == ConnectionStatus.connected) {
-      disconnect();
+      await disconnect();
       _config = config;
-      connect();
-    }
-    else{
+      await connect();
+    } else {
       _config = config;
     }
   }
 
   @override
-  void connect() {
+  Future<void> connect() async {
     if (_serialPort != null && _serialPort!.isOpen) return;
 
     if (!_isReconnecting) {
@@ -74,12 +72,12 @@ class SerialDatasource implements ISerialDatasource {
 
       final reader = SerialPortReader(port);
 
-      _subscription?.cancel();
+      await _subscription?.cancel();
       _subscription = reader.stream.listen(
-        (data) { _outputStreamController.add(data); print(data); },
-        onError: (error) {
+        (data) => _outputStreamController.add(data),
+        onError: (error) async {
           _updateStatus(ConnectionStatus.error);
-          _reconnect();
+          await _reconnect();
         },
       );
 
@@ -97,16 +95,16 @@ class SerialDatasource implements ISerialDatasource {
   }
 
   @override
-  void disconnect() {
-    _onDisconnect();
+  Future<void> disconnect() async {
+    await _onDisconnect();
     _updateStatus(ConnectionStatus.disconnected);
   }
 
-  void _onDisconnect() async {
+  Future<void> _onDisconnect() async {
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
 
-    _subscription?.cancel();
+    await _subscription?.cancel();
     _subscription = null;
 
     _reader?.close();
@@ -119,14 +117,14 @@ class SerialDatasource implements ISerialDatasource {
     _serialPort = null;
   }
 
-  void _reconnect() async {
-    _onDisconnect();
+  Future<void> _reconnect() async {
+    await _onDisconnect();
     _updateStatus(ConnectionStatus.reconnecting);
     _isReconnecting = true;
 
     _reconnectTimer = Timer.periodic(Duration(seconds: 3), (timer) async {
       try {
-        connect();
+        await connect();
         if (_serialPort != null && _serialPort!.isOpen) {
           timer.cancel();
           _reconnectTimer = null;
@@ -137,9 +135,9 @@ class SerialDatasource implements ISerialDatasource {
   }
 
   @override
-  void dispose() {
-    disconnect();
-    _outputStreamController.close();
-    _statusController.close();
+  Future<void> dispose() async {
+    await disconnect();
+    await _outputStreamController.close();
+    await _statusController.close();
   }
 }

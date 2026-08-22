@@ -1,5 +1,5 @@
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart';
-import 'package:arari_next/data/repositories/packet/packet_repository.dart';
+import 'package:arari_next/data/repositories/packet/telemetry_repository_interface.dart';
 import 'package:arari_next/domain/dashboard/dashboard_model.dart';
 import 'package:arari_next/ui/core/history_store.dart';
 import 'package:arari_next/ui/viewmodels/dashboard_viewmodel.dart';
@@ -15,12 +15,12 @@ class DashboardScreenViewmodel extends ChangeNotifier {
   final String id = "dash";
 
   final DashboardRepository _dashboardRepository;
-  final PacketRepository _packetRepository;
+  final ITelemetryRepository _packetRepository;
   final HistoryStore _historyStore;
 
   DashboardScreenViewmodel({
     required DashboardRepository dashboardRepository,
-    required PacketRepository packetRepository,
+    required ITelemetryRepository packetRepository,
     required HistoryStore historyStore,
   }) : _dashboardRepository = dashboardRepository,
        _packetRepository = packetRepository,

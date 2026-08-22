@@ -1,5 +1,5 @@
-import 'package:arari_next/domain/telemetry/iboat_data.dart';
-import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model_interface.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_model.dart';
 
 enum MotorStatus { gear, breaking, operationMode, dcContactor }
 
@@ -34,7 +34,7 @@ enum EzkontrolErrorFlag {
   software,
 }
 
-final class MotorStateData extends IBoatData {
+final class MotorStateModel extends ITelemetryModel {
   final int controllerTemperature;
   final int motorTemperature;
   final int status;
@@ -42,7 +42,7 @@ final class MotorStateData extends IBoatData {
   final int lifeSignal;
   final MotorInstance instance;
 
-  MotorStateData._({
+  MotorStateModel._({
     required this.controllerTemperature,
     required this.motorTemperature,
     required this.status,
@@ -52,7 +52,7 @@ final class MotorStateData extends IBoatData {
     required super.timestamp
   }) : errorFlags = List.unmodifiable(errorFlags);
 
-  factory MotorStateData({
+  factory MotorStateModel({
     required int controllerTemperature,
     required int motorTemperature,
     required int status,
@@ -86,7 +86,7 @@ final class MotorStateData extends IBoatData {
       }
     }
 
-    return MotorStateData._(
+    return MotorStateModel._(
       controllerTemperature: controllerTemperature,
       motorTemperature: motorTemperature,
       status: status,
@@ -97,8 +97,8 @@ final class MotorStateData extends IBoatData {
     );
   }
 
-  factory MotorStateData.empty() {
-    return MotorStateData._(
+  factory MotorStateModel.empty() {
+    return MotorStateModel._(
       controllerTemperature: 0,
       motorTemperature: 0,
       status: 0,

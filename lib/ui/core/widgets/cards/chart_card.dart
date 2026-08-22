@@ -1,11 +1,11 @@
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
 import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
 import 'package:arari_next/ui/core/widgets/cards/custom_card_widget.dart';
 import 'package:cristalyse/cristalyse.dart';
 import 'package:flutter/material.dart';
 
 class ChartCard extends StatelessWidget {
-  final List<({DateTime time, FullBoatData data})> historyData;
+  final List<({DateTime time, TelemetryModel data})> historyData;
 
   final List<MetricDefinition> selectedMetrics;
   final Duration selectedInterval;

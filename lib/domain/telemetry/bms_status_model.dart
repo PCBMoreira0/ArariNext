@@ -1,4 +1,4 @@
-import 'package:arari_next/domain/telemetry/iboat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model_interface.dart';
 
 enum BMSStatus{
   charge, discharge
@@ -74,7 +74,7 @@ enum BMSFailureFlag {
 }
 
 
-final class BMSStatusData extends IBoatData {
+final class BMSStatusData extends ITelemetryModel {
   final List<double> temperatures;
   final int status;
   final List<BMSFailureFlag> failureFlags;

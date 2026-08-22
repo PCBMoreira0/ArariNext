@@ -3,9 +3,9 @@ import 'dart:typed_data';
 import 'package:arari_next/data/services/datasource/connection_event.dart';
 
 abstract interface class IDataSource {
-  void connect();
-  void disconnect();
-  void dispose();
+  Future<void> connect();
+  Future<void> disconnect();
+  Future<void> dispose();
 
   Stream<Uint8List> get stream;
   Stream<ConnectionEvent> get statusStream;

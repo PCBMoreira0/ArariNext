@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:arari_next/data/repositories/packet/packet_repository.dart';
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/data/repositories/packet/telemetry_repository_interface.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
 import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
 import 'package:flutter/material.dart';
 
 class ChartCardViewmodel extends ChangeNotifier {
-  final PacketRepository packetRepository;
+  final ITelemetryRepository packetRepository;
   StreamSubscription? _subscription;
 
   Duration selectedInterval = const Duration(minutes: 1);
@@ -32,7 +32,7 @@ class ChartCardViewmodel extends ChangeNotifier {
     );
   }
 
-  void onNewDataReceived(FullBoatData? data) {
+  void onNewDataReceived(TelemetryModel? data) {
     if (data == null || selectedMetrics.isEmpty) return;
 
     bool hasUpdates = false;
@@ -41,7 +41,7 @@ class ChartCardViewmodel extends ChangeNotifier {
     final int cutoffTimeMemory = now - maxHistory.inMilliseconds;
 
     for (var metric in selectedMetrics) {
-      final double newValue = metric.valueExtractor(data);
+      final double newValue = metric.valueExtractor(data) ?? 0; // TODO data does not exist check
       final int newTimestamp = metric.timeExtractor(data);
 
       _seriesData.putIfAbsent(metric.label, () => []);

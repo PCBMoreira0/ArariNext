@@ -1,6 +1,6 @@
 import 'package:arari_next/domain/dashboard/card_model.dart';
 import 'package:arari_next/domain/dashboard/card_type.dart';
-import 'package:arari_next/domain/telemetry/motor_eletrical_data.dart';
+import 'package:arari_next/domain/telemetry/motor_eletrical_model.dart';
 
 class PropulsionCardModel extends CardModel {
   final MotorInstance selectedInstance;

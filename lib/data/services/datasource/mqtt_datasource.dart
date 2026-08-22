@@ -47,7 +47,9 @@ class MqttDatasource implements IDataSource {
   void _updateStatus(ConnectionStatus status) {
     _currentStatus = status;
     if (!_connectionStateStreamController.isClosed) {
-      _connectionStateStreamController.add(ConnectionEvent(ConnectionType.mqtt, status));
+      _connectionStateStreamController.add(
+        ConnectionEvent(ConnectionType.mqtt, status),
+      );
     }
   }
 
@@ -91,23 +93,23 @@ class MqttDatasource implements IDataSource {
 
     await _updatesSubscription?.cancel();
 
-    _updatesSubscription = _client.updates!.listen((
-      List<MqttReceivedMessage<MqttMessage?>>? c,
-    ) {
-      if (c != null && c.isNotEmpty) {
-        final recMess = c[0].payload as MqttPublishMessage;
-        final pt = recMess.payload.message;
-        _outputStreamController.add(pt.buffer.asUint8List());
-      }
-    }, onError: (rtt) => print("ENTROU AQUIII"), onDone: () => print("FINALIZOU"));
+    _updatesSubscription = _client.updates!.listen(
+      (List<MqttReceivedMessage<MqttMessage?>>? c) {
+        if (c != null && c.isNotEmpty) {
+          final recMess = c[0].payload as MqttPublishMessage;
+          final pt = recMess.payload.message;
+          _outputStreamController.add(pt.buffer.asUint8List());
+        }
+      },
+    ); //onError: (rtt) => print("ENTROU AQUIII"), onDone: () => print("FINALIZOU"));
   }
 
   @override
-  void disconnect() {
+  Future<void> disconnect() async {
     _client.disconnect();
   }
 
-  void _onAutoReconnect(){
+  void _onAutoReconnect() {
     _updateStatus(ConnectionStatus.reconnecting);
   }
 
@@ -129,9 +131,9 @@ class MqttDatasource implements IDataSource {
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     disconnect();
-    _outputStreamController.close();
-    _connectionStateStreamController.close();
+    await _outputStreamController.close();
+    await _connectionStateStreamController.close();
   }
 }

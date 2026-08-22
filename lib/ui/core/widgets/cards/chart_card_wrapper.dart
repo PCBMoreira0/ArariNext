@@ -1,6 +1,6 @@
 import 'package:arari_next/domain/dashboard/card_model.dart';
 import 'package:arari_next/domain/dashboard/chart_card_model.dart';
-import 'package:arari_next/domain/telemetry/full_boat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model.dart';
 import 'package:arari_next/ui/core/history_store.dart';
 import 'package:arari_next/ui/core/utils/metrics_catalog.dart';
 import 'package:arari_next/ui/core/widgets/cards/chart_card.dart';
@@ -23,7 +23,7 @@ class ChartCardWrapper extends StatefulWidget {
 }
 
 class _ChartCardWrapperState extends State<ChartCardWrapper> {
-  late List<({DateTime time, FullBoatData data})> _localDataPoints;
+  late List<({DateTime time, TelemetryModel data})> _localDataPoints;
   late Duration _currentInterval;
   late ChartCardModel _model;
 

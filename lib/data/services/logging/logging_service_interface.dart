@@ -1,5 +1,5 @@
-import 'package:arari_next/domain/telemetry/iboat_data.dart';
+import 'package:arari_next/domain/telemetry/telemetry_model_interface.dart';
 
 abstract interface class ILoggingService {
-  void save(IBoatData data);
+  void save(ITelemetryModel data);
 }

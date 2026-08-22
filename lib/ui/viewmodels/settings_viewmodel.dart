@@ -9,83 +9,81 @@ import 'package:flutter/material.dart';
 
 class SettingsViewmodel extends ChangeNotifier {
   List<String> _serialPorts = [];
+  List<String> get serialPorts => _serialPorts;
   final List<int> _baudrates = [9600, 115200];
-  String? _selectedSerialPort;
+  List<int> get baudRates => _baudrates;
+
+  String _selectedSerialPort = "";
+  String? get selectedSerialPort => _selectedSerialPort;
   int _selectedBaudrate = 9600;
-  bool get isSerialConnected => _serial.status == ConnectionStatus.connected;
+  int get selectedBaudrate => _selectedBaudrate;
+  bool get isSerialConnected =>
+      _connectionManager.serialStatus == ConnectionStatus.connected;
+
   String _loggingPath = "";
   bool get isLogOpen => _log.isOpen;
-
-  List<String> get serialPorts => _serialPorts;
-  List<int> get baudRates => _baudrates;
   String get loggingPath => _loggingPath;
 
-  String? get selectedSerialPort => _selectedSerialPort;
-  int get selectedBaudrate => _selectedBaudrate;
   final SettingsManager _settings;
-  final ISerialDatasource _serial;
+  final ConnectionManager _connectionManager;
   final LoggingServiceInflux _log;
 
   SettingsViewmodel({
-    required ISerialDatasource serial,
+    required ConnectionManager connectionManager,
     required SettingsManager settings,
     required LoggingServiceInflux log,
-  }) : _serial = serial,
+  }) : _connectionManager = connectionManager,
        _settings = settings,
        _log = log {
     if (!Platform.isAndroid && !Platform.isIOS) {
-      downloadSettings();
+      _loadSettings();
     }
   }
 
-  void downloadSettings() {
-    _serialPorts = _serial.availablePorts();
+  Future<void> _loadSettings() async {
+    _serialPorts = SerialDatasource.availablePorts();
 
-    String selectedSerial = _settings.serial.port;
-    for (var serial in _serialPorts) {
-      if (serial == selectedSerial) {
-        _selectedSerialPort = serial;
-        break;
-      }
-    }
-    _selectedSerialPort ??= null;
-
+    _selectedSerialPort = _settings.serial.port;
     _selectedBaudrate = _settings.serial.baudrate;
-
     _loggingPath = _settings.log.directory;
+
+    await _connectionManager.setSerialConfig(
+      SerialSettings(port: _selectedSerialPort, baudrate: _selectedBaudrate),
+    );
 
     notifyListeners();
   }
 
-  void toggleSerialPort() {
-    if (_serial.status == ConnectionStatus.connected) {
-      _serial.disconnect();
+  Future<void> toggleSerialPort() async {
+    if (_connectionManager.serialStatus == ConnectionStatus.connected) {
+      await _connectionManager.disconnect(ConnectionType.serial);
     } else {
-      _serial.connect();
+      await _connectionManager.connect(ConnectionType.serial);
     }
 
     notifyListeners();
   }
 
   Future<void> setSerialPort(String port) async {
-    await _settings.setSerial(_settings.serial.copyWith(port: port));
-    _serial.setConfig(SerialSettings(port: port, baudrate: _selectedBaudrate));
     _selectedSerialPort = port;
+    await _connectionManager.setSerialConfig(
+      SerialSettings(port: port, baudrate: _selectedBaudrate),
+    );
     notifyListeners();
+    await _settings.setSerial(_settings.serial.copyWith(port: port));
   }
 
   Future<void> setBaudrate(int baudrate) async {
-    await _settings.setSerial(_settings.serial.copyWith(baudrate: baudrate));
-    _serial.setConfig(
-      SerialSettings(port: _selectedSerialPort ?? "", baudrate: baudrate),
-    );
     _selectedBaudrate = baudrate;
+    final settings = _settings.serial.copyWith(baudrate: baudrate);
+    await _connectionManager.setSerialConfig(settings);
     notifyListeners();
+    await _settings.setSerial(settings);
   }
 
   Future<void> setLogDirectory(String dir) async {
-    await _settings.setLog(_settings.log.copyWith(directory: dir));
     _loggingPath = dir;
+    await _settings.setLog(_settings.log.copyWith(directory: dir));
     notifyListeners();
   }
 
