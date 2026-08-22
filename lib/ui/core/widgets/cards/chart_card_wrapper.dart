@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:arari_next/domain/dashboard/card_model.dart';
 import 'package:arari_next/domain/dashboard/chart_card_model.dart';
 import 'package:arari_next/domain/telemetry/telemetry_model.dart';
@@ -27,6 +29,8 @@ class _ChartCardWrapperState extends State<ChartCardWrapper> {
   late Duration _currentInterval;
   late ChartCardModel _model;
 
+  late Timer? _tickTimer;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +39,12 @@ class _ChartCardWrapperState extends State<ChartCardWrapper> {
     _localDataPoints = widget.historyStore.getHistory(_currentInterval);
 
     widget.historyStore.onThrottledUpdate.addListener(_onHistoryUpdated);
+
+    _tickTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() {
+        _localDataPoints = widget.historyStore.getHistory(_currentInterval);
+      });
+    });
   }
 
   void _onHistoryUpdated() {
@@ -45,6 +55,7 @@ class _ChartCardWrapperState extends State<ChartCardWrapper> {
 
   @override
   void dispose() {
+    _tickTimer?.cancel();
     widget.historyStore.onThrottledUpdate.removeListener(_onHistoryUpdated);
     super.dispose();
   }
