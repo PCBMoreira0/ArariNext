@@ -4,7 +4,6 @@ import 'package:arari_next/domain/dashboard/dashboard_model.dart';
 import 'package:arari_next/ui/core/history_store.dart';
 import 'package:arari_next/ui/viewmodels/dashboard_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:sliver_dashboard/sliver_dashboard.dart';
 
 class DashboardScreenViewmodel extends ChangeNotifier {
   DashboardModel? dashboard;

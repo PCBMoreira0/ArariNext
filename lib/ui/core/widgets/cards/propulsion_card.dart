@@ -147,7 +147,7 @@ class _CompactLayout extends LayoutConstraint {
                           : value.motorRight.state?.motorTemperature ?? 0.0;
                       return ValueGauge(
                         unit: 'ºC',
-                        value: motorTemperature.toStringAsFixed(2),
+                        value: motorTemperature.toString(),
                         label: 'Temp. Motor',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
                       );
@@ -167,7 +167,7 @@ class _CompactLayout extends LayoutConstraint {
                                 0.0;
                       return ValueGauge(
                         unit: 'ºC',
-                        value: controllerTemperature.toStringAsFixed(2),
+                        value: controllerTemperature.toString(),
                         label: 'Temp. ESC',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
                       );

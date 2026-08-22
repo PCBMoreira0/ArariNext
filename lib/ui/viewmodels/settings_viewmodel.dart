@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:arari_next/data/services/datasource/serial_datasource_interface.dart';
+import 'package:arari_next/managers/connection_manager.dart';
 import 'package:arari_next/managers/settings_manager.dart';
 import 'package:arari_next/data/services/datasource/connection_event.dart';
 import 'package:arari_next/data/services/logging/logging_service_influx.dart';
@@ -41,7 +41,7 @@ class SettingsViewmodel extends ChangeNotifier {
   }
 
   Future<void> _loadSettings() async {
-    _serialPorts = SerialDatasource.availablePorts();
+    _serialPorts = _connectionManager.availableSerialPorts;
 
     _selectedSerialPort = _settings.serial.port;
     _selectedBaudrate = _settings.serial.baudrate;

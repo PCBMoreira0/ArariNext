@@ -59,7 +59,7 @@ class _CompactLayout extends LayoutConstraint {
           valueListenable: boatDataListenable,
           builder: (context, value, child) {
             return ValueGauge(
-              value: (value.bmsData?.stateOfCharge ?? 0.0).toStringAsFixed(2),
+              value: (value.bmsData?.stateOfCharge ?? 0.0).toStringAsFixed(1),
               unit: '%',
               valueStyle: const TextStyle(fontSize: 16),
             );
@@ -139,14 +139,14 @@ class _FullLayout extends LayoutConstraint {
                         child: ValueListenableBuilder(
                           valueListenable: boatDataListenable,
                           builder: (context, value, child) {
-                            final hora =
+                            final hour =
                                 value.batteryRemainingTimeEstimation?.hora ?? 0;
-                            final minuto =
+                            final minute =
                                 value.batteryRemainingTimeEstimation?.minuto ??
                                 0;
                             return ValueGauge(
                               unit: 'h',
-                              value: '$hora:$minuto',
+                              value: '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}',
                               label: 'Tempo Restante',
                               valueStyle: TextStyle(fontSize: valueTextSize),
                             );
@@ -159,12 +159,12 @@ class _FullLayout extends LayoutConstraint {
                         child: ValueListenableBuilder(
                           valueListenable: boatDataListenable,
                           builder: (context, value, child) {
-                            final hora =
+                            final hour =
                                 value.batteryTimeWithoutGeneration?.hora ?? 0;
-                            final minuto =
+                            final minute =
                                 value.batteryTimeWithoutGeneration?.minuto ?? 0;
                             return ValueGauge(
-                              value: '$hora:$minuto',
+                              value: '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}',
                               label: 'Tempo s/ geração',
                               unit: 'h',
                               valueStyle: TextStyle(fontSize: valueTextSize),
@@ -192,7 +192,7 @@ class _FullLayout extends LayoutConstraint {
                                 : 0.0;
                             return ValueGauge(
                               unit: 'ºC',
-                              value: temp1.toStringAsFixed(2),
+                              value: temp1.toString(),
                               label: 'Temperatura 1',
                               valueStyle: TextStyle(fontSize: valueTextSize),
                             );
@@ -212,7 +212,7 @@ class _FullLayout extends LayoutConstraint {
                                 : 0.0;
                             return ValueGauge(
                               unit: 'ºC',
-                              value: temp2.toStringAsFixed(2),
+                              value: temp2.toString(),
                               label: 'Temperatura 2',
                               valueStyle: TextStyle(fontSize: valueTextSize),
                             );

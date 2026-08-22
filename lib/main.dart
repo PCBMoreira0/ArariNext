@@ -2,6 +2,7 @@ import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart
 import 'package:arari_next/data/repositories/dashboard/dashboard_repository_impl.dart';
 import 'package:arari_next/data/repositories/packet/telemetry_repository.dart';
 import 'package:arari_next/data/services/datasource/mqtt_datasource.dart';
+import 'package:arari_next/data/services/datasource/serial_datasource_interface.dart';
 import 'package:arari_next/data/services/pipeline/mavlink_mapper.dart';
 import 'package:arari_next/data/services/pipeline/mavlink_telemetry_source.dart';
 import 'package:arari_next/data/services/pipeline/telemetry_source_interface.dart';
@@ -15,6 +16,7 @@ import 'package:arari_next/data/services/file/file_storage_service.dart';
 import 'package:arari_next/data/services/file/local_file_storage_service.dart';
 import 'package:arari_next/data/services/logging/logging_service_influx.dart';
 import 'package:arari_next/data/services/datasource/serial_datasource.dart';
+import 'package:arari_next/mocks/mock_serial_datasource_random.dart';
 import 'package:arari_next/routing/routes.dart';
 import 'package:arari_next/ui/core/history_store.dart';
 import 'package:arari_next/ui/core/ui/theme_provider.dart';
@@ -46,7 +48,7 @@ void main() async {
         Provider.value(value: fileStorageService),
         Provider.value(value: settingsRepository),
         Provider(
-          create: (context) => SerialDatasource(),
+          create: (context) => SerialDatasource() as ISerialDatasource,
           dispose: (context, value) => value.dispose(),
         ),
         Provider(
@@ -54,7 +56,7 @@ void main() async {
           dispose: (context, value) => value.dispose(),
         ),
         Provider<IDataSource>(
-          create: (context) => context.read<SerialDatasource>(),
+          create: (context) => context.read<ISerialDatasource>(),
         ),
         Provider(
           create: (context) =>

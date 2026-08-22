@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:arari_next/data/services/datasource/connection_event.dart';
+import 'package:arari_next/data/services/datasource/serial_datasource_interface.dart';
 import 'package:arari_next/domain/settings/mqtt_settings.dart';
 import 'package:arari_next/data/services/datasource/mqtt_datasource.dart';
 import 'package:arari_next/domain/settings/serial_settings.dart';
-import 'package:arari_next/data/services/datasource/serial_datasource.dart';
 import 'package:async/async.dart';
 
 class ConnectionManager {
-  final SerialDatasource _serial;
+  final ISerialDatasource _serial;
   final MqttDatasource _mqtt;
 
   ConnectionStatus get serialStatus => _serial.status;
@@ -18,7 +18,7 @@ class ConnectionManager {
   Stream<ConnectionEvent> get connectionStream => _connectionStreamGroup;
 
   ConnectionManager({
-    required SerialDatasource serial,
+    required ISerialDatasource serial,
     required MqttDatasource mqtt,
   }) : _serial = serial,
        _mqtt = mqtt {
@@ -28,8 +28,10 @@ class ConnectionManager {
     ]);
   }
 
+  List<String> get availableSerialPorts => _serial.availablePorts();
+
   Future<void> setSerialConfig(SerialSettings config) async {
-    await _serial.setConfig(config);
+    _serial.setConfig(config);
   }
 
   Future<void> setMqttConfig(MqttSettings config) async {

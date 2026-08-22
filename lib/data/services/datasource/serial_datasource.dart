@@ -40,6 +40,7 @@ class SerialDatasource implements ISerialDatasource {
     }
   }
 
+  @override
   Future<void> setConfig(SerialSettings config) async {
     if (status == ConnectionStatus.connected) {
       await disconnect();

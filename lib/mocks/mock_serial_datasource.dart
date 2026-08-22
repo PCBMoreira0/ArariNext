@@ -46,7 +46,7 @@ class MockSerialDatasource implements ISerialDatasource {
   }
 
   @override
-  void connect() {
+  Future<void> connect() async {
     if (_currentStatus == ConnectionStatus.connected) return;
 
     _updateStatus(ConnectionStatus.connecting);
@@ -55,16 +55,16 @@ class MockSerialDatasource implements ISerialDatasource {
   }
 
   @override
-  void disconnect() {
+  Future<void> disconnect() async {
     _stopGeneratingData();
     _updateStatus(ConnectionStatus.disconnected);
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     disconnect();
-    _outputStreamController.close();
-    _statusController.close();
+    await _outputStreamController.close();
+    await _statusController.close();
   }
 
   @override
@@ -73,7 +73,7 @@ class MockSerialDatasource implements ISerialDatasource {
   }
 
   @override
-  void setConfig(SerialSettings config) {
+  Future<void> setConfig(SerialSettings config) async {
     debugPrint(
       'MockSerialDatasource: setConfig called with port: ${config.port}, baudrate: ${config.baudrate}',
     );

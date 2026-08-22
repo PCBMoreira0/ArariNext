@@ -39,7 +39,7 @@ class MockSerialDatasourceRandom implements ISerialDatasource {
   }
 
   @override
-  void connect() {
+  Future<void> connect() async {
     if (_currentStatus == ConnectionStatus.connected) return;
 
     _updateStatus(ConnectionStatus.connecting);
@@ -49,16 +49,16 @@ class MockSerialDatasourceRandom implements ISerialDatasource {
   }
 
   @override
-  void disconnect() {
+  Future<void> disconnect() async {
     _stopGeneratingData();
     _updateStatus(ConnectionStatus.disconnected);
   }
 
   @override
-  void dispose() {
-    disconnect();
-    _outputStreamController.close();
-    _statusController.close();
+  Future<void> dispose() async {
+    await disconnect();
+    await _outputStreamController.close();
+    await _statusController.close();
   }
 
   @override
@@ -67,7 +67,7 @@ class MockSerialDatasourceRandom implements ISerialDatasource {
   }
 
   @override
-  void setConfig(SerialSettings config) {
+  Future<void> setConfig(SerialSettings config) async {
     debugPrint(
       'MockSerialDatasource: setConfig called with port: ${config.port}, baudrate: ${config.baudrate}',
     );
@@ -206,7 +206,7 @@ class MockSerialDatasourceRandom implements ISerialDatasource {
         (_) => (25 + _random.nextInt(20)) * 100,
       ), // cdegC
       currentBattery: (_randomDouble(-50.0, 50.0) * 10).toInt(), // dA
-      stateOfCharge: _random.nextInt(91) + 10, // % [10-100]
+      stateOfCharge: _random.nextInt(910) + 100, // % [10-100]
     );
   }
 
