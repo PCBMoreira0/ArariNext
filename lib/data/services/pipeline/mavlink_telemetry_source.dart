@@ -13,7 +13,7 @@ class MavlinkTelemetrySource implements ITelemetrySource {
   final IDataSource _source;
   final MavlinkMapper _mapper;
   late StreamSubscription _sourceSubscription;
-  late StreamSubscription _mapperSubscription;
+  late StreamSubscription _parserSubscription;
 
   final MavlinkParser _parser = MavlinkParser(MavlinkDialectArariboat());
 
@@ -31,7 +31,7 @@ class MavlinkTelemetrySource implements ITelemetrySource {
     _sourceSubscription = _source.stream.listen(
       (data) => _handleRawBytes(data),
     );
-    _mapperSubscription = _parser.stream.listen(_handleMavlinkFrame);
+    _parserSubscription = _parser.stream.listen(_handleMavlinkFrame);
   }
 
   void _handleRawBytes(Uint8List bytes) {
@@ -48,7 +48,7 @@ class MavlinkTelemetrySource implements ITelemetrySource {
   @override
   Future<void> dispose() async {
     await _sourceSubscription.cancel();
-    await _mapperSubscription.cancel();
+    await _parserSubscription.cancel();
     await _streamController.close();
   }
 }

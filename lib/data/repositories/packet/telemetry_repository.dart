@@ -97,7 +97,7 @@ class TelemetryRepository extends ITelemetryRepository {
 
   @override
   Future<void> dispose() async {
-    _sourceSubscription.cancel();
-    _streamController.close();
+    await _sourceSubscription.cancel();
+    await _streamController.close();
   }
 }
