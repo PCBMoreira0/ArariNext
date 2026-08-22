@@ -240,20 +240,43 @@ class ChartCard extends StatelessWidget {
         constraints: const BoxConstraints(),
         onPressed: () => _showMultiMetricSelector(context),
       ),
-      child: CristalyseChart()
-          .data(finalData)
-          .mapping(x: 'timestamp', y: 'value', color: 'category')
-          .geomLine(strokeWidth: 2.0, alpha: hasData ? 0.8 : 0.0)
-          .scaleXContinuous(
-            tickConfig: TickConfig(simpleLinear: true),
-            labels: (value) => formatTimeLabel(value, minTime),
-            min: minTime,
-            max: maxTime,
-          )
-          .scaleYContinuous(min: hasData ? null : 0, max: hasData ? null : 100)
-          .animate(duration: const Duration(milliseconds: 0))
-          .theme(appTheme)
-          .build(),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Cálculo do posicionamento da legenda de acordo com o tamanho do card e tamanho do texto da métrica
+          final maxTextWidth = _calculateMaxLegendWidth(
+            selectedMetrics,
+            const TextStyle(fontSize: 10),
+          );
+          final estimatedLegendWidth = maxTextWidth + 20.0;
+
+          final offsetX = constraints.maxWidth - estimatedLegendWidth - 16.0;
+
+          return CristalyseChart()
+              .data(finalData)
+              .mapping(x: 'timestamp', y: 'value', color: 'category')
+              .geomLine(strokeWidth: 2.0, alpha: hasData ? 0.8 : 0.0)
+              .scaleXContinuous(
+                tickConfig: TickConfig(simpleLinear: true),
+                labels: (value) => formatTimeLabel(value, minTime),
+                min: minTime,
+                max: maxTime,
+              )
+              .scaleYContinuous(
+                min: hasData ? null : 0,
+                max: hasData ? null : 100,
+              )
+              .legend(
+                position: LegendPosition.floating,
+                floatingOffset: Offset(offsetX, 0.0),
+                textStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+                symbolSize: 10.0,
+                interactive: true,
+              )
+              .animate(duration: const Duration(milliseconds: 0))
+              .theme(appTheme)
+              .build();
+        },
+      ),
     );
   }
 
@@ -267,6 +290,24 @@ class ChartCard extends StatelessWidget {
     final s = (duration.inSeconds % 60).toString().padLeft(2, '0');
 
     return "$m:$s";
+  }
+
+  double _calculateMaxLegendWidth(
+    List<MetricDefinition> metrics,
+    TextStyle textStyle,
+  ) {
+    double maxWidth = 0.0;
+    for (var metric in metrics) {
+      final textPainter = TextPainter(
+        text: TextSpan(text: metric.label, style: textStyle),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      if (textPainter.width > maxWidth) {
+        maxWidth = textPainter.width;
+      }
+    }
+    return maxWidth;
   }
 
   ChartTheme getTheme(BuildContext context) {
