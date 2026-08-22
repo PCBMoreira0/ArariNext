@@ -87,98 +87,80 @@ class _CompactLayout extends LayoutConstraint {
 
   @override
   Widget build() {
-    return Column(
-      children: [
-        // Linha 1
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: boatDataListenable,
-                    builder: (context, value, child) {
-                      final busVoltage = selectedInstance == MotorInstance.left
-                          ? value.motorLeft.eletrical?.busVoltage ?? 0.0
-                          : value.motorRight.eletrical?.busVoltage ?? 0.0;
-                      return ValueGauge(
+    return ValueListenableBuilder<TelemetryModel>(
+      valueListenable: boatDataListenable,
+      builder: (context, value, child) {
+        final motorEletrical = selectedInstance == MotorInstance.left
+            ? value.motorLeft.eletrical
+            : value.motorRight.eletrical;
+        final motorState = selectedInstance == MotorInstance.left
+            ? value.motorLeft.state
+            : value.motorRight.state;
+
+        final busVoltage = motorEletrical?.busVoltage ?? 0.0;
+        final busCurrent = motorEletrical?.busCurrent ?? 0.0;
+        final motorTemperature = motorState?.motorTemperature ?? 0.0;
+        final controllerTemperature = motorState?.controllerTemperature ?? 0.0;
+
+        return Column(
+          children: [
+            // Linha 1
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: ValueGauge(
                         value: busVoltage.toStringAsFixed(2),
                         label: 'Tensão',
                         unit: 'V',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: boatDataListenable,
-                    builder: (context, value, child) {
-                      final busCurrent = selectedInstance == MotorInstance.left
-                          ? value.motorLeft.eletrical?.busCurrent ?? 0.0
-                          : value.motorRight.eletrical?.busCurrent ?? 0.0;
-                      return ValueGauge(
+                  Expanded(
+                    child: Center(
+                      child: ValueGauge(
                         value: busCurrent.toStringAsFixed(2),
                         label: 'Corrente',
                         unit: 'A',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
-        // Linha 2
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: boatDataListenable,
-                    builder: (context, value, child) {
-                      final motorTemperature =
-                          selectedInstance == MotorInstance.left
-                          ? value.motorLeft.state?.motorTemperature ?? 0.0
-                          : value.motorRight.state?.motorTemperature ?? 0.0;
-                      return ValueGauge(
+            ),
+            // Linha 2
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: ValueGauge(
                         unit: 'ºC',
                         value: motorTemperature.toString(),
                         label: 'Temp. Motor',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: ValueListenableBuilder(
-                    valueListenable: boatDataListenable,
-                    builder: (context, value, child) {
-                      final controllerTemperature =
-                          selectedInstance == MotorInstance.left
-                          ? value.motorLeft.state?.controllerTemperature ?? 0.0
-                          : value.motorRight.state?.controllerTemperature ??
-                                0.0;
-                      return ValueGauge(
+                  Expanded(
+                    child: Center(
+                      child: ValueGauge(
                         unit: 'ºC',
                         value: controllerTemperature.toString(),
                         label: 'Temp. ESC',
                         valueStyle: TextStyle(fontSize: _valueTextSize),
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -206,82 +188,66 @@ class _FullLayout extends LayoutConstraint {
       selectedInstance: selectedInstance,
     ).build();
 
-    return ValueListenableBuilder(
-      valueListenable: boatDataListenable,
-      builder: (context, value, child) {
-        if (selectedInstance == MotorInstance.right) {
-          return Row(
-            children: [
-              _buildSpeedometer(),
-              const SizedBox(width: 15),
-              Expanded(child: compactLayout),
-            ],
-          );
-        } else {
-          return Row(
-            children: [
-              Expanded(child: compactLayout),
-              const SizedBox(width: 15),
-              _buildSpeedometer(),
-            ],
-          );
-        }
-      },
-    );
+    final Widget speedometer = _buildSpeedometer();
+
+    if (selectedInstance == MotorInstance.right) {
+      return Row(
+        children: [
+          speedometer,
+          const SizedBox(width: 15),
+          Expanded(child: compactLayout),
+        ],
+      );
+    } else {
+      return Row(
+        children: [
+          Expanded(child: compactLayout),
+          const SizedBox(width: 15),
+          speedometer,
+        ],
+      );
+    }
   }
 
   Widget _buildSpeedometer() {
     return Flexible(
-      child: Stack(
-        alignment: AlignmentGeometry.bottomCenter,
-        children: [
-          ValueListenableBuilder(
-            valueListenable: boatDataListenable,
-            builder: (context, value, child) {
-              final rpm = selectedInstance == MotorInstance.left
-                  ? value.motorLeft.eletrical?.rpm ?? 0
-                  : value.motorRight.eletrical?.rpm ?? 0;
-              return SpeedometerGauge(rpm: rpm.toDouble());
-            },
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+      child: ValueListenableBuilder<TelemetryModel>(
+        valueListenable: boatDataListenable,
+        builder: (context, value, child) {
+          final motorEletrical = selectedInstance == MotorInstance.left
+              ? value.motorLeft.eletrical
+              : value.motorRight.eletrical;
+
+          final rpm = motorEletrical?.rpm ?? 0;
+          final acceleratorOpening = motorEletrical?.acceleratorOpening ?? 0;
+
+          return Stack(
+            alignment: AlignmentGeometry.bottomCenter,
             children: [
-              ValueListenableBuilder(
-                valueListenable: boatDataListenable,
-                builder: (context, value, child) {
-                  final rpm = selectedInstance == MotorInstance.left
-                      ? value.motorLeft.eletrical?.rpm ?? 0
-                      : value.motorRight.eletrical?.rpm ?? 0;
-                  return ValueGauge(
+              SpeedometerGauge(rpm: rpm.toDouble()),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ValueGauge(
                     value: '$rpm',
                     unit: 'rpm',
                     label: 'Velocidade',
                     valueStyle: const TextStyle(fontSize: 18),
-                  );
-                },
-              ),
-              const SizedBox(width: 10),
-              ValueListenableBuilder(
-                valueListenable: boatDataListenable,
-                builder: (context, value, child) {
-                  final acceleratorOpening =
-                      selectedInstance == MotorInstance.left
-                      ? value.motorLeft.eletrical?.acceleratorOpening ?? 0
-                      : value.motorRight.eletrical?.acceleratorOpening ?? 0;
-                  return ValueGauge(
+                  ),
+                  const SizedBox(width: 10),
+                  ValueGauge(
                     value: acceleratorOpening.toString(),
                     unit: '%',
                     label: 'Abertura Acel.',
                     maxWidth: 100,
                     valueStyle: const TextStyle(fontSize: 18),
-                  );
-                },
+                  ),
+                ],
               ),
             ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
