@@ -52,7 +52,7 @@ class MetricsCatalog {
     MetricDefinition(
       id: "motor_be_current",
       label: "Corrente Mot.BE",
-      unit: 'V',
+      unit: 'A',
       valueExtractor: (data) => data.motorRight.eletrical?.busCurrent,
       timeExtractor: (data) => data.motorRight.eletrical?.timestamp ?? 0,
     ),
