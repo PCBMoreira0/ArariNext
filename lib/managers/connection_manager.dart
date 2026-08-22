@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:arari_next/data/services/datasource/connection_event.dart';
+import 'package:arari_next/data/services/datasource/mqtt_datasource_interface.dart';
 import 'package:arari_next/data/services/datasource/serial_datasource_interface.dart';
 import 'package:arari_next/domain/settings/mqtt_settings.dart';
-import 'package:arari_next/data/services/datasource/mqtt_datasource.dart';
 import 'package:arari_next/domain/settings/serial_settings.dart';
 import 'package:async/async.dart';
 
 class ConnectionManager {
   final ISerialDatasource _serial;
-  final MqttDatasource _mqtt;
+  final IMqttDataSource _mqtt;
 
   ConnectionStatus get serialStatus => _serial.status;
   ConnectionStatus get mqttStatus => _mqtt.status;
@@ -19,7 +19,7 @@ class ConnectionManager {
 
   ConnectionManager({
     required ISerialDatasource serial,
-    required MqttDatasource mqtt,
+    required IMqttDataSource mqtt,
   }) : _serial = serial,
        _mqtt = mqtt {
     _connectionStreamGroup = StreamGroup.mergeBroadcast([

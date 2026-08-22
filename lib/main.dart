@@ -1,24 +1,9 @@
-import 'package:arari_next/data/repositories/dashboard/dashboard_repository.dart';
-import 'package:arari_next/data/repositories/dashboard/dashboard_repository_impl.dart';
-import 'package:arari_next/data/repositories/packet/telemetry_repository.dart';
-import 'package:arari_next/data/services/datasource/mqtt_datasource.dart';
-import 'package:arari_next/data/services/datasource/serial_datasource_interface.dart';
-import 'package:arari_next/data/services/pipeline/mavlink_mapper.dart';
-import 'package:arari_next/data/services/pipeline/mavlink_telemetry_source.dart';
-import 'package:arari_next/data/services/pipeline/telemetry_source_interface.dart';
-import 'package:arari_next/managers/connection_manager.dart';
-import 'package:arari_next/managers/settings_manager.dart';
 import 'package:arari_next/data/repositories/settings/local_settings_repository.dart';
-import 'package:arari_next/data/repositories/packet/telemetry_repository_interface.dart';
 import 'package:arari_next/data/repositories/settings/settings_repository.dart';
-import 'package:arari_next/data/services/datasource/data_source_interface.dart';
 import 'package:arari_next/data/services/file/file_storage_service.dart';
 import 'package:arari_next/data/services/file/local_file_storage_service.dart';
-import 'package:arari_next/data/services/logging/logging_service_influx.dart';
-import 'package:arari_next/data/services/datasource/serial_datasource.dart';
-import 'package:arari_next/mocks/mock_serial_datasource_random.dart';
+import 'package:arari_next/providers.dart';
 import 'package:arari_next/routing/routes.dart';
-import 'package:arari_next/ui/core/history_store.dart';
 import 'package:arari_next/ui/core/ui/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:arari_next/routing/router.dart';
@@ -44,58 +29,10 @@ void main() async {
 
   runApp(
     MultiProvider(
-      providers: [
-        Provider.value(value: fileStorageService),
-        Provider.value(value: settingsRepository),
-        Provider(
-          create: (context) => SerialDatasource() as ISerialDatasource,
-          dispose: (context, value) => value.dispose(),
-        ),
-        Provider(
-          create: (context) => MqttDatasource(),
-          dispose: (context, value) => value.dispose(),
-        ),
-        Provider<IDataSource>(
-          create: (context) => context.read<ISerialDatasource>(),
-        ),
-        Provider(
-          create: (context) =>
-              ConnectionManager(mqtt: context.read(), serial: context.read()),
-          dispose: (context, value) => value.dispose(),
-        ),
-        Provider(
-          create: (context) =>
-              SettingsManager(settingsRepository: context.read()),
-        ),
-        Provider(
-          create: (context) =>
-              DashboardRepositoryImpl(fileStorageService: context.read())
-                  as DashboardRepository,
-        ),
-
-        Provider.value(value: LoggingServiceInflux()),
-
-        Provider(
-          create: (context) =>
-              MavlinkTelemetrySource(
-                    source: context.read(),
-                    mapper: MavlinkMapper(),
-                  )
-                  as ITelemetrySource,
-          dispose: (context, value) => value.dispose(),
-        ),
-        Provider(
-          create: (context) =>
-              TelemetryRepository(source: context.read())
-                  as ITelemetryRepository,
-          dispose: (context, value) => value.dispose(),
-        ),
-        Provider(
-          create: (context) => HistoryStore(packetRepository: context.read()),
-          dispose: (context, value) => value.dispose(),
-        ),
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
-      ],
+      providers: appProviders(
+        fileStorageService: fileStorageService,
+        settingsRepository: settingsRepository,
+      ),
       child: const ArariNextApp(),
     ),
   );

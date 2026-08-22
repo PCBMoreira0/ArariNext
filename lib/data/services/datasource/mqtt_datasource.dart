@@ -3,12 +3,12 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:arari_next/data/services/datasource/connection_event.dart';
-import 'package:arari_next/data/services/datasource/data_source_interface.dart';
+import 'package:arari_next/data/services/datasource/mqtt_datasource_interface.dart';
 import 'package:arari_next/domain/settings/mqtt_settings.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-class MqttDatasource implements IDataSource {
+class MqttDatasource implements IMqttDataSource {
   final MqttServerClient _client;
   String _topic;
 
@@ -53,6 +53,7 @@ class MqttDatasource implements IDataSource {
     }
   }
 
+  @override
   void setTopic(String topic) {
     if (status == ConnectionStatus.connected) {
       _client.unsubscribe(_topic);
@@ -63,6 +64,7 @@ class MqttDatasource implements IDataSource {
     }
   }
 
+  @override
   Future<void> setConfig(MqttSettings config) async {
     disconnect();
     _client.port = config.port;
